@@ -54,7 +54,7 @@
   "createharmonics.gui.record_press_base.url_sequential_mode": "順番再生\nURLは上から下へ順番に再生されます",
   "createharmonics.gui.record_press_base.weight_input": "重み",
   "createharmonics.gui.record_press_base.weight_input_tooltip": "このURLの再生優先度を設定",
-  "createharmonics.item_group": "Create Harmonics",
+  "createharmonics.item_group": "Create Harmonics (Unofficial)",
   "createharmonics.ponder.andesite_jukebox.header": "安山岩ジュークボックスの使い方",
   "createharmonics.ponder.andesite_jukebox.text_1": "安山岩ジュークボックスは天上のレコードを再生できます",
   "createharmonics.ponder.andesite_jukebox.text_10": "一時停止モードでは、レッドストーンで再生と停止を制御します",

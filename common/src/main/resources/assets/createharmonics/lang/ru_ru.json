@@ -64,7 +64,7 @@
   "createharmonics.gui.record_press_base.url_sequential_mode": "Последовательный режим\nСсылки воспроизводятся по порядку сверху вниз",
   "createharmonics.gui.record_press_base.weight_input": "Приоритет",
   "createharmonics.gui.record_press_base.weight_input_tooltip": "Установите приоритет воспроизведения для этой ссылки (0.00–1.00)\nЧем выше приоритет, тем выше вероятность воспроизведения",
-  "createharmonics.item_group": "Create Harmonics",
+  "createharmonics.item_group": "Create Harmonics (Unofficial)",
   "createharmonics.ponder.andesite_jukebox.header": "Использованием андезитовых проигрывателей",
   "createharmonics.ponder.andesite_jukebox.text_1": "Андезитовые проигрыватели воспроизводят аудио с эфирных пластинок",
   "createharmonics.ponder.andesite_jukebox.text_10": "В режиме паузы редстоун управляет воспроизведением: при подаче сигнала — воспроизведение, при отсутствии сигнала — пауза.",

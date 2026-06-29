@@ -63,7 +63,7 @@
   "createharmonics.gui.record_press_base.url_sequential_mode": "Sekvensläge\nURLer spelas upp i ordning från topp till botten",
   "createharmonics.gui.record_press_base.weight_input": "Vikt",
   "createharmonics.gui.record_press_base.weight_input_tooltip": "Ange uppspelningsvikt för denna URL (0.00-1.00)\nHögre vikt = högre sannolikhet att spelas upp",
-  "createharmonics.item_group": "Create Harmonics",
+  "createharmonics.item_group": "Create Harmonics (Unofficial)",
   "createharmonics.ponder.andesite_jukebox.header": "Att Använda Andesitjukeboxar",
   "createharmonics.ponder.andesite_jukebox.text_1": "Andesitjukeboxar kan spela ljud från Eteriska Skivor",
   "createharmonics.ponder.andesite_jukebox.text_10": "I pausläge styr redstone uppspelning, alltså aktivera för att spela upp, inaktivera för att pausa",

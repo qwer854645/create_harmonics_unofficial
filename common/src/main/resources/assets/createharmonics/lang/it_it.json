@@ -68,7 +68,7 @@
   "createharmonics.gui.record_press_base.url_sequential_mode": "Modalità sequenziale\nGli URL vengono riprodotti in ordine dall'alto verso il basso",
   "createharmonics.gui.record_press_base.weight_input": "Probabilità",
   "createharmonics.gui.record_press_base.weight_input_tooltip": "Imposta la probabilità di riproduzione per questo URL (0,00-1,00)\nNumero più alto = maggiore probabilità di riproduzione",
-  "createharmonics.item_group": "Create Harmonics",
+  "createharmonics.item_group": "Create Harmonics (Unofficial)",
   "createharmonics.ponder.andesite_jukebox.header": "Utilizzo Giradischi di Andesite",
   "createharmonics.ponder.andesite_jukebox.text_1": "I Giradischi di Andesite possono riprodurre audio da Dischi Eterei",
   "createharmonics.ponder.andesite_jukebox.text_10": "In modalità pausa, la pietrarossa controlla la riproduzione, quindi accendere per riprodurre, spegnere per mettere in pausa.",

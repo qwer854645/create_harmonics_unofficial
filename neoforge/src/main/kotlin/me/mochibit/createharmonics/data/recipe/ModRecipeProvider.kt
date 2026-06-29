@@ -37,7 +37,7 @@ class ModRecipeProvider(
                                 }.toTypedArray(),
                         )
 
-                    override fun getName(): String = "Create Harmonics Processing Recipes"
+                    override fun getName(): String = "Create Harmonics (Unofficial) Processing Recipes"
                 },
             )
         }

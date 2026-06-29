@@ -53,7 +53,7 @@
   "createharmonics.gui.record_press_base.url_sequential_mode": "Tryb Sekwencyjny\nAdresy URL są wybierane w kolejności od góry do dołu",
   "createharmonics.gui.record_press_base.weight_input": "Waga",
   "createharmonics.gui.record_press_base.weight_input_tooltip": "Ustaw wagę odtwarzania dla tego adresu URL (0.00–1.00)\nWyższa waga = większa szansa na odtworzenie",
-  "createharmonics.item_group": "Create Harmonics",
+  "createharmonics.item_group": "Create Harmonics (Unofficial)",
   "createharmonics.ponder.andesite_jukebox.header": "Używanie Andezytowej Szafy Grającej",
   "createharmonics.ponder.andesite_jukebox.text_1": "Andezytowe Szafy Grające mogą odtwarzać dźwięki z płyt eterycznych",
   "createharmonics.ponder.andesite_jukebox.text_10": "W trybie pauzy czerwony proch kontroluje odtwarzanie: zasil, aby grało, odłącz, aby zatrzymać",

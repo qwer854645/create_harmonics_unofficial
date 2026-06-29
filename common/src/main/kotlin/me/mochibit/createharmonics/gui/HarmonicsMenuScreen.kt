@@ -208,6 +208,13 @@ class HarmonicsMenuScreen(
             89,
             -0x1b4499,
         )
+        graphics.drawCenteredString(
+            font,
+            ModLang.translate("mod_fork_subtitle").component().withStyle(ChatFormatting.GRAY),
+            width / 2,
+            102,
+            -0x1b4499,
+        )
         ms.popPose()
 
         RenderSystem.disableDepthTest()

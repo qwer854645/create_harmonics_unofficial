@@ -380,12 +380,22 @@ class LibraryDisclaimerScreen(
 
     private fun renderTitle(gfx: GuiGraphics) {
         val titleScale = 1.8f
+        val title = ModLang.translate("mod_display_name").component()
         gfx.pose().pushPose()
         gfx.pose().translate((width / 2).toDouble(), Layout.TITLE_Y.toDouble(), 0.0)
         gfx.pose().scale(titleScale, titleScale, 1f)
-        gfx.drawCenteredString(font, Component.literal("Create: Harmonics"), 1, 1, 0x000000, 200)
-        gfx.drawCenteredString(font, Component.literal("Create: Harmonics"), 0, 0, Theme.ACCENT, 200)
+        gfx.drawCenteredString(font, title, 1, 1, 0x000000, 200)
+        gfx.drawCenteredString(font, title, 0, 0, Theme.ACCENT, 200)
         gfx.pose().popPose()
+
+        gfx.drawCenteredString(
+            font,
+            ModLang.translate("mod_fork_subtitle").component().withStyle(ChatFormatting.GRAY),
+            width / 2,
+            Layout.TITLE_Y + 22,
+            Theme.ACCENT,
+            400,
+        )
     }
 
     private fun renderDisclaimer(

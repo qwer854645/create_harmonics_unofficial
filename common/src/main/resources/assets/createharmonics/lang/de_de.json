@@ -63,7 +63,7 @@
   "createharmonics.gui.record_press_base.url_sequential_mode": "Sequenzieller Modus\nURLs werden der Reihe nach von oben nach unten abgespielt",
   "createharmonics.gui.record_press_base.weight_input": "Gewicht",
   "createharmonics.gui.record_press_base.weight_input_tooltip": "Legen Sie das Wiedergabegewicht für diese URL fest (0,00-1,00).\nHöheres Gewicht = höhere Wahrscheinlichkeit, dass sie abgespielt wird",
-  "createharmonics.item_group": "Create Harmonics",
+  "createharmonics.item_group": "Create Harmonics (Unofficial)",
   "createharmonics.ponder.andesite_jukebox.header": "Verwendung von Andesit Plattenspielern",
   "createharmonics.ponder.andesite_jukebox.text_1": "Andesit Plattenspieler können Audio von Ätherischen Platten abspielen",
   "createharmonics.ponder.andesite_jukebox.text_10": "Im Pausenmodus steuert Redstone die Wiedergabe, also Strom einschalten zum Abspielen, Strom ausschalten zum Pausieren",
