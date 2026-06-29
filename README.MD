@@ -1,103 +1,98 @@
 <p align="center">
     <img src="common/src/main/resources/assets/createharmonics/textures/gui/logo_small.png" alt="Logo">
 </p>
-<h1 align="center"> Create: Harmonics (Unofficial) <br><br>
-    <a href="https://github.com/qwer854645/create_harmonics_unofficial"><img alt="Github Page" src="https://img.shields.io/badge/GitHub-Unofficial_Fork-blue?logo=github&style=for-the-badge"></a>
+<h1 align="center">Create: Harmonics (Unofficial)<br><br>
+    <a href="https://github.com/qwer854645/create_harmonics_unofficial"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-Unofficial_Fork-blue?logo=github&style=for-the-badge"></a>
 </h1>
 
-> **Unofficial fork** with replaced art assets. Textures, sounds, and Blockbench sources under `assets/` were removed and redrawn for redistribution. See `LICENSE.MD`.
+> **Unofficial fork** of [bitmochibit/createharmonics](https://github.com/bitmochibit/createharmonics).  
+> Gameplay code is based on the upstream MIT project; **textures, sounds, models, and Blockbench sources were removed and replaced** so this edition can be redistributed. See [LICENSE.MD](LICENSE.MD).
 
-<h4 align="center"> Required dependencies 
-<br><br>
+<h4 align="center">Required dependencies<br><br>
     <a href="https://modrinth.com/mod/kotlin-for-forge">
-        <img alt="KotlinForForgeDependency" src="https://img.shields.io/badge/KOTLIN%20FOR%20FORGE-REQUIRED-7f52ff?logo=kotlin&labelColor=white&style=for-the-badge">
+        <img alt="Kotlin For Forge" src="https://img.shields.io/badge/KOTLIN%20FOR%20FORGE-REQUIRED-7f52ff?logo=kotlin&labelColor=white&style=for-the-badge">
     </a>
     <a href="https://modrinth.com/mod/create">
-        <img alt="CreateModDependency" src="https://img.shields.io/badge/Create Mod-REQUIRED-ecaf89?logo=Modrinth&labelColor=white&style=for-the-badge">
+        <img alt="Create Mod" src="https://img.shields.io/badge/Create%20Mod-REQUIRED-ecaf89?logo=Modrinth&labelColor=white&style=for-the-badge">
     </a>
 </h4>
 
 <hr>
 
-### Welcome to Create: Harmonics
+## About this fork
 
-This mod lets you play music from URLs in Minecraft, to listen with your friends and enhance any kind of builds you
-make!
+This repository is **not** the official Create: Harmonics release. It is maintained separately and includes:
 
-Everything is built to work with _Create_, so you have to use rotational power to make the music play, and make special
-records, named **Ethereal Records**.
+- Replacement art assets (records, jukebox, record press, GUI, sounds)
+- Removal of upstream ARR files (including `.bbmodel` sources and the upstream mod logo)
+- Regenerated Ponder and GameTest structure files
+- Simplified project layout (the upstream `docs/` translation website is not included)
+- Additional `zh_cn` translations for mod tooltips and Ponder scenes
+- A yt-dlp patch script for Bilibili URL playback (`tools/repatch-ytdlp-bilibili.ps1`)
 
-Playback is also fully compatible with contraptions, so you can have moving speakers, on elevators, trains, or anything
-else you can think of!
+For original feature documentation, the upstream [wiki](https://github.com/bitmochibit/createharmonics/wiki) is still a useful reference. Bug reports and contributions for **this fork** should go to [this repository's issues](https://github.com/qwer854645/create_harmonics_unofficial/issues).
 
-Check the [wiki](https://github.com/bitmochibit/createharmonics/wiki) for checking all the features and more!
+## What the mod does
 
-### Planned features
+Create: Harmonics lets you play audio from URLs in Minecraft, integrated with **Create**:
 
-*   A lot more record types with unique audio effects
-*   Programmable Ethereal Record, with custom audio effects
-*   More directly supported platforms
-*   Brass jukebox, with configurable pitch, range and record collections
-*   Speakers and audio routing, for more controlled audio systems
+- Craft **Ethereal Records** and bind them to online audio sources
+- Use the **Andesite Jukebox** and **Record Press Base** with rotational power
+- Play audio on contraptions; pitch and playback follow machine speed and redstone logic
 
-### How it works
-
-This mod uses **ytdlp** for retrieving the stream link, then this link is sent to **ffmpeg** which handles
-the transcoding in _PCM_ format and then the audio is sent after the processing chain to native minecraft channels
-
-**It should be compatible natively with other audio handling mods since its using Minecraft directly for playing sounds,
-and not accessing to OpenAL**
+Audio is streamed **client-side** from the original source (not relayed through the game server). The mod uses **yt-dlp** and **ffmpeg** locally; you can install them automatically in-game or provide your own binaries.
 
 > [!IMPORTANT]
-> NO AUDIO is being streamed server to client and never will; clients themselves stream the audio from the original
-> source, as they're watching/playing it from their browsers.
+> Respect the terms of service of any platform you pull audio from. This mod does not host audio content.
 
-### Important notice
+## Development
 
-Since this mod relies on ffmpeg, and ytdlp, it can download from **official** and trusted sources these binaries, asking
-you for permission first.
-If you don't want this, you can provide your own binaries by placing them in the correct folder (displayed on the mod if
-you choose manual installation).
-The code is completely open source, and transparency is important to me, since it's downloading and executing external
-binaries on your computer.
+**Requirements:** JDK 21, Gradle (wrapper included)
 
-> [!CAUTION]
-> Only TRUST the official releases of this mod! This is very important. You can contact me personally on discord if you
-> have any doubts about the authenticity of a release.
+```powershell
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-21.0.10"
+cd create_harmonics_unofficial
+.\gradlew.bat :neoforge:runClient
+```
 
-### Legal stuff
+Default run directory: `neoforge/run`
 
-This mod is not affiliated with YouTube or any other music platform, and does not host any audio content.
-Please respect the terms of service of the platforms you use to get audio from.
-I do not condone unauthorized distribution of copyrighted material, nor I am responsible for any misuse of this mod.
-This mod is provided as-is, without any warranties or guarantees of any kind.
-By using this mod, you agree to use it responsibly and respect the rights of content creators.
+### Regenerating placeholder assets
+
+```bash
+python tools/generate_assets.py
+python tools/generate_ponder_nbt.py
+python tools/patch_gametest_nbt.py
+```
+
+## Differences from upstream
+
+| Item | Upstream | This fork |
+|------|----------|-----------|
+| Record / block textures | ARR | Replaced |
+| Sounds | ARR | Replaced (procedural) |
+| Blockbench sources | Included | Removed |
+| Mod logo (`logo.png`) | ARR | Removed |
+| `docs/` translation tool | Included | Removed |
+| Ponder / GameTest NBT | Upstream layouts | Regenerated |
+| License for `assets/` | ARR | MIT (replacement art) |
+
+## Legal
+
+- Upstream **code**: MIT (Leonardo Importuna / bitmochibit)
+- This fork's **assets**: MIT — see [LICENSE.MD](LICENSE.MD)
+- Upstream **original art**: All Rights Reserved — not included here
+
+This unofficial edition is provided as-is, without warranty. The fork maintainer is not affiliated with the upstream author, Create, YouTube, Bilibili, or other audio platforms.
 
 ## Credits
 
 ### Software
-- ffmpeg: https://ffmpeg.org/
-    - Windows builds by BtbN: Bundle licensed under _LGPLV2.1+_
-    - Linux (static) builds by John Van Sickle: Bundle licensed under _GNU GPLV3+_
-    - Mac builds by evermeet.cx: Bundle licensed under _LGPLV2.1+_
-- ytdlp: https://github.com/yt-dlp/yt-dlp, licensed under _Unlicense_
-- Create: https://github.com/Creators-of-Create/Create, licensed under _MIT License_
 
-Read the full license [here](LICENSE.MD)
+- [Create](https://github.com/Creators-of-Create/Create) — MIT
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) — Unlicense
+- [ffmpeg](https://ffmpeg.org/) — LGPL/GPL depending on build
 
-### Support the development
+### Upstream project
 
-If you want to support the development of this mod, you can do it by:
-
-- Sharing the mod with your friends
-- Reporting issues and suggesting features on the issue tracker and contributing code
-
-<h4 align="center"> 
-    Join the community and discover other amazing projects <br><br> 
-    <a href="https://discord.gg/MM5QjqyqwC">
-    <img alt="Discord icon" src="https://img.shields.io/discord/1076545114693972039?label=Discord&logo=discord&color=5865F2">
-    </a>
-</h4>
-
-
-
+- Original mod: [bitmochibit/createharmonics](https://github.com/bitmochibit/createharmonics) by Leonardo Importuna (mochibit)

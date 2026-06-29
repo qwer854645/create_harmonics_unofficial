@@ -1,19 +1,40 @@
 # License Overview
 
-This repository is an unofficial fork of [bitmochibit/createharmonics](https://github.com/bitmochibit/createharmonics).
+This repository is an **unofficial fork** of [bitmochibit/createharmonics](https://github.com/bitmochibit/createharmonics), maintained independently from the upstream project.
+
+---
 
 ## Assets License
 
-All files under `./src/main/resources/assets/` in this fork are **original replacements**
-created for this unofficial edition. They are **not** the All Rights Reserved assets from
-the upstream project.
+The following paths in this fork contain **redistributable replacement content** that is **not** the All Rights Reserved (ARR) artwork from upstream:
+
+- `common/src/main/resources/assets/createharmonics/` — textures, sounds, models, ponder scenes
+- `common/src/main/resources/data/createharmonics/structure/` — GameTest structure files (regenerated)
 
 Copyright © qwer854645 (Create Harmonics Unofficial)
 
-You may use, modify, and redistribute these assets under the same terms as the MIT code
-license below, provided you retain this notice.
+You may use, modify, and redistribute these files under the same terms as the MIT code license below, provided you retain this notice.
 
-To regenerate placeholder assets from source, run:
+### What was replaced
+
+Upstream ARR assets were removed, including:
+
+- Ethereal record item and block textures
+- Andesite jukebox and record press base art
+- GUI textures and custom sounds
+- Blockbench (`.bbmodel`) source files
+- Upstream mod logo and translation-tool web assets under `docs/`
+
+### Asset sources in this fork
+
+| Category | Examples | Origin |
+|----------|----------|--------|
+| Custom art | Record textures, jukebox/press base textures | Authored for this unofficial edition |
+| Script-generated placeholders | `gui/logo_small.png`, `gui/icons.png`, some particles | `tools/generate_assets.py` |
+| Regenerated data files | `ponder/*.nbt`, `data/.../structure/*.nbt` | `tools/generate_ponder_nbt.py`, `tools/patch_gametest_nbt.py` |
+| Procedural sounds | `sounds/*.ogg` | `tools/generate_assets.py` |
+
+### Regenerating assets
 
 ```bash
 python tools/generate_assets.py
@@ -23,34 +44,37 @@ python tools/patch_gametest_nbt.py
 
 ### Upstream asset notice
 
-The original mod's assets (2D records, 3D record visualizations, andesite jukebox, record
-press base, and related Blockbench sources) remain All Rights Reserved in the upstream
-repository. This fork removes those files and replaces them with newly authored art.
+The original mod's assets remain **All Rights Reserved** in the upstream repository. Do not copy them into this fork or redistribute them under this project's asset terms.
+
+### Runtime references (not bundled)
+
+Some block models reference textures from the **Create** mod at runtime (for example `create:block/brass_casing`). Those assets are not included in this repository and remain subject to Create's license.
 
 ---
 
 ## Code License (MIT)
 
-All non-asset source files remain licensed under the MIT License from the upstream project:
+All non-asset source files are based on the upstream project and remain under the **MIT License**:
 
 MIT License
 
 Copyright © Leonardo Importuna
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Fork modifications by qwer854645 are also distributed under the MIT License.
+
+---
+
+## Third-party software
+
+This mod may download or use external binaries at runtime (with user consent):
+
+- **ffmpeg** — https://ffmpeg.org/
+- **yt-dlp** — https://github.com/yt-dlp/yt-dlp (Unlicense)
+
+See the mod's in-game library setup screen for installation details. A Bilibili compatibility patch for the bundled yt-dlp workflow can be reapplied with `tools/repatch-ytdlp-bilibili.ps1`.
