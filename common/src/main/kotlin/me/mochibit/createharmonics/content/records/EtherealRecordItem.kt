@@ -1,7 +1,6 @@
 package me.mochibit.createharmonics.content.records
 
 import com.simibubi.create.content.equipment.goggles.GogglesItem
-import me.mochibit.createharmonics.foundation.locale.ModLang
 import me.mochibit.createharmonics.handler.RecordCraftingHandler
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
@@ -60,20 +59,26 @@ class EtherealRecordItem(
         tooltipComponents: MutableList<Component>,
         isAdvanced: TooltipFlag,
     ) {
-        val player = Minecraft.getInstance().player ?: return
-        if (!GogglesItem.isWearingGoggles(player)) return
+        val player = Minecraft.getInstance().player
+        val wearingGoggles = player != null && GogglesItem.isWearingGoggles(player)
 
         val url = RecordUtilities.getAudioUrl(stack)
-        if (!url.isNullOrBlank()) {
+        if (wearingGoggles && !url.isNullOrBlank()) {
             tooltipComponents.add(
-                ModLang.translate("tooltips.item.ethereal_record.url_bound").component().withStyle(ChatFormatting.GRAY),
+                Component
+                    .translatable("createharmonics.tooltips.item.ethereal_record.url_bound")
+                    .withStyle(ChatFormatting.GRAY),
             )
         }
 
         val effectAttributes = this.recordType.properties.effectAttributes
         if (effectAttributes.isNotEmpty()) {
             tooltipComponents.add(Component.empty())
-            tooltipComponents.add(ModLang.translate("tooltips.item.ethereal_record.qualities").component().withStyle(ChatFormatting.GRAY))
+            tooltipComponents.add(
+                Component
+                    .translatable("createharmonics.tooltips.item.ethereal_record.qualities")
+                    .withStyle(ChatFormatting.GRAY),
+            )
             val attributeComponent =
                 effectAttributes
                     .sortedByDescending { it.qualityIndicator }

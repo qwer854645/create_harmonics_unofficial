@@ -4,8 +4,6 @@ import com.simibubi.create.AllTags
 import com.simibubi.create.api.behaviour.display.DisplaySource.displaySource
 import com.simibubi.create.api.behaviour.movement.MovementBehaviour.movementBehaviour
 import com.simibubi.create.api.contraption.storage.item.MountedItemStorageType.mountedItemStorage
-import com.simibubi.create.foundation.data.AssetLookup
-import com.simibubi.create.foundation.data.AssetLookup.customItemModel
 import com.simibubi.create.foundation.data.BlockStateGen
 import com.simibubi.create.foundation.data.ModelGen.customItemModel
 import com.simibubi.create.foundation.data.SharedProperties
@@ -16,10 +14,9 @@ import me.mochibit.createharmonics.content.kinetics.recordPlayer.RecordPlayerMov
 import me.mochibit.createharmonics.content.kinetics.recordPlayer.andesiteJukebox.AndesiteJukeboxBlock
 import me.mochibit.createharmonics.content.processing.recordPressBase.RecordPressBaseBlock
 import me.mochibit.createharmonics.foundation.info
-import net.minecraft.client.renderer.RenderType
 import net.minecraft.core.Registry
 import net.minecraft.world.level.block.SoundType
-import java.util.function.Supplier
+import net.neoforged.neoforge.client.model.generators.ConfiguredModel
 
 object ModBlocks : CommonRegistry {
     override val registrationOrder = 2
@@ -41,8 +38,12 @@ object ModBlocks : CommonRegistry {
             .transform(displaySource(ModDisplaySources.AUDIO_NAME))
             .transform(displaySource(ModDisplaySources.PLAYER_STATUS))
             .transform(ModStressConfig.setImpact(1.0))
-            .blockstate(BlockStateGen.directionalBlockProvider(true))
-            .item()
+            .blockstate { ctx, prov ->
+                val model = prov.models().getExistingFile(prov.modLoc("block/${ctx.name}/block"))
+                prov.getVariantBuilder(ctx.entry).forAllStates {
+                    ConfiguredModel.builder().modelFile(model).build()
+                }
+            }.item()
             .tag(AllTags.AllItemTags.CONTRAPTION_CONTROLLED.tag)
             .transform(customItemModel())
             .register()
@@ -78,9 +79,8 @@ object ModBlocks : CommonRegistry {
                     .sound(SoundType.COPPER)
             }.tag(
                 AllTags.AllBlockTags.SAFE_NBT.tag,
-            ).blockstate { ctx, p ->
-                p.simpleBlock(ctx.entry, AssetLookup.partialBaseModel(ctx, p))
-            }.item()
+            ).blockstate(BlockStateGen.horizontalBlockProvider(true))
+            .item()
             .transform(customItemModel())
             .register()
 

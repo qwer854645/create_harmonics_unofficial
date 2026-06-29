@@ -2,9 +2,7 @@ package me.mochibit.createharmonics
 
 import me.mochibit.createharmonics.CreateHarmonicsMod.MOD_ID
 import me.mochibit.createharmonics.config.ModConfigs
-import me.mochibit.createharmonics.ponder.ModPonderPlugin
 import net.createmod.catnip.config.ui.BaseConfigScreen
-import net.createmod.ponder.foundation.PonderIndex
 import net.minecraft.client.gui.screens.Screen
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.IEventBus
@@ -59,7 +57,6 @@ class NeoforgeModClientEntryPoint(
     }
 
     private fun initialize() {
-        PonderIndex.addPlugin(ModPonderPlugin())
         CreateHarmonicsClientMod.setup()
     }
 }

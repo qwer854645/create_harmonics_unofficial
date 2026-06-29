@@ -28,7 +28,6 @@ subprojects {
         maven { url = uri("https://repo.spongepowered.org/repository/maven-public/") }
         maven("https://maven.createmod.net") // Create, Ponder, Flywheel
         maven("https://maven.ithundxr.dev/snapshots") // Registrate
-        maven { url = uri("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/") }
 
         maven {
             name = "Kotlin for Forge"

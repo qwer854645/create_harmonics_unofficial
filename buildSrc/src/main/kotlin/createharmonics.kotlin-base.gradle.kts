@@ -8,10 +8,7 @@ plugins {
 repositories { mavenCentral() }
 
 kotlin {
-    jvmToolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-        vendor = JvmVendorSpec.ADOPTIUM
-    }
+    jvmToolchain(21)
 }
 
 val v = chVersions

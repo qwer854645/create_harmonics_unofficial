@@ -182,7 +182,8 @@ class RecordPressBaseScreen(
                         if (!changedIndexOnce) {
                             changedIndexOnce = true
                         }
-                        configuration.currentUrlIndex = (configuration.currentUrlIndex + 1) % configuration.urls.size
+                        configuration.currentUrlIndex =
+                            (configuration.currentUrlIndex - 1 + configuration.urls.size) % configuration.urls.size
                     }
                 }
                 zIndex = 100
@@ -198,8 +199,7 @@ class RecordPressBaseScreen(
                         if (!changedIndexOnce) {
                             changedIndexOnce = true
                         }
-                        configuration.currentUrlIndex =
-                            (configuration.currentUrlIndex - 1 + configuration.urls.size) % configuration.urls.size
+                        configuration.currentUrlIndex = (configuration.currentUrlIndex + 1) % configuration.urls.size
                     }
                 }
                 zIndex = 100

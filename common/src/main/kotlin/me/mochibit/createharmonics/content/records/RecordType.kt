@@ -13,6 +13,7 @@ import me.mochibit.createharmonics.foundation.locale.LangProvider
 import me.mochibit.createharmonics.foundation.locale.ModLang
 import me.mochibit.createharmonics.foundation.registry.ModItems
 import me.mochibit.createharmonics.foundation.registry.ModSounds
+import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.TextColor
@@ -308,11 +309,10 @@ enum class RecordType(
         ;
 
         fun translatedComponent(): MutableComponent =
-            ModLang
-                .translate(
-                    "tooltips.item.ethereal_record.effect_attribute.${this.name.lowercase()}",
-                ).component()
-                .withStyle(style)
+            Component
+                .translatable(
+                    "createharmonics.tooltips.item.ethereal_record.effect_attribute.${name.lowercase()}",
+                ).withStyle(style)
 
         companion object : LangProvider {
             override fun provideLang(keyValueConsumer: (String, String) -> Unit) {

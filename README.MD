@@ -1,10 +1,11 @@
 <p align="center">
-    <img src="https://github.com/bitmochibit/createharmonics/blob/master/common/src/main/resources/assets/createharmonics/textures/gui/logo_small.png?raw=true" alt="Logo">
+    <img src="common/src/main/resources/assets/createharmonics/textures/gui/logo_small.png" alt="Logo">
 </p>
-<h1 align="center"> Create: Harmonics <br><br>
-    <a href="https://modrinth.com/mod/create-harmonics"><img alt="Modrinth Page" src="https://img.shields.io/badge/Harmonics-Modrinth?logo=modrinth&label=Modrinth&color=%2300AF5C&style=for-the-badge"></a>
-    <a href=""><img alt="Github Page" src="https://img.shields.io/badge/GitHub-Source_Code-blue?logo=github&style=for-the-badge"></a>
+<h1 align="center"> Create: Harmonics (Unofficial) <br><br>
+    <a href="https://github.com/qwer854645/create_harmonics_unofficial"><img alt="Github Page" src="https://img.shields.io/badge/GitHub-Unofficial_Fork-blue?logo=github&style=for-the-badge"></a>
 </h1>
+
+> **Unofficial fork** with replaced art assets. Textures, sounds, and Blockbench sources under `assets/` were removed and redrawn for redistribution. See `LICENSE.MD`.
 
 <h4 align="center"> Required dependencies 
 <br><br>
@@ -81,15 +82,6 @@ By using this mod, you agree to use it responsibly and respect the rights of con
     - Mac builds by evermeet.cx: Bundle licensed under _LGPLV2.1+_
 - ytdlp: https://github.com/yt-dlp/yt-dlp, licensed under _Unlicense_
 - Create: https://github.com/Creators-of-Create/Create, licensed under _MIT License_
-
-### Translations
-
-You can use the [official tool](https://bitmochibit.github.io/createharmonics/) for making translations easily! 
-
-- Japanese: @Yurisan001
-- Chinese: @KazeShukufuku
-- Polish: @AdInVas
-- Italian: @Robin
 
 Read the full license [here](LICENSE.MD)
 

@@ -30,6 +30,7 @@ dependencies {
     api("dev.ryanhcode.sable:sable-common-${v.minecraft}:${v.sable}") {
         exclude("foundry.veil")
         exclude("com.tterrag.registrate")
+        exclude(group = "fuzs.forgeconfigapiport", module = "forgeconfigapiport-common-neoforgeapi")
     }
 }
 

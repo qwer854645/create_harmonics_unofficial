@@ -32,6 +32,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.entity.BlockEntityType
+import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.material.FluidState
@@ -47,16 +48,19 @@ class RecordPressBaseBlock(
     ProperWaterloggedBlock {
     companion object {
         private val RANDOM = RandomSource.create()
+        val FACING = BlockStateProperties.HORIZONTAL_FACING
     }
 
     init {
         registerDefaultState(
-            defaultBlockState().setValue(WATERLOGGED, false),
+            defaultBlockState()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(WATERLOGGED, false),
         )
     }
 
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block?, BlockState?>) {
-        super.createBlockStateDefinition(builder.add(WATERLOGGED))
+        builder.add(FACING, WATERLOGGED)
     }
 
     override fun getBlockEntityClass(): Class<RecordPressBaseBlockEntity> = RecordPressBaseBlockEntity::class.java
@@ -172,7 +176,11 @@ class RecordPressBaseBlock(
         }
     }
 
-    override fun getStateForPlacement(context: BlockPlaceContext): BlockState = withWater(super.getStateForPlacement(context), context)
+    override fun getStateForPlacement(context: BlockPlaceContext): BlockState =
+        withWater(
+            defaultBlockState().setValue(FACING, context.horizontalDirection.opposite),
+            context,
+        )
 
     @Deprecated("Deprecated in Java")
     override fun updateShape(

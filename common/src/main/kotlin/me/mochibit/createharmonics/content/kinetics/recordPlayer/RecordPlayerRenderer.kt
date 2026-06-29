@@ -95,7 +95,7 @@ class RecordPlayerRenderer(
                 .light<SuperByteBuffer>(LevelRenderer.getLightColor(renderWorld, context.localPos))
                 .useLevelLight<SuperByteBuffer>(context.world, matrices.world)
                 .uncenter()
-                .renderInto(matrices.viewProjection, buffer.getBuffer(RenderType.solid()))
+                .renderInto(matrices.viewProjection, buffer.getBuffer(RenderType.cutoutMipped()))
         }
     }
 }

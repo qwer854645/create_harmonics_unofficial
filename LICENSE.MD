@@ -1,28 +1,37 @@
 # License Overview
 
-## Assets License (All Rights Reserved)
+This repository is an unofficial fork of [bitmochibit/createharmonics](https://github.com/bitmochibit/createharmonics).
 
-All Rights Reserved
+## Assets License
 
-### Copyright © Robin
+All files under `./src/main/resources/assets/` in this fork are **original replacements**
+created for this unofficial edition. They are **not** the All Rights Reserved assets from
+the upstream project.
 
-- 2D Records
-- 3D Record visualizations
+Copyright © qwer854645 (Create Harmonics Unofficial)
 
-### Copyright © Leonardo Importuna
+You may use, modify, and redistribute these assets under the same terms as the MIT code
+license below, provided you retain this notice.
 
-- Andesite jukebox
-- Record press base
+To regenerate placeholder assets from source, run:
 
-This license applies to any files under the following directories:
+```bash
+python tools/generate_assets.py
+python tools/generate_ponder_nbt.py
+python tools/patch_gametest_nbt.py
+```
 
-- ./src/main/resources/assets/
+### Upstream asset notice
+
+The original mod's assets (2D records, 3D record visualizations, andesite jukebox, record
+press base, and related Blockbench sources) remain All Rights Reserved in the upstream
+repository. This fork removes those files and replaces them with newly authored art.
 
 ---
 
 ## Code License (MIT)
 
-All other files are licensed under the MIT License:
+All non-asset source files remain licensed under the MIT License from the upstream project:
 
 MIT License
 
