@@ -37,7 +37,7 @@ description = '''${mod_description}'''
 config = "${mod_id}.mixins.json"
 
 [[mixins]]
-config = "createharmonics.common.mixins.json"
+config = "createharmonics_unofficial.common.mixins.json"
 
 # The coremods config file path is not configurable and is always loaded from META-INF/coremods.json
 

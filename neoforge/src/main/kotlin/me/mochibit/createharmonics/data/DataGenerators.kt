@@ -55,7 +55,7 @@ object DataGenerators {
     }
 
     private fun provideDefaultLang(consumer: (String, String) -> Unit) {
-        val path = "assets/createharmonics/lang/default/en_us.json"
+        val path = "assets/createharmonics_unofficial/lang/default/en_us.json"
         val jsonElement =
             JsonResourceLoader.loadJsonResource(path)
                 ?: throw IllegalStateException("Could not find default lang file: $path")

@@ -14,8 +14,8 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
-TEXTURES = ROOT / "common" / "src" / "main" / "resources" / "assets" / "createharmonics" / "textures"
-SOUNDS = ROOT / "common" / "src" / "main" / "resources" / "assets" / "createharmonics" / "sounds"
+TEXTURES = ROOT / "common" / "src" / "main" / "resources" / "assets" / "createharmonics_unofficial" / "textures"
+SOUNDS = ROOT / "common" / "src" / "main" / "resources" / "assets" / "createharmonics_unofficial" / "sounds"
 
 # Create-inspired palette
 ANDESITE = (110, 110, 110)
@@ -112,20 +112,6 @@ def make_andesite_jukebox_texture() -> Image.Image:
     draw.rectangle((18, 18, 30, 30), outline=BRASS, width=1)
     draw.line((24, 20, 24, 28), fill=BRASS_LIGHT)
     draw.line((20, 24, 28, 24), fill=BRASS_LIGHT)
-    return img
-
-
-def make_brass_jukebox_texture() -> Image.Image:
-    img = Image.new("RGBA", (64, 32), (0, 0, 0, 0))
-    for y in range(32):
-        for x in range(64):
-            stripe = ((x + y) // 4) % 2
-            base = BRASS_LIGHT if stripe else BRASS
-            put_pixel(img, x, y, (*base, 255))
-    draw = ImageDraw.Draw(img)
-    draw.rectangle((0, 0, 63, 31), outline=BRASS_DARK)
-    draw.rectangle((24, 8, 40, 24), outline=(40, 40, 40))
-    draw.rectangle((26, 10, 38, 22), fill=(30, 30, 35))
     return img
 
 
@@ -254,7 +240,6 @@ def save_png(path: Path, image: Image.Image) -> None:
 
 def generate_textures() -> None:
     save_png(TEXTURES / "block/andesite_jukebox/particle.png", make_particle(ANDESITE))
-    save_png(TEXTURES / "block/brass_jukebox/brass_jukebox.png", make_brass_jukebox_texture())
     save_png(TEXTURES / "item/ethereal_record_base/base.png", make_record_base_texture())
     save_png(TEXTURES / "gui/icons.png", make_icons_texture())
     save_png(TEXTURES / "gui/logo_small.png", make_logo_texture())

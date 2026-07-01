@@ -58,7 +58,7 @@ abstract class RecordPlayerBlockEntity(
 
         constructor(icon: AllIcons) {
             this.icon = icon
-            this.translationKey = "createharmonics.record_player.playback_mode." + name.lowercase()
+            this.translationKey = "createharmonics_unofficial.record_player.playback_mode." + name.lowercase()
         }
 
         override fun getIcon(): AllIcons = icon
@@ -108,7 +108,7 @@ abstract class RecordPlayerBlockEntity(
         playbackMode =
             ScrollOptionBehaviour(
                 PlaybackMode::class.java,
-                Component.translatable("createharmonics.record_player.playback_mode"),
+                Component.translatable("createharmonics_unofficial.record_player.playback_mode"),
                 this,
                 RecordPlayerValueBoxTransform { blockState, direction ->
                     val axis: Direction.Axis = direction.axis

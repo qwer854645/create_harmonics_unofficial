@@ -2,6 +2,7 @@ package me.mochibit.createharmonics.foundation.registry
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.serializer
+import me.mochibit.createharmonics.CreateHarmonicsMod
 import me.mochibit.createharmonics.foundation.extension.asResource
 import me.mochibit.createharmonics.foundation.network.FriendlyByteBufDecoder
 import me.mochibit.createharmonics.foundation.network.FriendlyByteBufEncoder
@@ -55,7 +56,7 @@ object NeoforgeModPackets : NeoforgeRegistry {
         val serializer = serializer(packetClass.starProjectedType) as KSerializer<T>
         val type =
             CustomPacketPayload.Type<ModPacketPayload<T>>(
-                ResourceLocation.fromNamespaceAndPath("createharmonics", packetClass.simpleName!!.lowercase()),
+                ResourceLocation.fromNamespaceAndPath(CreateHarmonicsMod.MOD_ID, packetClass.simpleName!!.lowercase()),
             )
         val codec =
             StreamCodec.of<RegistryFriendlyByteBuf, ModPacketPayload<T>>(

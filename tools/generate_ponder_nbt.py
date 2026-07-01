@@ -11,7 +11,7 @@ from pathlib import Path
 from nbtlib import Compound, File, Int, List, String
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT_DIR = ROOT / "common" / "src" / "main" / "resources" / "assets" / "createharmonics" / "ponder"
+OUT_DIR = ROOT / "common" / "src" / "main" / "resources" / "assets" / "createharmonics_unofficial" / "ponder"
 
 # Base plate uses a distinct checker pattern (not upstream snow / white concrete).
 BASE_A = "minecraft:gray_concrete"
@@ -22,7 +22,7 @@ RECORD_PRESS_BLOCKS = [
     {"pos": [2, 1, 4], "name": "create:belt", "props": {"casing": "false", "waterlogged": "false", "part": "start", "facing": "east", "slope": "horizontal"}},
     {"pos": [3, 1, 4], "name": "create:belt", "props": {"casing": "false", "waterlogged": "false", "part": "end", "facing": "east", "slope": "horizontal"}},
     {"pos": [3, 1, 5], "name": "create:gearbox", "props": {"axis": "y"}},
-    {"pos": [4, 1, 4], "name": "createharmonics:record_press_base", "props": {"waterlogged": "false", "facing": "north"}},
+    {"pos": [4, 1, 4], "name": "createharmonics_unofficial:record_press_base", "props": {"waterlogged": "false", "facing": "north"}},
     {"pos": [4, 1, 5], "name": "create:gearbox", "props": {"axis": "y"}},
     {"pos": [4, 1, 6], "name": "create:gearbox", "props": {"axis": "x"}},
     {"pos": [4, 1, 7], "name": "create:creative_motor", "props": {"facing": "north"}},
@@ -58,7 +58,7 @@ ANDESITE_JUKEBOX_BLOCKS = [
     {"pos": [16, 1, 23], "name": "create:shaft", "props": {"waterlogged": "false", "axis": "z"}},
     {"pos": [16, 1, 24], "name": "create:creative_motor", "props": {"facing": "north"}},
     {"pos": [19, 1, 16], "name": "create:creative_motor", "props": {"facing": "up"}},
-    {"pos": [16, 2, 16], "name": "createharmonics:andesite_jukebox", "props": {"has_record": "false", "facing": "up"}},
+    {"pos": [16, 2, 16], "name": "createharmonics_unofficial:andesite_jukebox", "props": {"has_record": "false", "facing": "up"}},
     {"pos": [16, 2, 17], "name": "create:speedometer", "props": {"facing": "up", "axis_along_first": "false"}},
     {"pos": [16, 2, 18], "name": "create:andesite_encased_cogwheel", "props": {"top_shaft": "false", "bottom_shaft": "true", "axis": "z"}},
     {"pos": [18, 2, 15], "name": "create:mechanical_arm", "props": {"ceiling": "false"}},
@@ -67,7 +67,7 @@ ANDESITE_JUKEBOX_BLOCKS = [
     {"pos": [19, 2, 15], "name": "create:cogwheel", "props": {"waterlogged": "false", "axis": "y"}},
     {"pos": [19, 2, 16], "name": "create:cogwheel", "props": {"waterlogged": "false", "axis": "y"}},
     {"pos": [19, 2, 17], "name": "create:cogwheel", "props": {"waterlogged": "false", "axis": "y"}},
-    {"pos": [15, 3, 14], "name": "createharmonics:andesite_jukebox", "props": {"has_record": "true", "facing": "west"}},
+    {"pos": [15, 3, 14], "name": "createharmonics_unofficial:andesite_jukebox", "props": {"has_record": "true", "facing": "west"}},
     {"pos": [16, 3, 16], "name": "create:mechanical_bearing", "props": {"facing": "west"}},
 ]
 

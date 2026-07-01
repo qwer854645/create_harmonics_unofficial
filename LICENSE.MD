@@ -8,8 +8,8 @@ This repository is an **unofficial fork** of [bitmochibit/createharmonics](https
 
 The following paths in this fork contain **redistributable replacement content** that is **not** the All Rights Reserved (ARR) artwork from upstream:
 
-- `common/src/main/resources/assets/createharmonics/` — textures, sounds, models, ponder scenes
-- `common/src/main/resources/data/createharmonics/structure/` — GameTest structure files (regenerated)
+- `common/src/main/resources/assets/createharmonics_unofficial/` — textures, sounds, models, ponder scenes
+- `common/src/main/resources/data/createharmonics_unofficial/structure/` — GameTest structure files (regenerated)
 
 Copyright © qwer854645 (Create Harmonics Unofficial)
 

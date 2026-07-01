@@ -311,7 +311,7 @@ enum class RecordType(
         fun translatedComponent(): MutableComponent =
             Component
                 .translatable(
-                    "createharmonics.tooltips.item.ethereal_record.effect_attribute.${name.lowercase()}",
+                    "createharmonics_unofficial.tooltips.item.ethereal_record.effect_attribute.${name.lowercase()}",
                 ).withStyle(style)
 
         companion object : LangProvider {
