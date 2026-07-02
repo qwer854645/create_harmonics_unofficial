@@ -95,6 +95,6 @@ interface RecordPlayerTrait {
     }
 
     companion object {
-        val HAS_ETHEREAL_RECORD: BooleanProperty = BooleanProperty.create("has_ethereal_record")
+        val HAS_ETHEREAL_RECORD: BooleanProperty = BooleanProperty.create("has_webdisc")
     }
 }

@@ -1,6 +1,6 @@
 # License Overview
 
-This repository is an **unofficial fork** of [bitmochibit/createharmonics](https://github.com/bitmochibit/createharmonics), maintained independently from the upstream project.
+This repository is an **independent addon** (**Create: Webdisc**) derived from MIT code in [bitmochibit/createharmonics](https://github.com/bitmochibit/createharmonics). It is **not** affiliated with the upstream author's brand or ARR assets.
 
 ---
 
@@ -8,10 +8,10 @@ This repository is an **unofficial fork** of [bitmochibit/createharmonics](https
 
 The following paths in this fork contain **redistributable replacement content** that is **not** the All Rights Reserved (ARR) artwork from upstream:
 
-- `common/src/main/resources/assets/createharmonics_unofficial/` — textures, sounds, models, ponder scenes
-- `common/src/main/resources/data/createharmonics_unofficial/structure/` — GameTest structure files (regenerated)
+- `common/src/main/resources/assets/create_webdisc/` — textures, sounds, models, ponder scenes
+- `common/src/main/resources/data/create_webdisc/structure/` — GameTest structure files (regenerated)
 
-Copyright © qwer854645 (Create Harmonics Unofficial)
+Copyright © qwer854645 (Create: Webdisc)
 
 You may use, modify, and redistribute these files under the same terms as the MIT code license below, provided you retain this notice.
 
@@ -19,7 +19,7 @@ You may use, modify, and redistribute these files under the same terms as the MI
 
 Upstream ARR assets were removed, including:
 
-- Ethereal record item and block textures
+- Webdisc item and block textures
 - Andesite jukebox and record press base art
 - GUI textures and custom sounds
 - Blockbench (`.bbmodel`) source files
@@ -29,7 +29,7 @@ Upstream ARR assets were removed, including:
 
 | Category | Examples | Origin |
 |----------|----------|--------|
-| Custom art | Record textures, jukebox/press base textures | Authored for this unofficial edition |
+| Custom art | Record textures, jukebox/press base textures | Authored for this derivative edition |
 | Script-generated placeholders | `gui/logo_small.png`, `gui/icons.png`, some particles | `tools/generate_assets.py` |
 | Regenerated data files | `ponder/*.nbt`, `data/.../structure/*.nbt` | `tools/generate_ponder_nbt.py`, `tools/patch_gametest_nbt.py` |
 | Procedural sounds | `sounds/*.ogg` | `tools/generate_assets.py` |

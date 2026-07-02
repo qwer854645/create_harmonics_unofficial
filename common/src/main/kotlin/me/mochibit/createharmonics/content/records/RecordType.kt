@@ -182,7 +182,7 @@ enum class RecordType(
         Properties(
             recipe =
                 Properties.Recipe(
-                    { Ingredient.of(ModItems.getEtherealRecordItem(DIAMOND)) },
+                    { Ingredient.of(ModItems.getWebdiscItem(DIAMOND)) },
                     {
                         Ingredient.of(
                             Tags.Items withPath "ingots/netherite",
@@ -311,7 +311,7 @@ enum class RecordType(
         fun translatedComponent(): MutableComponent =
             Component
                 .translatable(
-                    "createharmonics_unofficial.tooltips.item.ethereal_record.effect_attribute.${name.lowercase()}",
+                    "create_webdisc.tooltips.item.webdisc.effect_attribute.${name.lowercase()}",
                 ).withStyle(style)
 
         companion object : LangProvider {
@@ -319,7 +319,7 @@ enum class RecordType(
                 for (attribute in entries) {
                     val attrName = attribute.name.lowercase()
                     keyValueConsumer(
-                        "tooltips.item.ethereal_record.effect_attribute.$attrName".withModNamespace(),
+                        "tooltips.item.webdisc.effect_attribute.$attrName".withModNamespace(),
                         attrName.replaceFirstChar { if (it.isLowerCase()) it.titlecase(getDefault()) else it.toString() },
                     )
                 }

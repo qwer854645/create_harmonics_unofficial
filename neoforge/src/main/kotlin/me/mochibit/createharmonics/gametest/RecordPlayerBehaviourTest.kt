@@ -6,7 +6,7 @@ import me.mochibit.createharmonics.content.kinetics.recordPlayer.RecordPlayerBlo
 import me.mochibit.createharmonics.content.records.EtherealRecordItem
 import me.mochibit.createharmonics.content.records.RecordType
 import me.mochibit.createharmonics.foundation.registry.ModItems
-import me.mochibit.createharmonics.foundation.registry.ModItems.etherealRecord
+import me.mochibit.createharmonics.foundation.registry.ModItems.webdisc
 import net.minecraft.core.BlockPos
 import net.minecraft.gametest.framework.GameTest
 import net.minecraft.gametest.framework.GameTestHelper
@@ -24,7 +24,7 @@ class RecordPlayerBehaviourTest {
 
         val behaviour = blockEntity.playerBehaviour
 
-        val recordStack = ModItems etherealRecord RecordType.BRASS
+        val recordStack = ModItems webdisc RecordType.BRASS
         val result = behaviour.insertRecord(ItemStack(recordStack))
 
         helper.assertTrue(result, "Record insertion should succeed")
@@ -39,7 +39,7 @@ class RecordPlayerBehaviourTest {
             ?: return helper.fail("Record Player Behaviour not found! ${helper.getBlockState(pos)}")
 
         val behaviour = blockEntity.playerBehaviour
-        val recordStack = ModItems etherealRecord RecordType.BRASS
+        val recordStack = ModItems webdisc RecordType.BRASS
         behaviour.insertRecord(ItemStack(recordStack))
 
         val poppedStack = behaviour.popRecord()
@@ -64,7 +64,7 @@ class RecordPlayerBehaviourTest {
         val depotBe = helper.getBlockEntity(depotPosition) as? DepotBlockEntity
             ?: return helper.fail("Depot behaviour not found! ${helper.getBlockState(depotPosition)}")
 
-        val recordItem = ModItems etherealRecord RecordType.BRASS
+        val recordItem = ModItems webdisc RecordType.BRASS
         depotBe.heldItem = ItemStack(recordItem)
 
         val playerPos = fromOrigin(0, 1, 0)
@@ -87,7 +87,7 @@ class RecordPlayerBehaviourTest {
         val depotBe = helper.getBlockEntity(depotPosition) as? DepotBlockEntity
             ?: return helper.fail("Depot behaviour not found! ${helper.getBlockState(depotPosition)}")
 
-        val recordItem = ModItems etherealRecord RecordType.BRASS
+        val recordItem = ModItems webdisc RecordType.BRASS
         val playerPos = fromOrigin(0, 1, 0)
         val playerBe = helper.getBlockEntity(playerPos) as? RecordPlayerBlockEntity
             ?: return helper.fail("Record Player not found!")
@@ -124,7 +124,7 @@ class RecordPlayerBehaviourTest {
         val depotBe = helper.getBlockEntity(depotPosition) as? DepotBlockEntity
             ?: return helper.fail("Depot behaviour not found! ${helper.getBlockState(depotPosition)}")
 
-        val recordItem = ModItems etherealRecord RecordType.BRASS
+        val recordItem = ModItems webdisc RecordType.BRASS
         val playerPos = fromOrigin(0, 1, 0)
         val playerBe = helper.getBlockEntity(playerPos) as? RecordPlayerBlockEntity
             ?: return helper.fail("Record Player not found!")

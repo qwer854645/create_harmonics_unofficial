@@ -22,7 +22,7 @@ object DataGenerators {
     @SubscribeEvent
     @JvmStatic
     fun onGatherData(event: GatherDataEvent) {
-        "Generating data for Create: Harmonics".info()
+        "Generating data for Create: Webdisc".info()
         val generator = event.generator
         val output = generator.packOutput
         val lookUpProvider = event.lookupProvider
@@ -55,7 +55,7 @@ object DataGenerators {
     }
 
     private fun provideDefaultLang(consumer: (String, String) -> Unit) {
-        val path = "assets/createharmonics_unofficial/lang/default/en_us.json"
+        val path = "assets/create_webdisc/lang/default/en_us.json"
         val jsonElement =
             JsonResourceLoader.loadJsonResource(path)
                 ?: throw IllegalStateException("Could not find default lang file: $path")

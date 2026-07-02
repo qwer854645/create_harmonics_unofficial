@@ -12,7 +12,7 @@ import net.neoforged.neoforge.common.ModConfigSpec
  */
 object ServerConfig : ConfigBase() {
     // Stress configuration (nested)
-    val modStress = nested(0, { ModStressConfig }, "Mechanical stress impacts and capacities for CreateHarmonics blocks")
+    val modStress = nested(0, { ModStressConfig }, "Mechanical stress impacts and capacities for Webdisc blocks")
 
     // Record durability configuration
     private val recordDurabilities: MutableMap<RecordType, ConfigInt> = mutableMapOf()

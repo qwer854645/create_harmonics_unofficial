@@ -34,14 +34,14 @@ object ModPonders : CommonRegistry {
 
         helper.addStoryBoard(
             ModBlocks.ANDESITE_JUKEBOX,
-            "andesite_jukebox",
+            "andesite_web_player",
             PonderScenes::andesiteJukebox,
             AllCreatePonderTags.KINETIC_APPLIANCES,
         )
 
         helper.addStoryBoard(
             ModBlocks.RECORD_PRESS_BASE,
-            "record_press_base",
+            "webdisc_imprinter",
             PonderScenes::recordPressBase,
             AllCreatePonderTags.KINETIC_APPLIANCES,
         )

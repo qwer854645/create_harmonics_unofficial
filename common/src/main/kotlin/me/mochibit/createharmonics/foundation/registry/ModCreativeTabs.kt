@@ -5,7 +5,7 @@ import me.mochibit.createharmonics.ModRegistrate
 import me.mochibit.createharmonics.content.records.RecordType
 import me.mochibit.createharmonics.foundation.info
 import me.mochibit.createharmonics.foundation.locale.ModLang
-import me.mochibit.createharmonics.foundation.registry.ModItems.etherealRecord
+import me.mochibit.createharmonics.foundation.registry.ModItems.webdisc
 import net.createmod.catnip.platform.CatnipServices
 import net.minecraft.client.Minecraft
 import net.minecraft.core.Registry
@@ -24,7 +24,7 @@ object ModCreativeTabs : CommonRegistry {
             CreativeModeTab
                 .builder()
                 .title(ModLang.translate("item_group").component())
-                .icon { ItemStack(ModItems.etherealRecord(RecordType.BRASS)) }
+                .icon { ItemStack(ModItems.webdisc(RecordType.BRASS)) }
                 .displayItems(DisplayItemsGenerator())
                 .build(),
         )
@@ -128,13 +128,13 @@ object ModCreativeTabs : CommonRegistry {
         //     ItemStack(item).also { it.set(...) }
         // }
 
-        ModItems.ETHEREAL_RECORDS.forEach { (_, entry) ->
+        ModItems.WEBDISCS.forEach { (_, entry) ->
             factories[entry.get()] = { item ->
                 item.defaultInstance
             }
         }
 
-        ModItems.BROKEN_ETHEREAL_RECORDS.forEach { (_, entry) ->
+        ModItems.BROKEN_WEBDISCS.forEach { (_, entry) ->
             factories[entry.get()] = { item ->
                 item.defaultInstance
             }

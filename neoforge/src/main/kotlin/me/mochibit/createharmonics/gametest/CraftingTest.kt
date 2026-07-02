@@ -7,7 +7,7 @@ import me.mochibit.createharmonics.content.kinetics.recordPlayer.RecordPlayerBlo
 import me.mochibit.createharmonics.content.records.EtherealRecordItem
 import me.mochibit.createharmonics.content.records.RecordType
 import me.mochibit.createharmonics.foundation.registry.ModItems
-import me.mochibit.createharmonics.foundation.registry.ModItems.etherealRecord
+import me.mochibit.createharmonics.foundation.registry.ModItems.webdisc
 import me.mochibit.createharmonics.handler.RecordCraftingHandler
 import net.minecraft.gametest.framework.GameTest
 import net.minecraft.gametest.framework.GameTestHelper
@@ -21,7 +21,7 @@ class CraftingTest {
         val discDepotPos = fromOrigin(4, 1, 4)
 
         // The `complete setup` template uses a diamond ethereal record, check which source has and randomize
-        val referenceRecordItem = ModItems etherealRecord RecordType.DIAMOND
+        val referenceRecordItem = ModItems webdisc RecordType.DIAMOND
         val referenceBaseStack = referenceRecordItem.defaultInstance
 
         val defaultedDiscName = RecordCraftingHandler.getCraftedWithDisc(referenceBaseStack).displayName
@@ -37,7 +37,7 @@ class CraftingTest {
             val resultItem = resultStack.item
 
             if (resultItem !is EtherealRecordItem) {
-                return@runAfterDelay helper.fail("Expected an Ethereal Record Item, got ${resultItem}")
+                return@runAfterDelay helper.fail("Expected an Webdisc Item, got ${resultItem}")
             }
 
             val craftedWithDisc = RecordCraftingHandler.getCraftedWithDisc(resultStack)

@@ -18,7 +18,7 @@ object ModBlockEntities : CommonRegistry {
 
     val ANDESITE_JUKEBOX: BlockEntityEntry<AndesiteJukeboxBlockEntity> =
         ModRegistrate
-            .blockEntity("andesite_jukebox", ::AndesiteJukeboxBlockEntity)
+            .blockEntity("andesite_web_player", ::AndesiteJukeboxBlockEntity)
             .visual({
                 SimpleBlockEntityVisualizer.Factory { ctx, be, pt ->
                     RecordPlayerVisual(ctx, be, pt)
@@ -48,7 +48,7 @@ object ModBlockEntities : CommonRegistry {
 
     val RECORD_PRESS_BASE: BlockEntityEntry<RecordPressBaseBlockEntity> =
         ModRegistrate
-            .blockEntity("record_press_base", ::RecordPressBaseBlockEntity)
+            .blockEntity("webdisc_imprinter", ::RecordPressBaseBlockEntity)
             .validBlocks(ModBlocks.RECORD_PRESS_BASE)
             .renderer {
                 NonNullFunction { ctx ->

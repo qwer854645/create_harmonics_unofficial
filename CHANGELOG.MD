@@ -1,4 +1,4 @@
-# Create: Harmonics - 1.1.7
+# Create: Webdisc - 1.1.7
 
 ### Bug fixes
 - Fixed console spamming under certain conditions
@@ -9,14 +9,14 @@
 - Updated Italian translation
 
 
-# Create: Harmonics - 1.1.6
+# Create: Webdisc - 1.1.6
 ### Bug fixes
 - Fixed record durabilities not updating correctly
 - Fixed record press base not updating on sable and valkyrien skies plots
 ### Translations
 - Updated Russian translation @J0phie
 
-# Create: Harmonics - 1.1.5
+# Create: Webdisc - 1.1.5
 
 ### Features
 - **Sable** (_Create Aeronautics_) now supported!
@@ -40,7 +40,7 @@
 - Swedish translation by @Torktumlaren
 ---
 
-# Create: Harmonics - 1.1.4
+# Create: Webdisc - 1.1.4
 
 ### Features
 - Now stress usage from jukeboxes is dynamic depending on its state and mode

@@ -100,7 +100,7 @@ tasks.named<ProcessResources>("processResources") {
     filesMatching("META-INF/neoforge.mods.toml") { expand(project.properties) }
 }
 
-val mixinConfigs = "${v.modId}.mixins.json,createharmonics_unofficial.common.mixins.json"
+val mixinConfigs = "${v.modId}.mixins.json,create_webdisc.common.mixins.json"
 
 tasks.named<Jar>("jar") {
     manifest.attributes("MixinConfigs" to mixinConfigs)

@@ -97,7 +97,7 @@ object ModStressConfig : ConfigBase() {
             "Stress impact must be between $MIN_STRESS_VALUE and $MAX_STRESS_VALUE, got $value"
         }
         return NonNullUnaryOperator { builder ->
-            assertFromHarmonics(builder)
+            assertFromWebdisc(builder)
             val id = builder.name.asResource()
             defaultImpacts.put(id, value)
             builder
@@ -115,7 +115,7 @@ object ModStressConfig : ConfigBase() {
             "Stress capacity must be between $MIN_STRESS_VALUE and $MAX_STRESS_VALUE, got $value"
         }
         return NonNullUnaryOperator { builder ->
-            assertFromHarmonics(builder)
+            assertFromWebdisc(builder)
             val id = builder.name.asResource()
             defaultCapacities.put(id, value)
             builder
@@ -129,7 +129,9 @@ object ModStressConfig : ConfigBase() {
      */
     fun getImpact(block: Block): DoubleSupplier? {
         val id = RegisteredObjectsHelper.getKeyOrThrow(block)
-        return impacts[id]?.let { value -> DoubleSupplier { value.get() } }
+        val configValue = impacts[id] ?: return null
+        val default = defaultImpacts.getDouble(id)
+        return DoubleSupplier { resolveStressValue(configValue, default) }
     }
 
     /**
@@ -139,12 +141,25 @@ object ModStressConfig : ConfigBase() {
      */
     fun getCapacity(block: Block): DoubleSupplier? {
         val id = RegisteredObjectsHelper.getKeyOrThrow(block)
-        return capacities[id]?.let { value -> DoubleSupplier { value.get() } }
+        val configValue = capacities[id] ?: return null
+        val default = defaultCapacities.getDouble(id)
+        return DoubleSupplier { resolveStressValue(configValue, default) }
     }
 
-    private fun assertFromHarmonics(builder: BlockBuilder<*, *>) {
+    private fun resolveStressValue(
+        value: ModConfigSpec.ConfigValue<Double>,
+        default: Double,
+    ): Double =
+        try {
+            value.get()
+        } catch (_: IllegalStateException) {
+            // Server config is unavailable on the client until synced (e.g. JEI tooltips).
+            default
+        }
+
+    private fun assertFromWebdisc(builder: BlockBuilder<*, *>) {
         if (builder.owner.modid != CreateHarmonicsMod.MOD_ID) {
-            throw IllegalStateException("Non-Harmonics blocks cannot be added to Harmonics' config.")
+            throw IllegalStateException("Non-Webdisc blocks cannot be added to Webdisc's config.")
         }
     }
 

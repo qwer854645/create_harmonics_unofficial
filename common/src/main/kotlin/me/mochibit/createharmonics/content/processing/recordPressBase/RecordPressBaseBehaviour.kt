@@ -16,8 +16,8 @@ import net.minecraft.world.item.ItemStack
 /**
  *
  * This behaviour handles:
- * - Accepting Ethereal Records from belt conveyors and other sources
- * - Assigning audio URLs to Ethereal Records
+ * - Accepting Webdiscs from belt conveyors and other sources
+ * - Assigning audio URLs to Webdiscs
  * - Ejecting processed records back onto conveyors
  */
 class RecordPressBaseBehaviour(
@@ -28,7 +28,7 @@ class RecordPressBaseBehaviour(
         val BEHAVIOUR_TYPE = BehaviourType<RecordPressBaseBehaviour>()
     }
 
-    /** List of audio URLs to be assigned to processed Ethereal Records */
+    /** List of audio URLs to be assigned to processed Webdiscs */
     var audioUrls: MutableList<String> = mutableListOf()
 
     /** Weights for each URL in random mode (0.0 to 1.0, default 1.0 for equal probability) */
@@ -41,7 +41,7 @@ class RecordPressBaseBehaviour(
     var currentUrlIndex: Int = 0
 
     /**
-     * Assigns an audio URL to an Ethereal Record item after processing is complete.
+     * Assigns an audio URL to an Webdisc item after processing is complete.
      * This is called when the press finishes processing the item.
      * The URL is selected from the list based on the selection mode:
      * - Random mode: selects a random URL from the list

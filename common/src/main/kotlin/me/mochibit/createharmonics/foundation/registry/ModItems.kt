@@ -16,58 +16,58 @@ object ModItems : CommonRegistry {
 
     val BASE_RECORD: ItemEntry<BaseRecordItem> =
         ModRegistrate
-            .item("ethereal_record_base") { BaseRecordItem(Item.Properties().stacksTo(16)) }
+            .item("webdisc_blank") { BaseRecordItem(Item.Properties().stacksTo(16)) }
             .model { ctx, prov ->
-                prov.generated(ctx, prov.modLoc("item/ethereal_record_base/base"))
+                prov.generated(ctx, prov.modLoc("item/webdisc_blank/base"))
             }.register()
 
-    val BROKEN_ETHEREAL_RECORDS =
+    val BROKEN_WEBDISCS =
         EnumMap<RecordType, ItemEntry<EtherealRecordItem>>(RecordType::class.java).apply {
             RecordType.entries
                 .filter { it != RecordType.CREATIVE }
-                .forEach { this[it] = registerBrokenEtherealRecordVariant(it) }
+                .forEach { this[it] = registerBrokenWebdiscVariant(it) }
         }
 
-    val ETHEREAL_RECORDS =
+    val WEBDISCS =
         EnumMap<RecordType, ItemEntry<EtherealRecordItem>>(RecordType::class.java).apply {
-            RecordType.entries.forEach { this[it] = registerEtherealRecordVariant(it) }
+            RecordType.entries.forEach { this[it] = registerWebdiscVariant(it) }
         }
 
-    private fun registerBrokenEtherealRecordVariant(recordType: RecordType): ItemEntry<EtherealRecordItem> {
+    private fun registerBrokenWebdiscVariant(recordType: RecordType): ItemEntry<EtherealRecordItem> {
         val typeName = recordType.name.lowercase()
         return ModRegistrate
-            .item("broken_${typeName}_ethereal_record") {
+            .item("broken_${typeName}_webdisc") {
                 EtherealRecordItem(recordType, Item.Properties().stacksTo(1), true)
             }.apply {
-                recordType.properties.materialDisplayName?.let { lang("Broken $it Ethereal Record") }
+                recordType.properties.materialDisplayName?.let { lang("Broken $it Webdisc") }
             }.model { ctx, prov ->
-                prov.generated(ctx, prov.modLoc("item/ethereal_record/${typeName}_broken"))
+                prov.generated(ctx, prov.modLoc("item/webdisc/${typeName}_broken"))
             }.register()
     }
 
-    private fun registerEtherealRecordVariant(recordType: RecordType): ItemEntry<EtherealRecordItem> {
+    private fun registerWebdiscVariant(recordType: RecordType): ItemEntry<EtherealRecordItem> {
         val typeName = recordType.name.lowercase()
         return ModRegistrate
-            .item("${typeName}_ethereal_record") {
+            .item("${typeName}_webdisc") {
                 val properties = Item.Properties().stacksTo(1)
                 if (recordType == RecordType.CREATIVE) properties.rarity(Rarity.EPIC)
                 EtherealRecordItem(recordType, properties)
             }.apply {
-                recordType.properties.materialDisplayName?.let { lang("$it Ethereal Record") }
+                recordType.properties.materialDisplayName?.let { lang("$it Webdisc") }
             }.model { ctx, prov ->
-                prov.generated(ctx, prov.modLoc("item/ethereal_record/$typeName"))
+                prov.generated(ctx, prov.modLoc("item/webdisc/$typeName"))
             }.register()
     }
 
-    fun getEtherealRecordItem(recordType: RecordType): ItemEntry<EtherealRecordItem> = ETHEREAL_RECORDS.getValue(recordType)
+    fun getWebdiscItem(recordType: RecordType): ItemEntry<EtherealRecordItem> = WEBDISCS.getValue(recordType)
 
-    fun getBrokenEtherealRecordItem(recordType: RecordType): ItemEntry<EtherealRecordItem>? = BROKEN_ETHEREAL_RECORDS[recordType]
+    fun getBrokenWebdiscItem(recordType: RecordType): ItemEntry<EtherealRecordItem>? = BROKEN_WEBDISCS[recordType]
 
-    fun brokenVariantOf(recordType: RecordType): Item? = BROKEN_ETHEREAL_RECORDS[recordType]?.get()
+    fun brokenVariantOf(recordType: RecordType): Item? = BROKEN_WEBDISCS[recordType]?.get()
 
     override fun register(registry: Registry<*>?) {
         "Registering items".info()
     }
 
-    infix fun ModItems.etherealRecord(recordType: RecordType): EtherealRecordItem = getEtherealRecordItem(recordType).get()
+    infix fun ModItems.webdisc(recordType: RecordType): EtherealRecordItem = getWebdiscItem(recordType).get()
 }

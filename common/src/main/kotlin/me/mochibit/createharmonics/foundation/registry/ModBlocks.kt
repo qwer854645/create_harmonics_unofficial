@@ -23,7 +23,7 @@ object ModBlocks : CommonRegistry {
 
     val ANDESITE_JUKEBOX: BlockEntry<AndesiteJukeboxBlock> =
         ModRegistrate
-            .block("andesite_jukebox") { properties ->
+            .block("andesite_web_player") { properties ->
                 AndesiteJukeboxBlock(properties)
             }.initialProperties { SharedProperties.wooden() }
             .properties { p ->
@@ -72,7 +72,7 @@ object ModBlocks : CommonRegistry {
 
     val RECORD_PRESS_BASE: BlockEntry<RecordPressBaseBlock> =
         ModRegistrate
-            .block("record_press_base", ::RecordPressBaseBlock)
+            .block("webdisc_imprinter", ::RecordPressBaseBlock)
             .properties { p ->
                 p
                     .strength(2.0f, 6.0f)

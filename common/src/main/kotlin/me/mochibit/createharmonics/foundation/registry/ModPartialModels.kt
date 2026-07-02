@@ -12,7 +12,7 @@ object ModPartialModels : CommonRegistry {
     private val recordModels =
         EnumMap<RecordType, PartialModel>(RecordType::class.java).apply {
             for (type in RecordType.entries) {
-                this[type] = block("ethereal_record_visual/${type.name.lowercase()}")
+                this[type] = block("webdisc_visual/${type.name.lowercase()}")
             }
         }
 

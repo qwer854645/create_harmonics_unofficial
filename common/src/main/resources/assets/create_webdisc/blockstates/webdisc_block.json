@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "create_webdisc:block/webdisc_block"
+    }
+  }
+}

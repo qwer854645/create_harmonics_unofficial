@@ -10,7 +10,7 @@ from pathlib import Path
 from nbtlib import File, String
 
 ROOT = Path(__file__).resolve().parents[1]
-STRUCTURE_DIR = ROOT / "common" / "src" / "main" / "resources" / "data" / "createharmonics_unofficial" / "structure"
+STRUCTURE_DIR = ROOT / "common" / "src" / "main" / "resources" / "data" / "create_webdisc" / "structure"
 
 # Decorative swaps only; functional Create / mod blocks stay unchanged.
 NAME_REPLACEMENTS = {

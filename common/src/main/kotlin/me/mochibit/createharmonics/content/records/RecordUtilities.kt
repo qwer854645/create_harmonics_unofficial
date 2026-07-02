@@ -85,7 +85,7 @@ object RecordUtilities {
 
     fun toBrokenRecordStack(stack: ItemStack): ItemStack {
         val recordItem = stack.item as? EtherealRecordItem ?: return stack
-        val brokenItemType = ModItems.getBrokenEtherealRecordItem(recordItem.recordType)?.get() ?: return stack
+        val brokenItemType = ModItems.getBrokenWebdiscItem(recordItem.recordType)?.get() ?: return stack
 
         val craftedWithDisc = RecordCraftingHandler.getCraftedWithDisc(stack)
         val brokenItemStack = ItemStack(brokenItemType)
@@ -97,7 +97,7 @@ object RecordUtilities {
 
     fun fromBrokenRecordStack(stack: ItemStack): ItemStack {
         val brokenItemType = stack.item as? EtherealRecordItem ?: return stack
-        val recordItem = ModItems.getEtherealRecordItem(brokenItemType.recordType).get() ?: return stack
+        val recordItem = ModItems.getWebdiscItem(brokenItemType.recordType).get() ?: return stack
 
         val craftedWithDisc = RecordCraftingHandler.getCraftedWithDisc(stack)
         val recordItemStack = ItemStack(recordItem)

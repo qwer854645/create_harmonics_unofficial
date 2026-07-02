@@ -66,7 +66,7 @@ class EtherealRecordItem(
         if (wearingGoggles && !url.isNullOrBlank()) {
             tooltipComponents.add(
                 Component
-                    .translatable("createharmonics_unofficial.tooltips.item.ethereal_record.url_bound")
+                    .translatable("create_webdisc.tooltips.item.webdisc.url_bound")
                     .withStyle(ChatFormatting.GRAY),
             )
         }
@@ -76,7 +76,7 @@ class EtherealRecordItem(
             tooltipComponents.add(Component.empty())
             tooltipComponents.add(
                 Component
-                    .translatable("createharmonics_unofficial.tooltips.item.ethereal_record.qualities")
+                    .translatable("create_webdisc.tooltips.item.webdisc.qualities")
                     .withStyle(ChatFormatting.GRAY),
             )
             val attributeComponent =

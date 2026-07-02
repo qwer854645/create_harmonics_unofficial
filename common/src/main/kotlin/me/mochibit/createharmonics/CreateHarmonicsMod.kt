@@ -20,7 +20,7 @@ import net.minecraft.resources.ResourceKey
 import net.minecraft.world.item.CreativeModeTab
 
 object CreateHarmonicsMod {
-    const val MOD_ID = "createharmonics_unofficial"
+    const val MOD_ID = "create_webdisc"
     private var initialized = false
 
     @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")

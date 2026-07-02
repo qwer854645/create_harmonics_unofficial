@@ -1,12 +1,12 @@
 <p align="center">
-    <img src="common/src/main/resources/assets/createharmonics_unofficial/textures/gui/logo_small.png" alt="Logo">
+    <img src="common/src/main/resources/assets/create_webdisc/textures/gui/logo_small.png" alt="Logo">
 </p>
-<h1 align="center">Create: Harmonics (Unofficial)<br><br>
-    <a href="https://github.com/qwer854645/create_harmonics_unofficial"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-Unofficial_Fork-blue?logo=github&style=for-the-badge"></a>
+<h1 align="center">Create: Webdisc<br><br>
+    <a href="https://github.com/qwer854645/create_webdisc"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-Derivative_Work-blue?logo=github&style=for-the-badge"></a>
 </h1>
 
 > **This is not the official Create: Harmonics mod.**  
-> It is an independent redistribution fork with **replaced art assets** and a **different mod ID**.  
+> **Create: Webdisc** is an **independent derivative work** with **replaced art assets** and a **different mod ID**.  
 > Official releases: [bitmochibit/createharmonics](https://github.com/bitmochibit/createharmonics) (upstream assets are All Rights Reserved).
 
 <h4 align="center">Required dependencies<br><br>
@@ -20,12 +20,35 @@
 
 <hr>
 
+## 代码来源与二次创作声明
+
+**本项目（Create: Webdisc / 机械动力：网络唱片）是一次二次创作（derivative work），不是官版 Create: Harmonics 的重新上传或官方续作。**
+
+| 项目 | 说明 |
+|------|------|
+| **代码来源** | 玩法与功能代码源自上游开源项目 [bitmochibit/createharmonics](https://github.com/bitmochibit/createharmonics)（作者 Leonardo Importuna / mochibit），上游**代码**许可为 [MIT License](https://github.com/bitmochibit/createharmonics/blob/master/LICENSE.MD) |
+| **本项目性质** | 在 MIT 许可允许的范围内 fork 并修改代码后，以**新 Mod ID**（`create_webdisc`）、**新名称**与**原创美术**独立再发行 |
+| **与官版关系** | 与上游作者及 **Create: Harmonics** 品牌**无隶属、无授权、无官方合作**；不得与官版 JAR 互换或混为同一模组 |
+| **美术来源** | 官版 `assets/` 为 **All Rights Reserved**，**未**包含在本仓库中；本仓库 `assets/create_webdisc/` 为二次创作的替换资源（见 [LICENSE.MD](LICENSE.MD)） |
+| **维护者** | 本 fork / 二次创作版本由 **qwer854645** 维护；问题请提交到[本仓库 Issues](https://github.com/qwer854645/create_webdisc/issues)，请勿到上游报本 fork 的 bug |
+
+### Code provenance & derivative work (English)
+
+**Create: Webdisc** is a **derivative work**, not a re-upload of the official **Create: Harmonics** mod.
+
+- **Source code:** Forked from [bitmochibit/createharmonics](https://github.com/bitmochibit/createharmonics) by Leonardo Importuna (mochibit), licensed under **MIT** for the code portions described in upstream [LICENSE.MD](https://github.com/bitmochibit/createharmonics/blob/master/LICENSE.MD).
+- **This distribution:** Republished under a **new mod ID** (`create_webdisc`), **new branding**, and **replacement artwork** maintained by **qwer854645**.
+- **No affiliation:** Not affiliated with the upstream author or the Create: Harmonics brand. Upstream ARR artwork is **not** shipped in this project.
+- **Compliance:** MIT copyright and permission notices for upstream code are preserved in [LICENSE.MD](LICENSE.MD).
+
+---
+
 ## Quick facts
 
 | | Official upstream | **This fork** |
 |---|---|---|
-| Mod ID | `createharmonics` | **`createharmonics_unofficial`** |
-| Display name | Create: Harmonics | Create Harmonics (Unofficial) |
+| Mod ID | `createharmonics` | **`create_webdisc`** |
+| Display name | Create: Harmonics | **Create: Webdisc** |
 | Maintainer | Leonardo Importuna (mochibit) | qwer854645 |
 | `assets/` license | All Rights Reserved | MIT (replacement art only) |
 | Code license | MIT | MIT (based on upstream) |
@@ -35,13 +58,13 @@ Do **not** install this alongside the official mod expecting the same namespace.
 
 ---
 
-## What this fork is
+## What this project is
 
-An unofficial NeoForge 1.21.1 edition of [Create: Harmonics](https://github.com/bitmochibit/createharmonics), kept so the project can be **built and redistributed without upstream ARR artwork**.
+**Create: Webdisc** is a NeoForge 1.21.1 **derivative addon** built on MIT-licensed code from [bitmochibit/createharmonics](https://github.com/bitmochibit/createharmonics). It is **secondary creation** (二次创作): same general gameplay idea, but a separate mod with its own ID, name, textures, and maintainer.
 
-Gameplay is largely the same (URL audio, Ethereal Records, Andesite Jukebox, Record Press Base, Create contraption integration). Feature docs: upstream [wiki](https://github.com/bitmochibit/createharmonics/wiki) (reference only).
+Gameplay: URL audio, Webdiscs, Andesite Web Players, Webdisc Imprinter, Create contraption integration. Upstream [wiki](https://github.com/bitmochibit/createharmonics/wiki) may be used as a **reference only** for mechanics — it documents the original mod, not this fork.
 
-**Report bugs for this fork here:** [Issues](https://github.com/qwer854645/create_harmonics_unofficial/issues) — not on the upstream repo.
+**Report bugs for this fork here:** [Issues](https://github.com/qwer854645/create_webdisc/issues) — not on the upstream repo.
 
 ---
 
@@ -78,8 +101,8 @@ See [LICENSE.MD](LICENSE.MD) for the full asset/code split.
 
 ## What the mod does
 
-- Craft **Ethereal Records** and bind them to online audio URLs
-- Power an **Andesite Jukebox** or **Record Press Base** with Create rotation
+- Craft **Webdiscs** and bind them to online audio URLs
+- Power an **Andesite Web Player** or **Webdisc Imprinter** with Create rotation
 - Play audio on contraptions; pitch and playback follow speed and redstone
 
 Audio is streamed **client-side** from the original source (not relayed server → client). The mod may download **ffmpeg** and **yt-dlp** after asking permission, or you can supply your own binaries.
@@ -93,7 +116,7 @@ Audio is streamed **client-side** from the original source (not relayed server �
 
 **Minecraft:** 1.21.1 · **Loader:** NeoForge · **Requires:** Create + Kotlin for Forge
 
-1. Download **`createharmonics_unofficial-neoforge-1.21.1-*.jar`** from [Releases](https://github.com/qwer854645/create_harmonics_unofficial/releases) or build locally (below).
+1. Download **`create_webdisc-neoforge-1.21.1-*.jar`** from [Releases](https://github.com/qwer854645/create_webdisc/releases) or build locally (below).
 2. Put the JAR in your `mods` folder.
 3. **Do not** use the official `createharmonics-*.jar` — mod ID and assets differ.
 4. On first launch, accept the in-game prompt to install ffmpeg/yt-dlp, or install them manually (path shown in the library setup screen).
@@ -112,14 +135,14 @@ For Bilibili URLs after a fresh yt-dlp install, run:
 
 ```powershell
 $env:JAVA_HOME = "C:\Program Files\Java\jdk-21.0.10"
-cd create_harmonics_unofficial
+cd create_webdisc
 .\gradlew.bat :neoforge:build
 ```
 
 Output JAR:
 
 ```text
-neoforge/build/libs/createharmonics_unofficial-neoforge-1.21.1-1.2.0.jar
+neoforge/build/libs/create_webdisc-neoforge-1.21.1-2.0.0.jar
 ```
 
 Run client (dev):
@@ -138,7 +161,7 @@ python tools/generate_ponder_nbt.py
 python tools/patch_gametest_nbt.py
 ```
 
-Asset root: `common/src/main/resources/assets/createharmonics_unofficial/`
+Asset root: `common/src/main/resources/assets/create_webdisc/`
 
 ---
 
@@ -146,18 +169,19 @@ Asset root: `common/src/main/resources/assets/createharmonics_unofficial/`
 
 | Part | License | Notes |
 |------|---------|--------|
-| Upstream **code** (MIT) | MIT | © Leonardo Importuna |
-| This fork's **code changes** | MIT | Same as upstream base |
-| This fork's **assets** | MIT | Replacement art only — see [LICENSE.MD](LICENSE.MD) |
-| Upstream **original art** | All Rights Reserved | **Not included** in this repository |
+| Upstream **source code** | MIT | © Leonardo Importuna — [bitmochibit/createharmonics](https://github.com/bitmochibit/createharmonics) |
+| This project's **code changes** | MIT | Derivative modifications on top of upstream MIT code |
+| This project's **assets** | MIT | Original / regenerated replacement art — see [LICENSE.MD](LICENSE.MD) |
+| Upstream **original art** | All Rights Reserved | **Not included** in this repository or JAR |
 
-This project is **not affiliated** with the upstream author, the Create team, YouTube, Bilibili, or other audio platforms. Provided as-is, without warranty.
+This project is a **derivative work (二次创作)** and is **not affiliated** with Leonardo Importuna (mochibit), the Create: Harmonics brand, the Create team, YouTube, Bilibili, or other audio platforms. Provided as-is, without warranty.
 
 ---
 
 ## Credits
 
-- Original mod: [bitmochibit/createharmonics](https://github.com/bitmochibit/createharmonics) by Leonardo Importuna (mochibit)
+- **Upstream code (MIT):** [bitmochibit/createharmonics](https://github.com/bitmochibit/createharmonics) by Leonardo Importuna (mochibit) — original Create: Harmonics gameplay implementation
+- **This derivative work:** Create: Webdisc — code fork, rebranding, and replacement assets by **qwer854645**
 - [Create](https://github.com/Creators-of-Create/Create) — MIT
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) — Unlicense (source); official `.exe` builds may be GPLv3+
 - [ffmpeg](https://ffmpeg.org/) — LGPL/GPL depending on build

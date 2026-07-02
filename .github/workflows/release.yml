@@ -103,7 +103,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.tag }}
-          name: "Create: Harmonics ${{ steps.version.outputs.version }}"
+          name: "Create: Webdisc ${{ steps.version.outputs.version }}"
           body_path: /tmp/changelog_entry.md
           draft: false
           prerelease: false
@@ -119,7 +119,7 @@ jobs:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           modrinth-featured: true
 
-          name: "Create: Harmonics ${{ steps.version.outputs.version }} for Minecraft ${{ steps.version.outputs.mc_version }}"
+          name: "Create: Webdisc ${{ steps.version.outputs.version }} for Minecraft ${{ steps.version.outputs.mc_version }}"
           version: ${{ steps.version.outputs.version }}
           version-type: release
           changelog-file: /tmp/changelog_entry.md

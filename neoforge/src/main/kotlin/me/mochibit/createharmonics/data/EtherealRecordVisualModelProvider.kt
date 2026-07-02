@@ -28,11 +28,11 @@ class EtherealRecordVisualModelProvider(
     private fun generateRecordVisualModel(modelName: String) {
         // Create a model with parent pointing to visual.json
         withExistingParent(
-            "block/ethereal_record_visual/$modelName",
-            modLoc("block/ethereal_record_visual/visual"),
-        ).texture("0", modLoc("block/ethereal_record_visual/$modelName"))
-            .texture("particle", modLoc("block/ethereal_record_visual/$modelName"))
+            "block/webdisc_visual/$modelName",
+            modLoc("block/webdisc_visual/visual"),
+        ).texture("0", modLoc("block/webdisc_visual/$modelName"))
+            .texture("particle", modLoc("block/webdisc_visual/$modelName"))
     }
 
-    override fun getName(): String = "Ethereal Record Visual Models"
+    override fun getName(): String = "Webdisc Visual Models"
 }

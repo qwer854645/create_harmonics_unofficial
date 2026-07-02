@@ -17,9 +17,9 @@ class ModPressingRecipeGen(
     val discPressingRecipes: List<GeneratedRecipe> =
         RecordType.entries.map {
             // Simply create a recipe that returns itself, useful for the record stamping base
-            create("ethereal_record/${it.name.lowercase()}") { builder ->
+            create("webdisc/${it.name.lowercase()}") { builder ->
                 builder
-                    .require { ModItems.getEtherealRecordItem(it).get() }
+                    .require { ModItems.getWebdiscItem(it).get() }
                     .output(0.3f) { ItemStack(Items.AMETHYST_SHARD, 2).item }
                     .output(1f) { ItemStack(Items.AMETHYST_SHARD, 1).item }
             }

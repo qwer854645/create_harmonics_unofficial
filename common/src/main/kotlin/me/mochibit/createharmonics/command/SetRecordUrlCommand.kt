@@ -56,7 +56,7 @@ object SetRecordUrlCommand : CommandEntry {
     }
 
     /**
-     * If the player is holding an Ethereal Record, set its audio URL to the provided URL.
+     * If the player is holding an Webdisc, set its audio URL to the provided URL.
      */
     private fun execute(ctx: CommandContext<CommandSourceStack>): Int {
         val audioUrl = StringArgumentType.getString(ctx, "url")
@@ -75,7 +75,7 @@ object SetRecordUrlCommand : CommandEntry {
 
         val mainHandItem = player.mainHandItem
         if (mainHandItem.item !is EtherealRecordItem) {
-            source.sendFailure(Component.literal("You must be holding an Ethereal Record (main hand) to use this command."))
+            source.sendFailure(Component.literal("You must be holding an Webdisc (main hand) to use this command."))
             return 0
         }
 
@@ -83,7 +83,7 @@ object SetRecordUrlCommand : CommandEntry {
 
         source.sendSuccess(
             {
-                Component.literal("Set Ethereal Record audio URL to: $audioUrl")
+                Component.literal("Set Webdisc audio URL to: $audioUrl")
             },
             false,
         )

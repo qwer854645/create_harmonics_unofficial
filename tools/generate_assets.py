@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Generate original replacement assets for Create Harmonics Unofficial."""
+"""Generate original replacement assets for Create: Webdisc."""
 
 from __future__ import annotations
 
+import argparse
 import math
 import os
 import subprocess
@@ -14,8 +15,8 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
-TEXTURES = ROOT / "common" / "src" / "main" / "resources" / "assets" / "createharmonics_unofficial" / "textures"
-SOUNDS = ROOT / "common" / "src" / "main" / "resources" / "assets" / "createharmonics_unofficial" / "sounds"
+TEXTURES = ROOT / "common" / "src" / "main" / "resources" / "assets" / "create_webdisc" / "textures"
+SOUNDS = ROOT / "common" / "src" / "main" / "resources" / "assets" / "create_webdisc" / "sounds"
 
 # Create-inspired palette
 ANDESITE = (110, 110, 110)
@@ -28,6 +29,11 @@ PANEL_BG = (38, 38, 42)
 PANEL_BORDER = (24, 24, 28)
 PANEL_INNER = (56, 56, 62)
 UI_ACCENT = (180, 140, 70)
+WEB_BLUE = (30, 58, 95)
+WEB_BLUE_LIGHT = (79, 195, 247)
+WEB_BLUE_DARK = (18, 36, 58)
+VINYL = (32, 34, 40)
+VINYL_GROOVE = (48, 50, 58)
 
 RECORD_COLORS = {
     "stone": ((120, 120, 120), (90, 90, 90)),
@@ -94,7 +100,7 @@ def draw_andesite_face(img: Image.Image, x0: int, y0: int, w: int, h: int, top: 
         draw.ellipse((cx - 2, cy - 2, cx + 1, cy + 1), fill=BRASS)
 
 
-def make_andesite_jukebox_texture() -> Image.Image:
+def make_andesite_web_player_texture() -> Image.Image:
     img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
     draw_andesite_face(img, 0, 0, 16, 16, top=False)
     draw_andesite_face(img, 16, 0, 16, 16, top=True)
@@ -115,7 +121,7 @@ def make_andesite_jukebox_texture() -> Image.Image:
     return img
 
 
-def make_record_press_base_texture() -> Image.Image:
+def make_webdisc_imprinter_texture() -> Image.Image:
     img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
     draw_andesite_face(img, 0, 0, 32, 32, top=True)
     draw_andesite_face(img, 32, 0, 32, 32, top=False)
@@ -173,14 +179,56 @@ def make_icons_texture() -> Image.Image:
 
 
 def make_logo_texture() -> Image.Image:
-    img = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
+    """Webdisc logo: vinyl disc + URL link + Create brass gear (distinct from upstream Harmonics)."""
+    size = 256
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
-    draw.ellipse((28, 28, 228, 228), fill=PANEL_BG, outline=UI_ACCENT, width=4)
-    draw.ellipse((78, 78, 178, 178), fill=(25, 25, 28), outline=BRASS, width=3)
-    draw.ellipse((108, 108, 148, 148), fill=BRASS_LIGHT)
-    draw.arc((48, 48, 208, 208), start=220, end=320, fill=BRASS, width=8)
-    draw.line((128, 56, 128, 92), fill=BRASS_LIGHT, width=6)
-    draw.polygon([(118, 92), (138, 92), (128, 112)], fill=BRASS)
+    cx, cy = size // 2, size // 2
+
+    # Outer badge
+    draw.ellipse((20, 20, 236, 236), fill=WEB_BLUE_DARK, outline=BRASS_DARK, width=5)
+    draw.ellipse((30, 30, 226, 226), outline=WEB_BLUE_LIGHT, width=2)
+
+    # Vinyl disc
+    draw.ellipse((52, 52, 204, 204), fill=VINYL, outline=BRASS, width=3)
+    for r in (78, 92, 106, 120):
+        draw.ellipse((cx - r, cy - r, cx + r, cy + r), outline=VINYL_GROOVE, width=1)
+    draw.ellipse((108, 108, 148, 148), fill=(18, 18, 22), outline=BRASS_DARK, width=2)
+    draw.ellipse((118, 118, 138, 138), fill=BRASS_LIGHT)
+
+    # URL link arcs (top-right)
+    draw.arc((138, 58, 198, 118), start=200, end=340, fill=WEB_BLUE_LIGHT, width=6)
+    draw.arc((152, 72, 212, 132), start=20, end=160, fill=WEB_BLUE_LIGHT, width=6)
+
+    # Audio wave (left)
+    for i, h in enumerate((18, 28, 22, 34, 20)):
+        x = 56 + i * 10
+        draw.line((x, cy + h // 2, x, cy - h // 2), fill=WEB_BLUE_LIGHT, width=3)
+
+    # Small Create-style gear (bottom-left)
+    gear_cx, gear_cy = 78, 186
+    gear_r = 18
+    draw.ellipse(
+        (gear_cx - gear_r, gear_cy - gear_r, gear_cx + gear_r, gear_cy + gear_r),
+        fill=BRASS_DARK,
+        outline=BRASS,
+        width=2,
+    )
+    draw.ellipse(
+        (gear_cx - 7, gear_cy - 7, gear_cx + 7, gear_cy + 7),
+        fill=BRASS_LIGHT,
+    )
+    for angle_deg in range(0, 360, 45):
+        rad = math.radians(angle_deg)
+        x1 = gear_cx + math.cos(rad) * (gear_r - 2)
+        y1 = gear_cy + math.sin(rad) * (gear_r - 2)
+        x2 = gear_cx + math.cos(rad) * (gear_r + 5)
+        y2 = gear_cy + math.sin(rad) * (gear_r + 5)
+        draw.line((x1, y1, x2, y2), fill=BRASS, width=4)
+
+    # Highlight arc on disc
+    draw.arc((60, 60, 196, 196), start=240, end=310, fill=(255, 255, 255, 60), width=3)
+
     return img
 
 
@@ -238,9 +286,13 @@ def save_png(path: Path, image: Image.Image) -> None:
     print(f"Wrote {path.relative_to(ROOT)}")
 
 
+def generate_logo() -> None:
+    save_png(TEXTURES / "gui/logo_small.png", make_logo_texture())
+
+
 def generate_textures() -> None:
-    save_png(TEXTURES / "block/andesite_jukebox/particle.png", make_particle(ANDESITE))
-    save_png(TEXTURES / "item/ethereal_record_base/base.png", make_record_base_texture())
+    save_png(TEXTURES / "block/andesite_web_player/particle.png", make_particle(ANDESITE))
+    save_png(TEXTURES / "item/webdisc_blank/base.png", make_record_base_texture())
     save_png(TEXTURES / "gui/icons.png", make_icons_texture())
     save_png(TEXTURES / "gui/logo_small.png", make_logo_texture())
     save_png(TEXTURES / "gui/record_press_base.png", make_record_press_gui())
@@ -250,12 +302,12 @@ def generate_textures() -> None:
         block = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
         draw_vinyl(item, label, rim, broken=False)
         draw_vinyl(block, label, rim, broken=False)
-        save_png(TEXTURES / f"item/ethereal_record/{name}.png", item)
-        save_png(TEXTURES / f"block/ethereal_record_visual/{name}.png", block)
+        save_png(TEXTURES / f"item/webdisc/{name}.png", item)
+        save_png(TEXTURES / f"block/webdisc_visual/{name}.png", block)
 
         broken = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
         draw_vinyl(broken, label, rim, broken=True)
-        save_png(TEXTURES / f"item/ethereal_record/{name}_broken.png", broken)
+        save_png(TEXTURES / f"item/webdisc/{name}_broken.png", broken)
 
 
 def write_wav(path: Path, samples, sample_rate: int = 44100) -> None:
@@ -322,6 +374,15 @@ def generate_sounds() -> None:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Generate Create: Webdisc replacement assets")
+    parser.add_argument("--logo-only", action="store_true", help="Regenerate logo_small.png only")
+    args = parser.parse_args()
+
+    if args.logo_only:
+        generate_logo()
+        print("Logo generation complete.")
+        return
+
     generate_textures()
     generate_sounds()
     print("Asset generation complete.")

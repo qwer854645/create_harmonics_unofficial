@@ -26,7 +26,7 @@ import kotlin.math.max
 
 class RecordPressBaseScreen(
     val be: RecordPressBaseBlockEntity,
-) : AbstractSimiScreen(ModLang.translate("gui.record_press_base.title").component()) {
+) : AbstractSimiScreen(ModLang.translate("gui.webdisc_imprinter.title").component()) {
     // Constants
     companion object {
         private const val SCROLL_AREA_X = 3
@@ -188,7 +188,7 @@ class RecordPressBaseScreen(
                 }
                 zIndex = 100
                 toolTipZIndex = 6000
-                setToolTip(ModLang.translate("gui.record_press_base.url_index_increase").component())
+                setToolTip(ModLang.translate("gui.webdisc_imprinter.url_index_increase").component())
                 addRenderableWidget(this)
             }
 
@@ -204,7 +204,7 @@ class RecordPressBaseScreen(
                 }
                 zIndex = 100
                 toolTipZIndex = 6000
-                setToolTip(ModLang.translate("gui.record_press_base.url_index_decrease").component())
+                setToolTip(ModLang.translate("gui.webdisc_imprinter.url_index_decrease").component())
                 addRenderableWidget(this)
             }
     }
@@ -213,9 +213,9 @@ class RecordPressBaseScreen(
         modeButton.toolTip.clear()
         val tooltipLines =
             if (configuration.randomMode) {
-                ModLang.translate("gui.record_press_base.url_random_mode").component()
+                ModLang.translate("gui.webdisc_imprinter.url_random_mode").component()
             } else {
-                ModLang.translate("gui.record_press_base.url_sequential_mode").component()
+                ModLang.translate("gui.webdisc_imprinter.url_sequential_mode").component()
             }
 
         modeButton.toolTip.addAll(tooltipLines.toMultilineComponent())
@@ -244,7 +244,7 @@ class RecordPressBaseScreen(
                     0, // Position will be set during render
                     urlInputWidth,
                     URL_FIELD_HEIGHT,
-                    ModLang.translate("gui.record_press_base.url_input").component(),
+                    ModLang.translate("gui.webdisc_imprinter.url_input").component(),
                 ).apply {
                     value = url
                     setWidth(urlInputWidth)
@@ -265,7 +265,7 @@ class RecordPressBaseScreen(
                     0, // Position will be set during render
                     30, // Small width for weight input
                     URL_FIELD_HEIGHT,
-                    ModLang.translate("gui.record_press_base.weight_input").component(),
+                    ModLang.translate("gui.webdisc_imprinter.weight_input").component(),
                 ).apply {
                     value = String.format("%.2f", configuration.weights.getOrElse(index) { 1f })
                     @Suppress("UsePropertyAccessSyntax")
@@ -747,7 +747,7 @@ class RecordPressBaseScreen(
                 ) {
                     graphics.renderTooltip(
                         font,
-                        ModLang.translate("gui.record_press_base.url_add").component(),
+                        ModLang.translate("gui.webdisc_imprinter.url_add").component(),
                         mouseX,
                         mouseY,
                     )
@@ -763,7 +763,7 @@ class RecordPressBaseScreen(
                     ) {
                         graphics.renderTooltip(
                             font,
-                            ModLang.translate("gui.record_press_base.url_remove").component(),
+                            ModLang.translate("gui.webdisc_imprinter.url_remove").component(),
                             mouseX,
                             mouseY,
                         )
@@ -778,7 +778,7 @@ class RecordPressBaseScreen(
                     ) {
                         graphics.renderTooltip(
                             font,
-                            ModLang.translate("gui.record_press_base.url_move_up").component(),
+                            ModLang.translate("gui.webdisc_imprinter.url_move_up").component(),
                             mouseX,
                             mouseY,
                         )
@@ -793,7 +793,7 @@ class RecordPressBaseScreen(
                     ) {
                         graphics.renderTooltip(
                             font,
-                            ModLang.translate("gui.record_press_base.url_move_down").component(),
+                            ModLang.translate("gui.webdisc_imprinter.url_move_down").component(),
                             mouseX,
                             mouseY,
                         )
@@ -811,7 +811,7 @@ class RecordPressBaseScreen(
                         val fullUrl = configuration.urls.getOrNull(index) ?: ""
                         val tooltipLines =
                             ModLang
-                                .translate("gui.record_press_base.url_input_tooltip")
+                                .translate("gui.webdisc_imprinter.url_input_tooltip")
                                 .component()
                                 .toMultilineComponent()
                                 .toMutableList()
@@ -844,7 +844,7 @@ class RecordPressBaseScreen(
                             graphics.renderTooltip(
                                 font,
                                 ModLang
-                                    .translate("gui.record_press_base.weight_input_tooltip")
+                                    .translate("gui.webdisc_imprinter.weight_input_tooltip")
                                     .component()
                                     .toMultilineComponent(),
                                 mouseX,

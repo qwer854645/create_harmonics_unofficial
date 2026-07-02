@@ -34,7 +34,7 @@ object PonderScenes {
         // Ponder scene size 9 x 6 x 9
         val scene = CreateSceneBuilder(builder)
         scene.title(
-            "record_press_base",
+            "webdisc_imprinter",
             "Using Record Press Bases",
         )
 
@@ -53,13 +53,13 @@ object PonderScenes {
         scene
             .overlay()
             .showText(60)
-            .text("Record Press Bases are depot-like blocks used for setting urls on Ethereal Records")
+            .text("Record Press Bases are depot-like blocks used for setting urls on Webdiscs")
             .placeNearTarget()
             .pointAt(pressTop)
         scene.idle(70)
 
         scene.addKeyframe()
-        val fallingItem = ItemStack(ModItems.getEtherealRecordItem(RecordType.EMERALD).get())
+        val fallingItem = ItemStack(ModItems.getWebdiscItem(RecordType.EMERALD).get())
         val fallingItemLink =
             scene.world().createItemEntity(util.vector().centerOf(4, 4, 4), util.vector().of(.0, -0.1, .0), fallingItem)
         scene.idle(9)
@@ -69,7 +69,7 @@ object PonderScenes {
         scene
             .overlay()
             .showText(40)
-            .text("Ethereal Records can be dropped on top of the press base")
+            .text("Webdiscs can be dropped on top of the press base")
             .placeNearTarget()
             .pointAt(pressTop)
         scene.idle(50)
@@ -128,7 +128,7 @@ object PonderScenes {
                 .getPressingBehaviour()
                 .makePressingParticleEffect(
                     util.vector().centerOf(pressBase).add(0.0, (8 / 16f).toDouble(), 0.0),
-                    ItemStack(ModItems.getEtherealRecordItem(RecordType.GOLD).get()),
+                    ItemStack(ModItems.getWebdiscItem(RecordType.GOLD).get()),
                 )
         }
         scene
@@ -148,7 +148,7 @@ object PonderScenes {
     ) {
         val scene = CreateSceneBuilder(builder)
         scene.title(
-            "andesite_jukebox",
+            "andesite_web_player",
             "Using Andesite Jukeboxes",
         )
 
@@ -167,14 +167,14 @@ object PonderScenes {
         scene
             .overlay()
             .showText(60)
-            .text("Andesite jukeboxes can play audio from Ethereal Records")
+            .text("Andesite jukeboxes can play audio from Webdiscs")
             .placeNearTarget()
             .pointAt(topOfPlayer)
         scene.idle(70)
 
         // Record insertion feature
         scene.addKeyframe()
-        val brassRecord = ItemStack(ModItems.getEtherealRecordItem(RecordType.BRASS).get())
+        val brassRecord = ItemStack(ModItems.getWebdiscItem(RecordType.BRASS).get())
         scene
             .overlay()
             .showControls(topOfPlayer, Pointing.DOWN, 20)
@@ -190,7 +190,7 @@ object PonderScenes {
         scene
             .overlay()
             .showText(60)
-            .text("Right-Click to manually insert or pop Ethereal Records from it")
+            .text("Right-Click to manually insert or pop Webdiscs from it")
             .placeNearTarget()
             .pointAt(topOfPlayer)
         scene.idle(50)
@@ -198,7 +198,7 @@ object PonderScenes {
         scene
             .overlay()
             .showText(70)
-            .text("Each Ethereal Record has some intrinsic audio effects")
+            .text("Each Webdisc has some intrinsic audio effects")
             .placeNearTarget()
         scene.idle(70)
 
@@ -214,7 +214,7 @@ object PonderScenes {
         scene.effects().indicateSuccess(recordPlayer)
         scene.idle(20)
 
-        val diamondRecord = ItemStack(ModItems.getEtherealRecordItem(RecordType.DIAMOND).get())
+        val diamondRecord = ItemStack(ModItems.getWebdiscItem(RecordType.DIAMOND).get())
         scene
             .overlay()
             .showControls(topOfPlayer, Pointing.DOWN, 20)

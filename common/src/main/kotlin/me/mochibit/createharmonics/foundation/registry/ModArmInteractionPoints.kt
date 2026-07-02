@@ -24,7 +24,7 @@ object ModArmInteractionPoints : CommonRegistry {
 
     val RECORD_PRESS_BASE_TYPE: RegistryEntry<ArmInteractionPointType, RecordPressBaseType> =
         ModRegistrate
-            .generic("record_press_base", CreateRegistries.ARM_INTERACTION_POINT_TYPE) {
+            .generic("webdisc_imprinter", CreateRegistries.ARM_INTERACTION_POINT_TYPE) {
                 RecordPressBaseType()
             }.register()
 

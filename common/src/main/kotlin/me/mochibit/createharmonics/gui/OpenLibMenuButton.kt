@@ -39,7 +39,7 @@ class OpenLibMenuButton(
         pFont: Font,
         pColor: Int,
     ) {
-        val icon = ModItems.getEtherealRecordItem(RecordType.BRASS).asStack()
+        val icon = ModItems.getWebdiscItem(RecordType.BRASS).asStack()
         val bakedModel =
             Minecraft
                 .getInstance()
@@ -87,7 +87,7 @@ class OpenLibMenuButton(
     companion object {
         @Suppress("UNUSED_PARAMETER")
         fun click(b: Button?) {
-            ScreenOpener.open(HarmonicsMenuScreen(Minecraft.getInstance().screen))
+            ScreenOpener.open(WebdiscMenuScreen(Minecraft.getInstance().screen))
         }
     }
 }

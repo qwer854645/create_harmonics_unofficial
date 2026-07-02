@@ -94,8 +94,8 @@ object RecordRepairJEIRecipes {
     fun buildDisplayHolders(): List<RecipeHolder<DeployerApplicationRecipe>> =
         buildList {
             RecordType.entries.filter { it != RecordType.CREATIVE }.forEach { recordType ->
-                val brokenRecordItem = ModItems.getBrokenEtherealRecordItem(recordType)?.get() ?: return@forEach
-                val repairedRecordItem = ModItems.getEtherealRecordItem(recordType).get()
+                val brokenRecordItem = ModItems.getBrokenWebdiscItem(recordType)?.get() ?: return@forEach
+                val repairedRecordItem = ModItems.getWebdiscItem(recordType).get()
 
                 val brokenIngredient = Ingredient.of(brokenRecordItem)
                 val damagedIngredient = Ingredient.of(repairedRecordItem)

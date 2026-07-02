@@ -19,11 +19,11 @@ class ModDeployingRecipeGen(
     init {
         // <editor-fold desc="Ethereal record recipe gen">
         RecordType.entries.filter { it.properties.recipe != null }.forEach {
-            create("ethereal_record/00_crafting/${it.name.lowercase()}") { builder ->
+            create("webdisc/00_crafting/${it.name.lowercase()}") { builder ->
                 builder
                     .require(it.properties.recipe?.primaryIngredientProvider())
                     .require(it.properties.recipe?.secondaryIngredientProvider())
-                    .output { ModItems.getEtherealRecordItem(it).get() }
+                    .output { ModItems.getWebdiscItem(it).get() }
             }
         }
         // </editor-fold>
@@ -31,8 +31,8 @@ class ModDeployingRecipeGen(
         // <editor-fold desc="Ethereal record glue repair gen">
 //        RecordType.entries.filter { it != RecordType.CREATIVE }.forEach {
 //            val damagedStack = ModItems.getBrokenEtherealRecordItem(it)?.get()?.defaultInstance ?: return@forEach
-//            create("ethereal_record/10_glue_repair/${it.name.lowercase()}") { builder ->
-//                val repairedStack = ModItems.getEtherealRecordItem(it).get().defaultInstance
+//            create("webdisc/10_glue_repair/${it.name.lowercase()}") { builder ->
+//                val repairedStack = ModItems.getWebdiscItem(it).get().defaultInstance
 //                val costedGlue = ItemStack(AllItems.SUPER_GLUE.get())
 //                costedGlue.damageValue = calculateGlueRepairCost(it, it.uses)
 //                builder
@@ -51,10 +51,10 @@ class ModDeployingRecipeGen(
 //                    .getBrokenEtherealRecordItem(recordType)
 //                    ?.get()
 //                    ?.defaultInstance ?: return@forEach
-//            val repairedStack = ModItems.getEtherealRecordItem(recordType).get().defaultInstance
+//            val repairedStack = ModItems.getWebdiscItem(recordType).get().defaultInstance
 //
 //            recordType.properties.repair?.fullRepairIngredientProvider?.invoke()?.let { ingredient ->
-//                create("ethereal_record/20_full_repair/${recordType.name.lowercase()}") { builder ->
+//                create("webdisc/20_full_repair/${recordType.name.lowercase()}") { builder ->
 //                    builder
 //                        .require(Ingredient.of(damagedStack))
 //                        .require(ingredient)
@@ -68,7 +68,7 @@ class ModDeployingRecipeGen(
 //                ?.let { (ingredient, repairFraction) ->
 //                    val partialStack = repairedStack.copy()
 //                    partialStack.damageValue = ((1 - repairFraction) * partialStack.maxDamage).toInt()
-//                    create("ethereal_record/30_partial_repair/${recordType.name.lowercase()}") { builder ->
+//                    create("webdisc/30_partial_repair/${recordType.name.lowercase()}") { builder ->
 //                        builder
 //                            .require(Ingredient.of(damagedStack))
 //                            .require(ingredient)
