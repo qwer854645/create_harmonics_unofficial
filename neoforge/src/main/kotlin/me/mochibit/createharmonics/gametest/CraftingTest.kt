@@ -1,13 +1,9 @@
 package me.mochibit.createharmonics.gametest
 
-
 import com.simibubi.create.content.logistics.depot.DepotBlockEntity
 import me.mochibit.createharmonics.CreateHarmonicsMod
-import me.mochibit.createharmonics.content.kinetics.recordPlayer.RecordPlayerBlockEntity
 import me.mochibit.createharmonics.content.records.EtherealRecordItem
-import me.mochibit.createharmonics.content.records.RecordType
 import me.mochibit.createharmonics.foundation.registry.ModItems
-import me.mochibit.createharmonics.foundation.registry.ModItems.webdisc
 import me.mochibit.createharmonics.handler.RecordCraftingHandler
 import net.minecraft.gametest.framework.GameTest
 import net.minecraft.gametest.framework.GameTestHelper
@@ -20,16 +16,13 @@ class CraftingTest {
     fun `crafting chain and original disc check`(helper: GameTestHelper) {
         val discDepotPos = fromOrigin(4, 1, 4)
 
-        // The `complete setup` template uses a diamond ethereal record, check which source has and randomize
-        val referenceRecordItem = ModItems webdisc RecordType.DIAMOND
-        val referenceBaseStack = referenceRecordItem.defaultInstance
+        val referenceBaseStack = ModItems.WEBDISC.get().defaultInstance
 
         val defaultedDiscName = RecordCraftingHandler.getCraftedWithDisc(referenceBaseStack).displayName
         val uniqueDisc = EtherealRecordItem.JUKEBOX_DISCS.filter { it.defaultInstance.displayName != defaultedDiscName }.random().defaultInstance
 
         val discDepotBe = helper.getBlockEntity(discDepotPos) as? DepotBlockEntity ?: return helper.fail("Disc depot was not found")
         discDepotBe.heldItem = uniqueDisc
-        // It should craft a disc and place it in the result depot that is diamond and has the same uniqueDisc source
         helper.runAfterDelay(800) {
             val resultDepotPos = fromOrigin(4, 1, 0)
             val resultDepotBe = helper.getBlockEntity(resultDepotPos) as? DepotBlockEntity ?: return@runAfterDelay helper.fail("Result depot was not found")

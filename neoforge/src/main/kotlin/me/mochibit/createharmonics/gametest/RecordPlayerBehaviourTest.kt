@@ -4,9 +4,7 @@ import com.simibubi.create.content.logistics.depot.DepotBlockEntity
 import me.mochibit.createharmonics.CreateHarmonicsMod.MOD_ID
 import me.mochibit.createharmonics.content.kinetics.recordPlayer.RecordPlayerBlockEntity
 import me.mochibit.createharmonics.content.records.EtherealRecordItem
-import me.mochibit.createharmonics.content.records.RecordType
 import me.mochibit.createharmonics.foundation.registry.ModItems
-import me.mochibit.createharmonics.foundation.registry.ModItems.webdisc
 import net.minecraft.core.BlockPos
 import net.minecraft.gametest.framework.GameTest
 import net.minecraft.gametest.framework.GameTestHelper
@@ -15,7 +13,6 @@ import net.neoforged.neoforge.gametest.GameTestHolder
 
 @GameTestHolder(MOD_ID)
 class RecordPlayerBehaviourTest {
-
     @GameTest(template = "andesite")
     fun `(andesite player) record insertion test`(helper: GameTestHelper) {
         val pos = fromOrigin(0, 1, 0)
@@ -24,7 +21,7 @@ class RecordPlayerBehaviourTest {
 
         val behaviour = blockEntity.playerBehaviour
 
-        val recordStack = ModItems webdisc RecordType.BRASS
+        val recordStack = ModItems.WEBDISC.get()
         val result = behaviour.insertRecord(ItemStack(recordStack))
 
         helper.assertTrue(result, "Record insertion should succeed")
@@ -39,7 +36,7 @@ class RecordPlayerBehaviourTest {
             ?: return helper.fail("Record Player Behaviour not found! ${helper.getBlockState(pos)}")
 
         val behaviour = blockEntity.playerBehaviour
-        val recordStack = ModItems webdisc RecordType.BRASS
+        val recordStack = ModItems.WEBDISC.get()
         behaviour.insertRecord(ItemStack(recordStack))
 
         val poppedStack = behaviour.popRecord()
@@ -47,11 +44,8 @@ class RecordPlayerBehaviourTest {
             return helper.fail("Invalid record was popped out!")
         }
 
-        val poppedItem =
-            poppedStack.item as? EtherealRecordItem ?: return helper.fail("A non record item was popped out!")
-
-        if (poppedItem.recordType != RecordType.BRASS) {
-            return helper.fail("Record type popped(${poppedStack}) is different than the one inserted(${recordStack})")
+        if (poppedStack.item !is EtherealRecordItem) {
+            return helper.fail("A non record item was popped out!")
         }
 
         helper.assertTrue(!behaviour.hasRecord(), "Should not have a record after removal")
@@ -64,7 +58,7 @@ class RecordPlayerBehaviourTest {
         val depotBe = helper.getBlockEntity(depotPosition) as? DepotBlockEntity
             ?: return helper.fail("Depot behaviour not found! ${helper.getBlockState(depotPosition)}")
 
-        val recordItem = ModItems webdisc RecordType.BRASS
+        val recordItem = ModItems.WEBDISC.get()
         depotBe.heldItem = ItemStack(recordItem)
 
         val playerPos = fromOrigin(0, 1, 0)
@@ -78,16 +72,13 @@ class RecordPlayerBehaviourTest {
         }
     }
 
-    /**
-     * While in pause mode the arm can extract the record whenever redstone power isn't there
-     */
     @GameTest(template = "andesite_arm_extract", setupTicks = 100, timeoutTicks = 600)
     fun `(andesite player) mechanical arm extraction from player, pause mode`(helper: GameTestHelper) {
         val depotPosition = fromOrigin(1, 1, 1)
         val depotBe = helper.getBlockEntity(depotPosition) as? DepotBlockEntity
             ?: return helper.fail("Depot behaviour not found! ${helper.getBlockState(depotPosition)}")
 
-        val recordItem = ModItems webdisc RecordType.BRASS
+        val recordItem = ModItems.WEBDISC.get()
         val playerPos = fromOrigin(0, 1, 0)
         val playerBe = helper.getBlockEntity(playerPos) as? RecordPlayerBlockEntity
             ?: return helper.fail("Record Player not found!")
@@ -101,13 +92,8 @@ class RecordPlayerBehaviourTest {
                 return@runAfterDelay helper.fail("Depot not received any items, arm failed to extract maybe?")
             }
 
-            val depotItem = depotHeldItem.item
-            if (depotItem !is EtherealRecordItem) {
+            if (depotHeldItem.item !is EtherealRecordItem) {
                 return@runAfterDelay helper.fail("Depot has a non ethereal record item!")
-            }
-
-            if (depotItem.recordType != RecordType.BRASS) {
-                return@runAfterDelay helper.fail("Record type ${RecordType.BRASS} is different than the one inserted into depot ${depotItem.recordType}")
             }
 
             helper.assertTrue(!playerBehaviour.hasRecord(), "Should not have a record since removed from arms!")
@@ -115,16 +101,13 @@ class RecordPlayerBehaviourTest {
         }
     }
 
-    /**
-     * While in play mode the arm can extract the record only if the song finishes
-     */
     @GameTest(template = "andesite_arm_extract", setupTicks = 100, timeoutTicks = 600)
     fun `(andesite player) mechanical arm extraction from player, play mode`(helper: GameTestHelper) {
         val depotPosition = fromOrigin(1, 1, 1)
         val depotBe = helper.getBlockEntity(depotPosition) as? DepotBlockEntity
             ?: return helper.fail("Depot behaviour not found! ${helper.getBlockState(depotPosition)}")
 
-        val recordItem = ModItems webdisc RecordType.BRASS
+        val recordItem = ModItems.WEBDISC.get()
         val playerPos = fromOrigin(0, 1, 0)
         val playerBe = helper.getBlockEntity(playerPos) as? RecordPlayerBlockEntity
             ?: return helper.fail("Record Player not found!")
@@ -138,13 +121,8 @@ class RecordPlayerBehaviourTest {
                 return@runAfterDelay helper.fail("Depot not received any items, arm failed to extract maybe?")
             }
 
-            val depotItem = depotHeldItem.item
-            if (depotItem !is EtherealRecordItem) {
+            if (depotHeldItem.item !is EtherealRecordItem) {
                 return@runAfterDelay helper.fail("Depot has a non ethereal record item!")
-            }
-
-            if (depotItem.recordType != RecordType.BRASS) {
-                return@runAfterDelay helper.fail("Record type ${RecordType.BRASS} is different than the one inserted into depot ${depotItem.recordType}")
             }
 
             helper.assertTrue(!playerBehaviour.hasRecord(), "Should not have a record since removed from arms!")

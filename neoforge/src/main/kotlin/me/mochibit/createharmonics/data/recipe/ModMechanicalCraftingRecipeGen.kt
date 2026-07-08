@@ -30,4 +30,19 @@ class ModMechanicalCraftingRecipeGen(
                 disallowMirrored()
             }
         }
+
+    val brassWebPlayerRecipe =
+        create { ModBlocks.BRASS_JUKEBOX }.returns(1).recipe { b ->
+            b.apply {
+                key('J', Ingredient.of(ModBlocks.ANDESITE_JUKEBOX.get()))
+                key('B', Ingredient.of(AllItems.BRASS_INGOT))
+                key('P', Ingredient.of(AllItems.PRECISION_MECHANISM))
+                key('E', Ingredient.of(AllItems.ELECTRON_TUBE))
+
+                patternLine(" B ")
+                patternLine("EJE")
+                patternLine(" P ")
+                disallowMirrored()
+            }
+        }
 }

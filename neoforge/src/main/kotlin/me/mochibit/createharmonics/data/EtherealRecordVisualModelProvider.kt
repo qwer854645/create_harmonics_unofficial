@@ -1,32 +1,19 @@
 package me.mochibit.createharmonics.data
 
 import me.mochibit.createharmonics.CreateHarmonicsMod.MOD_ID
-import me.mochibit.createharmonics.content.records.RecordType
 import net.minecraft.data.PackOutput
 import net.neoforged.neoforge.client.model.generators.BlockModelProvider
 import net.neoforged.neoforge.common.data.ExistingFileHelper
 
-/**
- * Data generator for ethereal record visual block models.
- * Generates model files for each RecordType variant with proper texture references.
- */
 class EtherealRecordVisualModelProvider(
     output: PackOutput,
     existingFileHelper: ExistingFileHelper,
 ) : BlockModelProvider(output, MOD_ID, existingFileHelper) {
     override fun registerModels() {
-        // Iterate through all RecordType values and generate models
-        RecordType.entries.forEach { recordType ->
-            val modelName = recordType.name.lowercase()
-            generateRecordVisualModel(modelName)
-        }
+        generateRecordVisualModel("webdisc")
     }
 
-    /**
-     * Generates a single model file for a given record type
-     */
     private fun generateRecordVisualModel(modelName: String) {
-        // Create a model with parent pointing to visual.json
         withExistingParent(
             "block/webdisc_visual/$modelName",
             modLoc("block/webdisc_visual/visual"),

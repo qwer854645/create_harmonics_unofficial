@@ -30,7 +30,7 @@ abstract class PlatformEventBridge<PE : Any> {
                 error(
                     "Unregistered proxy events!\n" +
                         missing.map { it.qualifiedName } +
-                        "\nhttps://github.com/bitmochibit/createharmonics/issues",
+                        "\nhttps://github.com/qwer854645/create_webdisc/issues",
                 )
             }
         }

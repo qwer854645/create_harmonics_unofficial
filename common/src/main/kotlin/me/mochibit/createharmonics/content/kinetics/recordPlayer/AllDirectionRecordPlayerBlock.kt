@@ -53,7 +53,8 @@ abstract class AllDirectionRecordPlayerBlock(
         pPlayer: Player,
         pHand: InteractionHand,
         pHit: BlockHitResult,
-    ): ItemInteractionResult = handleRecordUse(pState, pLevel, pPos, pPlayer, pHand, pHit, pState.getValue(FACING))
+    ): ItemInteractionResult =
+        handleRecordUse(pState, pLevel, pPos, pPlayer, pHand, pHit, pState.getValue(FACING))
 
     override fun hasShaftTowards(
         world: LevelReader?,

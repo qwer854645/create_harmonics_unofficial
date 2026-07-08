@@ -5,7 +5,6 @@ import com.google.gson.JsonElement
 import com.tterrag.registrate.providers.ProviderType
 import me.mochibit.createharmonics.CreateHarmonicsMod.MOD_ID
 import me.mochibit.createharmonics.ModRegistrate
-import me.mochibit.createharmonics.content.records.RecordType
 import me.mochibit.createharmonics.data.recipe.ModRecipeProvider
 import me.mochibit.createharmonics.foundation.err
 import me.mochibit.createharmonics.foundation.info
@@ -46,8 +45,6 @@ object DataGenerators {
                 provider.add(key, value)
             }
 
-            RecordType.EffectAttribute.provideLang(langConsumer)
-
             provideDefaultLang(langConsumer)
 
             providePonderLang(langConsumer)
@@ -68,7 +65,6 @@ object DataGenerators {
     }
 
     private fun providePonderLang(consumer: (String, String) -> Unit) {
-        // Register this since FMLClientSetupEvent does not run during datagen
         PonderIndex.addPlugin(ModPonderPlugin())
 
         PonderIndex.getLangAccess().provideLang(MOD_ID, consumer)

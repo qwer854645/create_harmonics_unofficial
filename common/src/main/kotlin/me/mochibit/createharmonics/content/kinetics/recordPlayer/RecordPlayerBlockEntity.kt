@@ -40,9 +40,13 @@ abstract class RecordPlayerBlockEntity(
         fun handleAudioTitleChange(
             playerId: String,
             newTitle: String,
+            durationSeconds: Int = -1,
         ) {
             val blockEntity = RecordPlayerBehaviour.getBlockEntityByPlayerUUID(playerId)
             blockEntity?.playerBehaviour?.onAudioTitleUpdate(newTitle)
+            if (durationSeconds > 0) {
+                blockEntity?.playerBehaviour?.onDurationUpdate(durationSeconds)
+            }
         }
     }
 
@@ -112,7 +116,8 @@ abstract class RecordPlayerBlockEntity(
                 this,
                 RecordPlayerValueBoxTransform { blockState, direction ->
                     val axis: Direction.Axis = direction.axis
-                    val beAxis: Direction.Axis = (blockState.block as? KineticBlock)?.getRotationAxis(blockState) ?: direction.axis
+                    val beAxis: Direction.Axis =
+                        (blockState.block as? KineticBlock)?.getRotationAxis(blockState) ?: direction.axis
                     beAxis !== axis
                 },
             )

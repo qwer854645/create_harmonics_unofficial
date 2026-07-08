@@ -8,10 +8,11 @@ import me.mochibit.createharmonics.foundation.services.contentService
 class UpdateAudioNamePacket(
     val audioPlayerId: String,
     val audioName: String,
+    val durationSeconds: Int = -1,
 ) : ModPacket,
     C2SPacket {
     override fun handle(context: ModPacket.Context): Boolean {
-        RecordPlayerBlockEntity.handleAudioTitleChange(audioPlayerId, audioName)
+        RecordPlayerBlockEntity.handleAudioTitleChange(audioPlayerId, audioName, durationSeconds)
         return true
     }
 }

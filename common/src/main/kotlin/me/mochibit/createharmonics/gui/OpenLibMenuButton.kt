@@ -1,7 +1,6 @@
 package me.mochibit.createharmonics.gui
 
 import me.mochibit.createharmonics.config.ModConfigs
-import me.mochibit.createharmonics.content.records.RecordType
 import me.mochibit.createharmonics.foundation.eventbus.ClientEvents
 import me.mochibit.createharmonics.foundation.eventbus.EventBus
 import me.mochibit.createharmonics.foundation.registry.ModItems
@@ -39,7 +38,7 @@ class OpenLibMenuButton(
         pFont: Font,
         pColor: Int,
     ) {
-        val icon = ModItems.getWebdiscItem(RecordType.BRASS).asStack()
+        val icon = ModItems.WEBDISC.asStack()
         val bakedModel =
             Minecraft
                 .getInstance()

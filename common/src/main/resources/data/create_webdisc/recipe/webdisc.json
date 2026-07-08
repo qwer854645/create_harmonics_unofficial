@@ -13,7 +13,7 @@
     "Q": { "item": "create:polished_rose_quartz" }
   },
   "result": {
-    "id": "create_webdisc:webdisc_blank",
+    "id": "create_webdisc:webdisc",
     "count": 1
   }
 }

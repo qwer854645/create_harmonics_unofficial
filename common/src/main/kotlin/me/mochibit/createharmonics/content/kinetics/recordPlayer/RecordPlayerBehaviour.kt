@@ -1,12 +1,7 @@
 package me.mochibit.createharmonics.content.kinetics.recordPlayer
 
-import com.simibubi.create.content.kinetics.belt.behaviour.DirectBeltInputBehaviour
-import com.simibubi.create.content.logistics.chute.AbstractChuteBlock
-import com.simibubi.create.content.logistics.funnel.AbstractFunnelBlock
-import com.simibubi.create.content.logistics.funnel.FunnelBlock
 import com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
-import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringBehaviour
 import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld
 import me.mochibit.createharmonics.audio.AudioPlayerManager
 import me.mochibit.createharmonics.audio.effect.AudioEffect
@@ -21,9 +16,7 @@ import me.mochibit.createharmonics.audio.player.updateClock
 import me.mochibit.createharmonics.config.ModConfigs
 import me.mochibit.createharmonics.config.ServerConfig
 import me.mochibit.createharmonics.content.kinetics.recordPlayer.RecordPlayerItemHandler.Companion.MAIN_RECORD_SLOT
-import me.mochibit.createharmonics.content.kinetics.recordPlayer.RecordPlayerItemHandler.Companion.RECORD_OUTPUT_SLOT
 import me.mochibit.createharmonics.content.records.EtherealRecordItem
-import me.mochibit.createharmonics.content.records.RecordUtilities
 import me.mochibit.createharmonics.content.records.RecordUtilities.playFromRecord
 import me.mochibit.createharmonics.foundation.async.every
 import me.mochibit.createharmonics.foundation.extension.onClient
@@ -36,18 +29,13 @@ import net.createmod.catnip.nbt.NBTHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.core.Direction
 import net.minecraft.core.HolderLookup
-import net.minecraft.core.particles.ItemParticleOption
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.core.particles.ShriekParticleOption
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
-import net.minecraft.sounds.SoundSource
 import net.minecraft.util.RandomSource
 import net.minecraft.world.Containers
 import net.minecraft.world.SimpleContainer
-import net.minecraft.world.entity.item.ItemEntity
-import net.minecraft.world.item.AirItem
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import net.minecraft.world.phys.Vec3
@@ -214,9 +202,14 @@ class RecordPlayerBehaviour(
     // Flag to request restart on next tick (for redstone looping)
     private var shouldRestartOnNextTick = false
 
+    private var pendingSeekPosition: Double? = null
+    private var pendingSeekRestart: Boolean = false
+
+    var cachedDurationSeconds: Int? = null
+        private set
+
     val itemHandler = RecordPlayerItemHandler(this)
 
-    private var pendingRecordUse = false
     private var ticksSinceLastClockSave = 0
 
     private val audioPlayer: AudioPlayer?
@@ -349,17 +342,6 @@ class RecordPlayerBehaviour(
             }
             ensureTracking()
 
-            val outputStack = itemHandler.getStackInSlot(RECORD_OUTPUT_SLOT)
-            if (!outputStack.isEmpty) {
-                tryEjectOutputSlot(outputStack, serverLevel)
-            }
-
-            if (pendingRecordUse) {
-                pendingRecordUse = false
-                if (hasRecord()) {
-                    handleRecordUse()
-                }
-            }
             val currentSpeed = abs(be.speed)
             val hasDisc = hasRecord()
             val isPowered = redstonePower > 0
@@ -372,7 +354,6 @@ class RecordPlayerBehaviour(
                     // Start playing from the beginning
                     updatePlaybackState(PlaybackState.PLAYING, setCurrentTime = true)
                     audioPlayCount += 1
-                    pendingRecordUse = true
                 }
                 return@onServer
             }
@@ -414,7 +395,6 @@ class RecordPlayerBehaviour(
                             if (playbackState != PlaybackState.PLAYING) {
                                 updatePlaybackState(PlaybackState.PLAYING, setCurrentTime = true)
                                 audioPlayCount += 1
-                                pendingRecordUse = true
                             }
                         } else {
                             currentlyLooping = false
@@ -425,7 +405,6 @@ class RecordPlayerBehaviour(
                                     if (!playbackEndedNaturally) {
                                         updatePlaybackState(PlaybackState.PLAYING, setCurrentTime = true)
                                         audioPlayCount += 1
-                                        pendingRecordUse = true
                                     }
                                 }
 
@@ -460,7 +439,6 @@ class RecordPlayerBehaviour(
                                 updatePlaybackState(PlaybackState.PLAYING, setCurrentTime = shouldResetTime)
                                 if (shouldResetTime) {
                                     audioPlayCount += 1
-                                    pendingRecordUse = true
                                 }
                             }
                         } else {
@@ -486,92 +464,6 @@ class RecordPlayerBehaviour(
         }
     }
 
-    fun handleRecordUse() {
-        be.level?.onServer { level ->
-            val record = getRecord()
-            val result = RecordUtilities.handleRecordUse(record, level)
-
-            when {
-                result.shouldReplace -> {
-                    result.replacementStack?.let { setRecord(it) }
-                }
-
-                result.isBroken -> {
-                    setRecord(ItemStack.EMPTY)
-                    val itemStack = (result as RecordUtilities.RecordUseResult.Broken).dropStack.copy()
-
-                    val facing = be.blockState.getValue(BlockStateProperties.FACING)
-                    val dropPos =
-                        Vec3.atCenterOf(be.blockPos).add(
-                            facing.stepX * 0.7,
-                            facing.stepY * 0.7,
-                            facing.stepZ * 0.7,
-                        )
-
-                    level.playSound(null, be.blockPos, SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, .7f, 1.7f)
-                    level.playSound(null, be.blockPos, SoundEvents.SMALL_AMETHYST_BUD_BREAK, SoundSource.PLAYERS)
-                    level.sendParticles(
-                        ItemParticleOption(ParticleTypes.ITEM, itemStack),
-                        dropPos.x,
-                        dropPos.y,
-                        dropPos.z,
-                        16,
-                        0.15,
-                        0.15,
-                        0.15,
-                        0.08,
-                    )
-
-                    itemHandler.setStackInSlot(RECORD_OUTPUT_SLOT, itemStack)
-                    be.notifyUpdate()
-                }
-            }
-        }
-    }
-
-    private fun tryEjectOutputSlot(
-        stack: ItemStack,
-        level: ServerLevel,
-    ) {
-        val facing = be.blockState.getValue(BlockStateProperties.FACING)
-
-        val funnelResult =
-            this.be
-                .getBehaviour(DirectBeltInputBehaviour.TYPE)
-                ?.tryExportingToBeltFunnel(stack, facing.opposite, false)
-        if (funnelResult != null && funnelResult.count != stack.count) {
-            itemHandler.setStackInSlot(RECORD_OUTPUT_SLOT, funnelResult)
-            be.notifyUpdate()
-            return
-        }
-
-        for (direction in Direction.entries) {
-            if (direction == Direction.UP) continue
-
-            val neighbourPos = be.blockPos.relative(direction)
-            val behaviour = get(level, neighbourPos, DirectBeltInputBehaviour.TYPE) ?: continue
-            if (!behaviour.canInsertFromSide(direction)) continue
-            val remainder = behaviour.handleInsertion(stack, direction, false)
-            if (!ItemStack.matches(remainder, stack)) {
-                itemHandler.setStackInSlot(RECORD_OUTPUT_SLOT, remainder)
-                be.notifyUpdate()
-                return
-            }
-        }
-
-        val dropPos =
-            Vec3.atCenterOf(be.blockPos).add(
-                facing.stepX * 0.7,
-                facing.stepY * 0.7,
-                facing.stepZ * 0.7,
-            )
-        itemHandler.setStackInSlot(RECORD_OUTPUT_SLOT, ItemStack.EMPTY)
-        val itemEntity = ItemEntity(level, dropPos.x, dropPos.y, dropPos.z, stack)
-        itemEntity.setDeltaMovement(facing.stepX * 0.2, 0.2, facing.stepZ * 0.2)
-        level.addFreshEntity(itemEntity)
-        be.notifyUpdate()
-    }
-
     fun redstonePowerChanged(power: Int) {
         redstonePower = power
         be.notifyUpdate()
@@ -583,7 +475,6 @@ class RecordPlayerBehaviour(
         if (hasRecord()) return false
         val item = discItem.item
         if (item !is EtherealRecordItem) return false
-        if (item.isRecordBroken()) return false
         itemHandler.setStackInSlot(MAIN_RECORD_SLOT, discItem.copy())
         playbackEndedNaturally = false
         return true
@@ -625,7 +516,6 @@ class RecordPlayerBehaviour(
             else -> {
                 updatePlaybackState(PlaybackState.PLAYING, setCurrentTime = true)
                 audioPlayCount += 1
-                pendingRecordUse = true
             }
         }
     }
@@ -636,6 +526,65 @@ class RecordPlayerBehaviour(
 
     fun pausePlayer() {
         updatePlaybackState(PlaybackState.PAUSED, resetTime = false)
+    }
+
+    fun seekTo(positionSeconds: Double) {
+        if (!hasRecord()) return
+
+        val clamped = positionSeconds.coerceAtLeast(0.0)
+        val wasPlaying = playtimeClock.isPlaying
+        pendingSeekPosition = clamped
+        pendingSeekRestart = false
+        playtimeClock.play(clamped)
+        if (!wasPlaying) {
+            playtimeClock.pause()
+        }
+        be.notifyUpdate()
+        be.sendData()
+        be.setChanged()
+    }
+
+    fun restartFromBeginning() {
+        if (!hasRecord()) return
+
+        pendingSeekPosition = 0.0
+        pendingSeekRestart = true
+        playtimeClock.play(0.0)
+
+        when (playbackState) {
+            PlaybackState.PLAYING -> {
+                be.notifyUpdate()
+                be.sendData()
+            }
+
+            PlaybackState.PAUSED -> {
+                if (abs(be.speed) > 0f) {
+                    updatePlaybackState(PlaybackState.PLAYING, setCurrentTime = true)
+                } else {
+                    playtimeClock.pause()
+                    be.notifyUpdate()
+                    be.sendData()
+                }
+            }
+
+            PlaybackState.STOPPED -> {
+                if (abs(be.speed) > 0f) {
+                    updatePlaybackState(PlaybackState.PLAYING, setCurrentTime = true)
+                    audioPlayCount += 1
+                } else {
+                    playtimeClock.pause()
+                    be.notifyUpdate()
+                    be.sendData()
+                }
+            }
+        }
+        be.setChanged()
+    }
+
+    fun onDurationUpdate(seconds: Int) {
+        if (seconds <= 0) return
+        cachedDurationSeconds = seconds
+        be.notifyUpdate()
     }
 
     private fun updatePlaybackState(
@@ -783,6 +732,19 @@ class RecordPlayerBehaviour(
         audioPlayingTitle?.let {
             compound.putString("AudioPlayingTitle", it)
         }
+        cachedDurationSeconds?.let {
+            compound.putInt("CachedDurationSeconds", it)
+        }
+        pendingSeekPosition?.let {
+            compound.putDouble("PendingSeek", it)
+            if (pendingSeekRestart) {
+                compound.putBoolean("PendingSeekRestart", true)
+            }
+            if (clientPacket) {
+                pendingSeekPosition = null
+                pendingSeekRestart = false
+            }
+        }
     }
 
     override fun read(
@@ -815,6 +777,52 @@ class RecordPlayerBehaviour(
 
         if (compound.contains("AudioPlayingTitle")) {
             audioPlayingTitle = compound.getString("AudioPlayingTitle")
+        }
+
+        if (compound.contains("CachedDurationSeconds")) {
+            cachedDurationSeconds = compound.getInt("CachedDurationSeconds")
+        }
+
+        if (compound.contains("PendingSeek")) {
+            val seekPosition = compound.getDouble("PendingSeek")
+            val forceRestart = compound.getBoolean("PendingSeekRestart")
+            pendingSeekPosition = null
+            pendingSeekRestart = false
+            val resumePlayback = playtimeClock.isPlaying
+            playtimeClock.play(seekPosition)
+            if (!resumePlayback) {
+                playtimeClock.pause()
+            }
+            be.level?.onClient { _, _ ->
+                val record = getRecord()
+                if (record.isEmpty || record.item !is EtherealRecordItem) return@onClient
+
+                val player = audioPlayer
+                when {
+                    forceRestart -> {
+                        player?.stop()
+                        startClientPlayer(record, seekPosition)
+                    }
+
+                    player != null -> {
+                        when (player.state.value) {
+                            PlayerState.PLAYING,
+                            PlayerState.PAUSED,
+                            -> player.seek(seekPosition)
+
+                            else -> {
+                                if (playbackState == PlaybackState.PLAYING || playbackState == PlaybackState.PAUSED) {
+                                    startClientPlayer(record, seekPosition)
+                                }
+                            }
+                        }
+                    }
+
+                    playbackState == PlaybackState.PLAYING || playbackState == PlaybackState.PAUSED -> {
+                        startClientPlayer(record, seekPosition)
+                    }
+                }
+            }
         }
 
         if (compound.contains("PlaybackState")) {

@@ -1,6 +1,5 @@
 package me.mochibit.createharmonics.content.kinetics.recordPlayer
 
-import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock.FACING
 import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock
 import com.simibubi.create.content.logistics.packagerLink.PackagerLinkBlock
 import com.simibubi.create.foundation.block.IBE

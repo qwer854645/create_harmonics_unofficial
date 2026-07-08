@@ -2,10 +2,8 @@ package me.mochibit.createharmonics.foundation.registry
 
 import com.tterrag.registrate.util.entry.RegistryEntry
 import me.mochibit.createharmonics.ModRegistrate
-import me.mochibit.createharmonics.content.records.RecordType
 import me.mochibit.createharmonics.foundation.info
 import me.mochibit.createharmonics.foundation.locale.ModLang
-import me.mochibit.createharmonics.foundation.registry.ModItems.webdisc
 import net.createmod.catnip.platform.CatnipServices
 import net.minecraft.client.Minecraft
 import net.minecraft.core.Registry
@@ -24,7 +22,7 @@ object ModCreativeTabs : CommonRegistry {
             CreativeModeTab
                 .builder()
                 .title(ModLang.translate("item_group").component())
-                .icon { ItemStack(ModItems.webdisc(RecordType.BRASS)) }
+                .icon { ItemStack(ModItems.WEBDISC.get()) }
                 .displayItems(DisplayItemsGenerator())
                 .build(),
         )
@@ -106,56 +104,24 @@ object ModCreativeTabs : CommonRegistry {
 
     private fun makeExclusionPredicate(): Predicate<Item> {
         val exclusions = mutableSetOf<Item>()
-
-        // exclusions += ModItems.SOME_INTERNAL_ITEM.asItem()
-
         return Predicate { it in exclusions }
     }
 
-    private fun makeOrderings(): List<ItemOrdering> {
-        val orderings = mutableListOf<ItemOrdering>()
-
-        // orderings += ItemOrdering.before(ModItems.NEEDLE.asItem(), ModBlocks.RECORD_PLAYER.asItem())
-
-        return orderings
-    }
+    private fun makeOrderings(): List<ItemOrdering> = emptyList()
 
     private fun makeStackFunc(): (Item) -> ItemStack {
-        val factories = mutableMapOf<Item, (Item) -> ItemStack>()
-
-        // Example — pre-set a record property:
-        // factories[ModItems.EtherealRecord ... ] = { item ->
-        //     ItemStack(item).also { it.set(...) }
-        // }
-
-        ModItems.WEBDISCS.forEach { (_, entry) ->
-            factories[entry.get()] = { item ->
-                item.defaultInstance
-            }
-        }
-
-        ModItems.BROKEN_WEBDISCS.forEach { (_, entry) ->
-            factories[entry.get()] = { item ->
-                item.defaultInstance
-            }
-        }
-
-        return { item -> factories[item]?.invoke(item) ?: ItemStack(item) }
-    }
-
-    private fun makeVisibilityFunc(): (Item) -> CreativeModeTab.TabVisibility {
-        val visibilities = mutableMapOf<Item, CreativeModeTab.TabVisibility>()
-
-        // Example — hide colour variants beyond the default from the main tab:
-        // ModBlocks.DYED_SPEAKERS.forEach { entry ->
-        //     if (entry.get().color != DyeColor.WHITE)
-        //         visibilities[entry.asItem()] = CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY
-        // }
-
+        val webdisc = ModItems.WEBDISC.get()
         return { item ->
-            visibilities[item] ?: CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS
+            if (item == webdisc) {
+                item.defaultInstance
+            } else {
+                ItemStack(item)
+            }
         }
     }
+
+    private fun makeVisibilityFunc(): (Item) -> CreativeModeTab.TabVisibility =
+        { CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS }
 
     private val IS_ITEM_3D: Predicate<Item> by lazy {
         if (CatnipServices.PLATFORM.env.isClient) {

@@ -36,13 +36,7 @@ VINYL = (32, 34, 40)
 VINYL_GROOVE = (48, 50, 58)
 
 RECORD_COLORS = {
-    "stone": ((120, 120, 120), (90, 90, 90)),
-    "gold": ((255, 210, 70), (180, 130, 20)),
-    "diamond": ((120, 220, 255), (40, 160, 210)),
-    "emerald": ((80, 220, 120), (20, 140, 60)),
-    "brass": ((210, 170, 90), (150, 110, 50)),
-    "netherite": ((70, 68, 72), (35, 32, 38)),
-    "creative": ((255, 90, 220), (120, 40, 180)),
+    "webdisc": ((120, 220, 255), (40, 160, 210)),
 }
 
 
@@ -291,23 +285,11 @@ def generate_logo() -> None:
 
 
 def generate_textures() -> None:
-    save_png(TEXTURES / "block/andesite_web_player/particle.png", make_particle(ANDESITE))
-    save_png(TEXTURES / "item/webdisc_blank/base.png", make_record_base_texture())
+    # Hand-drawn assets (do not overwrite):
+    # block/andesite_web_player/*, item/webdisc_blank/base.png, block/webdisc_visual/webdisc.png
     save_png(TEXTURES / "gui/icons.png", make_icons_texture())
     save_png(TEXTURES / "gui/logo_small.png", make_logo_texture())
     save_png(TEXTURES / "gui/record_press_base.png", make_record_press_gui())
-
-    for name, (label, rim) in RECORD_COLORS.items():
-        item = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
-        block = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
-        draw_vinyl(item, label, rim, broken=False)
-        draw_vinyl(block, label, rim, broken=False)
-        save_png(TEXTURES / f"item/webdisc/{name}.png", item)
-        save_png(TEXTURES / f"block/webdisc_visual/{name}.png", block)
-
-        broken = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
-        draw_vinyl(broken, label, rim, broken=True)
-        save_png(TEXTURES / f"item/webdisc/{name}_broken.png", broken)
 
 
 def write_wav(path: Path, samples, sample_rate: int = 44100) -> None:

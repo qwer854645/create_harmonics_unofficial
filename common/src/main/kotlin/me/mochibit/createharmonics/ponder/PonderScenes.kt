@@ -10,7 +10,6 @@ import com.simibubi.create.foundation.ponder.CreateSceneBuilder
 import me.mochibit.createharmonics.audio.effect.EffectPreset
 import me.mochibit.createharmonics.content.kinetics.recordPlayer.andesiteJukebox.AndesiteJukeboxBlockEntity
 import me.mochibit.createharmonics.content.processing.recordPressBase.RecordPressBaseBlockEntity
-import me.mochibit.createharmonics.content.records.RecordType
 import me.mochibit.createharmonics.foundation.registry.ModItems
 import net.createmod.catnip.math.Pointing
 import net.createmod.ponder.api.PonderPalette
@@ -59,7 +58,7 @@ object PonderScenes {
         scene.idle(70)
 
         scene.addKeyframe()
-        val fallingItem = ItemStack(ModItems.getWebdiscItem(RecordType.EMERALD).get())
+        val fallingItem = ItemStack(ModItems.WEBDISC.get())
         val fallingItemLink =
             scene.world().createItemEntity(util.vector().centerOf(4, 4, 4), util.vector().of(.0, -0.1, .0), fallingItem)
         scene.idle(9)
@@ -128,7 +127,7 @@ object PonderScenes {
                 .getPressingBehaviour()
                 .makePressingParticleEffect(
                     util.vector().centerOf(pressBase).add(0.0, (8 / 16f).toDouble(), 0.0),
-                    ItemStack(ModItems.getWebdiscItem(RecordType.GOLD).get()),
+                    ItemStack(ModItems.WEBDISC.get()),
                 )
         }
         scene
@@ -174,16 +173,16 @@ object PonderScenes {
 
         // Record insertion feature
         scene.addKeyframe()
-        val brassRecord = ItemStack(ModItems.getWebdiscItem(RecordType.BRASS).get())
+        val webdisc = ItemStack(ModItems.WEBDISC.get())
         scene
             .overlay()
             .showControls(topOfPlayer, Pointing.DOWN, 20)
             .rightClick()
-            .withItem(brassRecord)
+            .withItem(webdisc)
         scene.idle(7)
 
         scene.world().modifyBlockEntity(recordPlayer, AndesiteJukeboxBlockEntity::class.java) { be ->
-            be.playerBehaviour.insertRecord(brassRecord)
+            be.playerBehaviour.insertRecord(webdisc)
         }
 
         scene.idle(10)
@@ -194,37 +193,6 @@ object PonderScenes {
             .placeNearTarget()
             .pointAt(topOfPlayer)
         scene.idle(50)
-
-        scene
-            .overlay()
-            .showText(70)
-            .text("Each Webdisc has some intrinsic audio effects")
-            .placeNearTarget()
-        scene.idle(70)
-
-        scene
-            .overlay()
-            .showControls(topOfPlayer, Pointing.DOWN, 20)
-            .whileSneaking()
-            .rightClick()
-        scene.idle(7)
-        scene.world().modifyBlockEntity(recordPlayer, AndesiteJukeboxBlockEntity::class.java) { be ->
-            be.playerBehaviour.popRecord()
-        }
-        scene.effects().indicateSuccess(recordPlayer)
-        scene.idle(20)
-
-        val diamondRecord = ItemStack(ModItems.getWebdiscItem(RecordType.DIAMOND).get())
-        scene
-            .overlay()
-            .showControls(topOfPlayer, Pointing.DOWN, 20)
-            .rightClick()
-            .withItem(diamondRecord)
-        scene.idle(7)
-
-        scene.world().modifyBlockEntity(recordPlayer, AndesiteJukeboxBlockEntity::class.java) { be ->
-            be.playerBehaviour.insertRecord(diamondRecord)
-        }
 
         // Pitch change feature
         scene.addKeyframe()
@@ -474,11 +442,11 @@ object PonderScenes {
         scene.world().modifyBlockEntity(recordPlayer, AndesiteJukeboxBlockEntity::class.java) { be ->
             be.playerBehaviour.popRecord()
         }
-        scene.world().instructArm(extractingArm, ArmBlockEntity.Phase.SEARCH_OUTPUTS, diamondRecord, -1)
+        scene.world().instructArm(extractingArm, ArmBlockEntity.Phase.SEARCH_OUTPUTS, webdisc, -1)
         scene.idle(30)
-        scene.world().instructArm(extractingArm, ArmBlockEntity.Phase.MOVE_TO_OUTPUT, diamondRecord, 0)
+        scene.world().instructArm(extractingArm, ArmBlockEntity.Phase.MOVE_TO_OUTPUT, webdisc, 0)
         scene.idle(24)
-        scene.world().createItemOnBeltLike(depot, Direction.UP, diamondRecord)
+        scene.world().createItemOnBeltLike(depot, Direction.UP, webdisc)
         scene.world().instructArm(extractingArm, ArmBlockEntity.Phase.SEARCH_INPUTS, ItemStack.EMPTY, -1)
         scene
             .overlay()
@@ -501,12 +469,12 @@ object PonderScenes {
         scene.world().instructArm(insertingArm, ArmBlockEntity.Phase.MOVE_TO_INPUT, ItemStack.EMPTY, 0)
         scene.idle(24)
         scene.world().removeItemsFromBelt(depot)
-        scene.world().instructArm(insertingArm, ArmBlockEntity.Phase.SEARCH_OUTPUTS, diamondRecord, -1)
+        scene.world().instructArm(insertingArm, ArmBlockEntity.Phase.SEARCH_OUTPUTS, webdisc, -1)
         scene.idle(5)
-        scene.world().instructArm(insertingArm, ArmBlockEntity.Phase.MOVE_TO_OUTPUT, diamondRecord, 0)
+        scene.world().instructArm(insertingArm, ArmBlockEntity.Phase.MOVE_TO_OUTPUT, webdisc, 0)
         scene.idle(24)
         scene.world().modifyBlockEntity(recordPlayer, AndesiteJukeboxBlockEntity::class.java) { be ->
-            be.playerBehaviour.insertRecord(diamondRecord)
+            be.playerBehaviour.insertRecord(webdisc)
         }
         scene.world().instructArm(insertingArm, ArmBlockEntity.Phase.SEARCH_INPUTS, ItemStack.EMPTY, -1)
         scene.idle(5)

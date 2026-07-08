@@ -6,24 +6,14 @@ import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.network.chat.CommonComponents
 import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.Style
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TooltipFlag
 
 class EtherealRecordItem(
-    val recordType: RecordType,
     props: Properties,
-    private val brokenVariant: Boolean = false,
-) : Item(
-        props.apply {
-            if (brokenVariant == false) {
-                this.durability(1)
-            }
-        },
-    ) {
+) : Item(props) {
     companion object {
         val JUKEBOX_DISCS: List<Item> by lazy {
             BuiltInRegistries.ITEM
@@ -34,10 +24,6 @@ class EtherealRecordItem(
                 }.toList()
         }
     }
-
-    fun isRecordBroken(): Boolean = brokenVariant
-
-    override fun isDamageable(stack: ItemStack): Boolean = recordType.uses > 0 && !isRecordBroken()
 
     override fun getDefaultInstance(): ItemStack {
         val default = super.getDefaultInstance()
@@ -71,31 +57,6 @@ class EtherealRecordItem(
             )
         }
 
-        val effectAttributes = this.recordType.properties.effectAttributes
-        if (effectAttributes.isNotEmpty()) {
-            tooltipComponents.add(Component.empty())
-            tooltipComponents.add(
-                Component
-                    .translatable("create_webdisc.tooltips.item.webdisc.qualities")
-                    .withStyle(ChatFormatting.GRAY),
-            )
-            val attributeComponent =
-                effectAttributes
-                    .sortedByDescending { it.qualityIndicator }
-                    .map {
-                        Component
-                            .empty()
-                            .withStyle(Style.EMPTY)
-                            .append(it.translatedComponent())
-                    }.reduceOrNull { acc, c ->
-                        acc
-                            .append(
-                                Component.literal(", ").setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE)),
-                            ).append(c)
-                    }
-                    ?: Component.empty()
-            tooltipComponents.add(CommonComponents.space().plainCopy().append(attributeComponent))
-        }
         super.appendHoverText(stack, context, tooltipComponents, isAdvanced)
     }
 }

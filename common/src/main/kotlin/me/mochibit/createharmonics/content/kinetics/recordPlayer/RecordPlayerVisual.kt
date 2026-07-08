@@ -12,9 +12,8 @@ import dev.engine_room.flywheel.lib.model.Models
 import dev.engine_room.flywheel.lib.model.baked.PartialModel
 import dev.engine_room.flywheel.lib.visual.SimpleDynamicVisual
 import dev.engine_room.flywheel.lib.visual.SimpleTickableVisual
-import me.mochibit.createharmonics.content.records.EtherealRecordItem
-import me.mochibit.createharmonics.content.records.RecordType
-import me.mochibit.createharmonics.extension.getFacingDirection
+import me.mochibit.createharmonics.extension.getRecordSlotDirection
+import me.mochibit.createharmonics.extension.getShaftFacing
 import me.mochibit.createharmonics.foundation.extension.lerpTo
 import me.mochibit.createharmonics.foundation.registry.ModPartialModels
 import net.createmod.catnip.math.AngleHelper
@@ -30,12 +29,12 @@ class RecordPlayerVisual(
         blockEntity,
         partialTick,
         Direction.SOUTH,
-        blockEntity.blockState.getFacingDirection().opposite,
+        blockEntity.blockState.getShaftFacing(),
         Models.partial(AllPartialModels.SHAFT_HALF),
     ),
     SimpleTickableVisual,
     SimpleDynamicVisual {
-    private val discFacing = blockState.getFacingDirection()
+    private val discFacing = blockState.getRecordSlotDirection()
 
     private var rotation = 0.0
     private var previousRotation = 0.0
@@ -46,8 +45,7 @@ class RecordPlayerVisual(
     private var targetSpeed = 0.0f
     private val decelerationFactor = 0.05f // Slower deceleration for gradual stop
 
-    private var currentModel: PartialModel =
-        ModPartialModels.getRecordModel(blockEntity.playerBehaviour.getRecordItem()?.recordType ?: RecordType.BRASS)
+    private var currentModel: PartialModel = ModPartialModels.getRecordModel()
 
     private val disc: TransformedInstance =
         instancerProvider()
@@ -82,14 +80,6 @@ class RecordPlayerVisual(
 
     override fun tick(context: TickableVisual.Context) {
         if (blockEntity.playerBehaviour.hasRecord()) {
-            val recordType = (blockEntity.playerBehaviour.getRecord().item as EtherealRecordItem).recordType
-            val newModel = ModPartialModels.getRecordModel(recordType)
-            if (newModel != currentModel) {
-                currentModel = newModel
-                instancerProvider()
-                    .instancer(InstanceTypes.TRANSFORMED, Models.partial(currentModel))
-                    .stealInstance(disc)
-            }
             disc.setVisible(true)
         } else {
             disc.setVisible(false)

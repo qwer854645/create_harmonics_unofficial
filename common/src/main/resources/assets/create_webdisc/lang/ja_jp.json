@@ -92,13 +92,5 @@
   "create_webdisc.record_player.playback_mode.pause": "一時停止",
   "create_webdisc.record_player.playback_mode.pause_static_pitch": "一時停止（音程固定）",
   "create_webdisc.record_player.playback_mode.play": "再生",
-  "create_webdisc.record_player.playback_mode.play_static_pitch": "再生（音程固定）",
-  "item.create_webdisc.brass_webdisc": "真鍮の天上のレコード",
-  "item.create_webdisc.creative_webdisc": "クリエイティブ天上のレコード",
-  "item.create_webdisc.diamond_webdisc": "ダイヤモンドの天上のレコード",
-  "item.create_webdisc.emerald_webdisc": "エメラルドの天上のレコード",
-  "item.create_webdisc.webdisc_blank": "天上のレコードの型",
-  "item.create_webdisc.gold_webdisc": "金の天上のレコード",
-  "item.create_webdisc.netherite_webdisc": "ネザライトの天上のレコード",
-  "item.create_webdisc.stone_webdisc": "石の天上のレコード"
+  "create_webdisc.record_player.playback_mode.play_static_pitch": "再生（音程固定）"
 }

@@ -122,19 +122,5 @@
   "create_webdisc.tooltips.item.webdisc.effect_attribute.rustic": "Rustico",
   "create_webdisc.tooltips.item.webdisc.effect_attribute.shiny": "Brillante",
   "create_webdisc.tooltips.item.webdisc.qualities": "Qualità:",
-  "create_webdisc.tooltips.item.webdisc.url_bound": "Sorgente eterea assegnata",
-  "item.create_webdisc.brass_webdisc": "Disco Etereo di Ottone",
-  "item.create_webdisc.broken_brass_webdisc": "Disco Etereo rotto di Ottone",
-  "item.create_webdisc.broken_diamond_webdisc": "Disco Etereo rotto di Diamante ",
-  "item.create_webdisc.broken_emerald_webdisc": "Disco Etereo rotto di Smeraldo",
-  "item.create_webdisc.broken_gold_webdisc": "Disco Etereo rotto d'Oro",
-  "item.create_webdisc.broken_netherite_webdisc": "Disco Etereo rotto di Netherite",
-  "item.create_webdisc.broken_stone_webdisc": "Disco Etereo rotto di Pietra",
-  "item.create_webdisc.creative_webdisc": "Disco Etereo (Creativa)",
-  "item.create_webdisc.diamond_webdisc": "Disco Etereo di Diamante",
-  "item.create_webdisc.emerald_webdisc": "Disco Etereo di Smeraldo",
-  "item.create_webdisc.webdisc_blank": "Disco Etereo di base",
-  "item.create_webdisc.gold_webdisc": "Disco Etereo d'Oro",
-  "item.create_webdisc.netherite_webdisc": "Disco Etereo di Netherite",
-  "item.create_webdisc.stone_webdisc": "Disco Etereo di Pietra"
+  "create_webdisc.tooltips.item.webdisc.url_bound": "Sorgente eterea assegnata"
 }

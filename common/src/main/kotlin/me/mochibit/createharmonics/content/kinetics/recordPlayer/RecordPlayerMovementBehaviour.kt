@@ -46,7 +46,7 @@ import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.level.block.state.properties.BlockStateProperties
+import me.mochibit.createharmonics.extension.getRecordSlotDirection
 import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.items.ItemHandlerHelper
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper
@@ -262,7 +262,7 @@ class RecordPlayerMovementBehaviour : SmartMovementBehaviour<RecordPlayerContext
                             return@every
                         }
 
-                        val facing = context.state.getValue(BlockStateProperties.FACING)
+                        val facing = context.state.getRecordSlotDirection()
                         val localDirection =
                             Vec3(facing.stepX.toDouble(), facing.stepY.toDouble(), facing.stepZ.toDouble())
                         val worldDirection = context.rotation.apply(localDirection).normalize()
@@ -408,9 +408,6 @@ class RecordPlayerMovementBehaviour : SmartMovementBehaviour<RecordPlayerContext
             }
 
             if (data.playbackState != newState) {
-                if (newState == PlaybackState.PLAYING && data.playbackState == PlaybackState.STOPPED) {
-                    handleRecordUse(context)
-                }
                 if (newState == PlaybackState.PLAYING) {
                     data.playbackState = newState
                 }
@@ -580,79 +577,6 @@ class RecordPlayerMovementBehaviour : SmartMovementBehaviour<RecordPlayerContext
             "Player UUID not found, something is very wrong here! Try replacing the record player block on the contraption ${context.localPos}"
         }
         return context.blockEntityData.getUUID(PLAYER_UUID_KEY).toString()
-    }
-
-    private fun handleRecordUse(context: MovementContext) {
-        context.world?.onServer { level ->
-            val storage =
-                context.contraption.storage.allItemStorages[context.localPos] as? RecordPlayerMountedStorage ?: return
-            val record = getRecordItem(context)
-            val result = RecordUtilities.handleRecordUse(record, level)
-
-            when {
-                result.shouldReplace -> {
-                    result.replacementStack?.let { storage.setRecord(it) }
-                }
-
-                result.isBroken -> {
-                    storage.setRecord(ItemStack.EMPTY)
-                    val itemStack = (result as RecordUtilities.RecordUseResult.Broken).dropStack.copy()
-
-                    val remainder: ItemStack =
-                        if (AllConfigs
-                                .server()
-                                .kinetics.moveItemsToStorage
-                                .get()
-                        ) {
-                            val otherStorages =
-                                context.contraption.storage.allItemStorages
-                                    .filterKeys { it != context.localPos }
-                                    .values
-                                    .toTypedArray()
-
-                            if (otherStorages.isNotEmpty()) {
-                                ItemHandlerHelper.insertItem(
-                                    CombinedInvWrapper(*otherStorages),
-                                    itemStack,
-                                    false,
-                                )
-                            } else {
-                                itemStack
-                            }
-                        } else {
-                            itemStack
-                        }
-
-                    val vec = context.position ?: return
-                    val pos = BlockPos.containing(vec)
-
-                    level.playSound(null, pos, SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, .7f, 1.7f)
-                    level.playSound(null, pos, SoundEvents.SMALL_AMETHYST_BUD_BREAK, SoundSource.PLAYERS)
-                    level.sendParticles(
-                        ItemParticleOption(ParticleTypes.ITEM, itemStack),
-                        pos.x.toDouble(),
-                        pos.y.toDouble(),
-                        pos.z.toDouble(),
-                        16,
-                        0.15,
-                        0.15,
-                        0.15,
-                        0.08,
-                    )
-
-                    if (remainder.isEmpty) return
-
-                    val facing = context.state.getValue(BlockStateProperties.FACING)
-                    val localDirection = Vec3(facing.stepX.toDouble(), facing.stepY.toDouble(), facing.stepZ.toDouble())
-                    val worldDirection = context.rotation.apply(localDirection).normalize()
-                    val dropPos = Vec3.atCenterOf(pos).add(worldDirection.scale(0.7))
-
-                    val itemEntity = ItemEntity(level, dropPos.x, dropPos.y, dropPos.z, remainder)
-                    itemEntity.deltaMovement = worldDirection.scale(0.3)
-                    level.addFreshEntity(itemEntity)
-                }
-            }
-        }
     }
 
     private fun getRecordItem(context: MovementContext): ItemStack {

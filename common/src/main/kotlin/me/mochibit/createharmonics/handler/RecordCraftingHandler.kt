@@ -4,7 +4,6 @@ import me.mochibit.createharmonics.content.records.EtherealRecordItem
 import me.mochibit.createharmonics.event.crafting.RecipeAssembledEvent
 import me.mochibit.createharmonics.foundation.eventbus.EventBus
 import me.mochibit.createharmonics.foundation.registry.ModDataComponents
-import me.mochibit.createharmonics.foundation.registry.ModItems
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.ResourceLocation
@@ -16,8 +15,6 @@ object RecordCraftingHandler : CommonEventHandler {
     private const val CRAFTED_WITH_DISC_KEY = "crafted_with_disc"
 
     private fun isVanillaDisc(stack: ItemStack): Boolean = stack.item.defaultInstance.has(DataComponents.JUKEBOX_PLAYABLE)
-
-    private fun isBaseRecord(stack: ItemStack): Boolean = stack.item == ModItems.BASE_RECORD.get()
 
     private fun isEtherealRecord(stack: ItemStack): Boolean = stack.item is EtherealRecordItem
 
@@ -32,7 +29,7 @@ object RecordCraftingHandler : CommonEventHandler {
         stack: ItemStack,
         withDisc: ItemStack,
     ) {
-        if (!isBaseRecord(stack) && !isEtherealRecord(stack)) return
+        if (!isEtherealRecord(stack)) return
         val resLoc = BuiltInRegistries.ITEM.getKey(withDisc.item)
         stack.set(ModDataComponents.CRAFTED_WITH, resLoc.toString())
     }
@@ -67,22 +64,17 @@ object RecordCraftingHandler : CommonEventHandler {
         EventBus.on<RecipeAssembledEvent> { event ->
             val (ingredients, result) = event
             result.forEach { resultStack ->
-                when {
-                    isBaseRecord(resultStack) -> {
-                        ingredients
-                            .firstOrNull { isVanillaDisc(it) }
-                            ?.let { setCraftedWithDisc(resultStack, it) }
-                    }
+                if (!isEtherealRecord(resultStack)) return@forEach
 
-                    isEtherealRecord(resultStack) -> {
-                        ingredients
-                            .firstOrNull { isBaseRecord(it) || isEtherealRecord(it) }
-                            ?.let { source ->
-                                val originalDisc = getCraftedWithDisc(source)
-                                if (!originalDisc.isEmpty) transferCraftedWithDisc(resultStack, source)
-                            }
-                    }
-                }
+                ingredients
+                    .firstOrNull { isVanillaDisc(it) }
+                    ?.let { setCraftedWithDisc(resultStack, it) }
+                    ?: ingredients
+                        .firstOrNull { isEtherealRecord(it) }
+                        ?.let { source ->
+                            val originalDisc = getCraftedWithDisc(source)
+                            if (!originalDisc.isEmpty) transferCraftedWithDisc(resultStack, source)
+                        }
             }
         }
     }

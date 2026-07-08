@@ -11,10 +11,6 @@ public abstract class EtherealRecordItemMixin implements IItemExtension {
 
     @Override
     public int getMaxDamage(@NotNull ItemStack stack) {
-        EtherealRecordItem recordItem = (EtherealRecordItem) (Object) this;
-        var uses = recordItem.getRecordType().getUses();
-        if (uses > 0)
-            return uses + 1;
         return 0;
     }
 }

@@ -133,7 +133,7 @@ class RecordPressBaseBehaviour(
     }
 
     override fun processOnlyData(input: TransportedItemStack): Boolean =
-        (input.stack.item as? EtherealRecordItem)?.isRecordBroken()?.not() == true
+        input.stack.item is EtherealRecordItem
 
     override fun processData(input: TransportedItemStack): ItemStack {
         input.stack.let {

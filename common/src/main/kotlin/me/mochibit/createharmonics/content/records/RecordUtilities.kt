@@ -11,12 +11,9 @@ import me.mochibit.createharmonics.audio.utils.getStreamDirectly
 import me.mochibit.createharmonics.config.ClientConfig
 import me.mochibit.createharmonics.foundation.debug
 import me.mochibit.createharmonics.foundation.registry.ModDataComponents
-import me.mochibit.createharmonics.foundation.registry.ModItems
-import me.mochibit.createharmonics.foundation.supplier.values.FloatSupplier
 import me.mochibit.createharmonics.foundation.warn
 import me.mochibit.createharmonics.handler.RecordCraftingHandler
 import net.minecraft.core.component.DataComponents
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.JukeboxSong
 import net.minecraft.world.item.component.CustomData
@@ -50,126 +47,16 @@ object RecordUtilities {
         stack.set(ModDataComponents.RECORD_URL, url)
     }
 
-    /**
-     * Handles record usage by applying durability damage.
-     * @param stack The ethereal record item stack
-     * @param random Random source for durability calculations
-     * @return RecordUseResult containing the result of the usage
-     */
-    fun handleRecordUse(
-        stack: ItemStack,
-        level: ServerLevel,
-    ): RecordUseResult {
-        val itemType = stack.item
-        if (itemType !is EtherealRecordItem) return RecordUseResult.Invalid
-
-        if (!itemType.isDamageable(stack)) {
-            return RecordUseResult.NotDamageable(stack)
-        }
-
-        // Apply damage
-        val damaged = stack.copy()
-        var broken = false
-        damaged.hurtAndBreak(1, level, null) {
-            broken = true
-        }
-
-        return if (broken) {
-            val brokenItemStack = toBrokenRecordStack(stack)
-            if (brokenItemStack === stack) return RecordUseResult.Invalid
-            RecordUseResult.Broken(brokenItemStack)
-        } else {
-            RecordUseResult.Damaged(damaged)
-        }
-    }
-
-    fun toBrokenRecordStack(stack: ItemStack): ItemStack {
-        val recordItem = stack.item as? EtherealRecordItem ?: return stack
-        val brokenItemType = ModItems.getBrokenWebdiscItem(recordItem.recordType)?.get() ?: return stack
-
-        val craftedWithDisc = RecordCraftingHandler.getCraftedWithDisc(stack)
-        val brokenItemStack = ItemStack(brokenItemType)
-        if (!craftedWithDisc.isEmpty) {
-            RecordCraftingHandler.setCraftedWithDisc(brokenItemStack, craftedWithDisc)
-        }
-        return brokenItemStack
-    }
-
-    fun fromBrokenRecordStack(stack: ItemStack): ItemStack {
-        val brokenItemType = stack.item as? EtherealRecordItem ?: return stack
-        val recordItem = ModItems.getWebdiscItem(brokenItemType.recordType).get() ?: return stack
-
-        val craftedWithDisc = RecordCraftingHandler.getCraftedWithDisc(stack)
-        val recordItemStack = ItemStack(recordItem)
-        if (!craftedWithDisc.isEmpty) {
-            RecordCraftingHandler.setCraftedWithDisc(recordItemStack, craftedWithDisc)
-        }
-
-        return recordItemStack
-    }
-
-    /**
-     * Result of handling record use
-     */
-    sealed class RecordUseResult {
-        /** The record is not damageable (infinite uses) */
-        data class NotDamageable(
-            val stack: ItemStack,
-        ) : RecordUseResult()
-
-        /** The record was damaged but not broken */
-        data class Damaged(
-            val stack: ItemStack,
-        ) : RecordUseResult()
-
-        /** The record broke and should drop the base record */
-        data class Broken(
-            val dropStack: ItemStack,
-        ) : RecordUseResult()
-
-        /** Invalid input (not an ethereal record) */
-        data object Invalid : RecordUseResult()
-
-        val isBroken: Boolean get() = this is Broken
-        val shouldReplace: Boolean get() = this is Damaged || this is NotDamageable
-        val replacementStack: ItemStack?
-            get() =
-                when (this) {
-                    is Damaged -> stack
-                    is NotDamageable -> stack
-                    else -> null
-                }
-    }
-
     fun AudioPlayer.playFromRecord(
         etherealRecord: ItemStack,
         initialPos: Double = 0.0,
         level: Level,
     ) {
-        val etherealRecordItem = etherealRecord.item
-        if (etherealRecordItem !is EtherealRecordItem) return
+        if (etherealRecord.item !is EtherealRecordItem) return
         val url = getAudioUrl(etherealRecord) ?: ""
 
-        // source -> |INTRINSIC_EFFECT| -> |EFFECT_COMP_MIXER|(untouched by intrinsics) -> |PITCH SHIFT| -> |WATER MUFFLE|
-
-        val recordProps = etherealRecordItem.recordType
         this.soundEventComposition.removeAll { true }
-
-        this.soundEventComposition.anchorBefore(AudioEffect.Scope.MACHINE_CONTROLLED_PITCH)
-
-        val soundEvents = recordProps.properties.createSoundEventComps()
-        for (event in soundEvents) {
-            event.pitchSupplier = this.masterPitchInterpolator
-            event.radiusSupplier = this.masterRadiusInterpolator
-            event.volumeSupplier = this.masterVolumeInterpolator
-            this.soundEventComposition.add(event)
-        }
-
         this.effectChain.cleanAllExceptScopes(AudioEffect.Scope.MACHINE_CONTROLLED_PITCH)
-
-        recordProps.properties.createAudioEffects().forEach { effect ->
-            this.effectChain.addBeforeScope(AudioEffect.Scope.MACHINE_CONTROLLED_PITCH, effect)
-        }
 
         if (url.isNotBlank() && FFMPEGProvider.isAvailable() && YTDLProvider.isAvailable()) {
             if (FFMPEGProvider.isProbeAvailable()) {
@@ -181,7 +68,7 @@ object RecordUtilities {
             } else {
                 (
                     "FFmpeg is correctly installed but it seems ffprobe is missing! \nIf it was installed by the mod" +
-                        " please report this here https://github.com/bitmochibit/createharmonics/issues.\n" +
+                        " please report this here https://github.com/qwer854645/create_webdisc/issues.\n" +
                         "If it was installed manually, make sure ffprobe executable is in the same folder as ffmpeg"
                 ).warn()
             }
@@ -198,7 +85,6 @@ object RecordUtilities {
             ).debug()
         }
 
-        // Try to play audio from the crafted-from record
         val craftedWithItem = RecordCraftingHandler.getCraftedWithDisc(etherealRecord)
         val song = JukeboxSong.fromStack(level.registryAccess(), craftedWithItem)
         if (!song.isPresent) return
@@ -233,7 +119,5 @@ object RecordUtilities {
 }
 
 fun ItemStack.isEtherealRecord(): Boolean = item is EtherealRecordItem
-
-fun ItemStack.isBrokenEtherealRecord(): Boolean = (item as? EtherealRecordItem)?.isRecordBroken() == true
 
 fun ItemStack.hasAssignedUrl(): Boolean = !RecordUtilities.getAudioUrl(this).isNullOrEmpty()

@@ -116,13 +116,5 @@
   "create_webdisc.tooltips.item.webdisc.effect_attribute.rustic": "Rustikal",
   "create_webdisc.tooltips.item.webdisc.effect_attribute.shiny": "Höhenbetont",
   "create_webdisc.tooltips.item.webdisc.qualities": "Qualitäten:",
-  "create_webdisc.tooltips.item.webdisc.url_bound": "Ätherische Quelle gebunden",
-  "item.create_webdisc.brass_webdisc": "Ätherische Schallplatte aus Messing",
-  "item.create_webdisc.creative_webdisc": "Kreative Ätherische Schallplatte",
-  "item.create_webdisc.diamond_webdisc": "Ätherische Schallplatte aus Diamant",
-  "item.create_webdisc.emerald_webdisc": "Ätherische Schallplatte aus Smaragd ",
-  "item.create_webdisc.webdisc_blank": "Ätherische Plattenbasis",
-  "item.create_webdisc.gold_webdisc": "Ätherische Schallplatte aus Gold",
-  "item.create_webdisc.netherite_webdisc": "Ätherische Schallplatte aus Netherit",
-  "item.create_webdisc.stone_webdisc": "Ätherische Schallplatte aus Stein"
+  "create_webdisc.tooltips.item.webdisc.url_bound": "Ätherische Quelle gebunden"
 }

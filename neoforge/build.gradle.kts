@@ -96,6 +96,8 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 
 tasks.named<ProcessResources>("processResources") {
     from(commonProject.sourceSets["main"].resources)
+    from(rootProject.file("LICENSE.MD")) { into("META-INF") }
+    from(rootProject.file("NOTICE.MD")) { into("META-INF") }
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     filesMatching("META-INF/neoforge.mods.toml") { expand(project.properties) }
 }
@@ -111,6 +113,8 @@ tasks.named<ShadowJar>("shadowJar") {
     configurations = listOf(project.configurations.getByName("shadow"))
     dependencies { include(dependency("org.tukaani:xz:1.11")) }
     relocate("org.tukaani.xz", "me.mochibit.createharmonics.libs.tukaani.xz")
+    from(rootProject.file("LICENSE.MD")) { into("META-INF") }
+    from(rootProject.file("NOTICE.MD")) { into("META-INF") }
     archiveClassifier = ""
 }
 

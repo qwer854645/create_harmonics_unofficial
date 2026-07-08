@@ -116,13 +116,5 @@
   "create_webdisc.tooltips.item.webdisc.effect_attribute.rustic": "Rustik",
   "create_webdisc.tooltips.item.webdisc.effect_attribute.shiny": "Glänsande",
   "create_webdisc.tooltips.item.webdisc.qualities": "Kvaliteter:",
-  "create_webdisc.tooltips.item.webdisc.url_bound": "Eterisk källa bunden",
-  "item.create_webdisc.brass_webdisc": "Eterisk Mässingskiva",
-  "item.create_webdisc.creative_webdisc": "Kreativ Eterisk Skiva",
-  "item.create_webdisc.diamond_webdisc": "Eterisk Diamantskiva",
-  "item.create_webdisc.emerald_webdisc": "Eterisk Smaragdskiva",
-  "item.create_webdisc.webdisc_blank": "Eterisk Skivbas",
-  "item.create_webdisc.gold_webdisc": "Eterisk Guldskiva",
-  "item.create_webdisc.netherite_webdisc": "Eterisk Netheritskiva",
-  "item.create_webdisc.stone_webdisc": "Eterisk Stenskiva"
+  "create_webdisc.tooltips.item.webdisc.url_bound": "Eterisk källa bunden"
 }

@@ -14,7 +14,6 @@ import dev.engine_room.flywheel.lib.model.Models
 import dev.engine_room.flywheel.lib.model.baked.PartialModel
 import me.mochibit.createharmonics.content.kinetics.recordPlayer.RecordPlayerMovementBehaviour.Companion.Utils.isPauseModeWithRedstone
 import me.mochibit.createharmonics.content.records.EtherealRecordItem
-import me.mochibit.createharmonics.content.records.RecordType
 import me.mochibit.createharmonics.foundation.behaviour.movement.getContextData
 import me.mochibit.createharmonics.foundation.extension.lerpTo
 import me.mochibit.createharmonics.foundation.registry.ModPartialModels
@@ -23,7 +22,8 @@ import net.createmod.catnip.math.AngleHelper
 import net.minecraft.core.Direction
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.level.block.state.properties.BlockStateProperties
+import me.mochibit.createharmonics.extension.getRecordSlotDirection
+import me.mochibit.createharmonics.extension.getShaftFacing
 
 class RecordPlayerActorVisual(
     vCtx: VisualizationContext,
@@ -34,7 +34,7 @@ class RecordPlayerActorVisual(
         vRw,
         mCtx,
     ) {
-    private val discFacing = context.state.getValue(BlockStateProperties.FACING)
+    private val discFacing = context.state.getRecordSlotDirection()
     private val axis: Direction.Axis = KineticBlockEntityVisual.rotationAxis(context.state)
     private val blockState: BlockState = context.state
 
@@ -44,9 +44,9 @@ class RecordPlayerActorVisual(
     private var currentSpeed = 0.0f
     private val speedSmoothingFactor = 0.1f
 
-    private var currentModel: PartialModel = ModPartialModels.getRecordModel(RecordType.BRASS)
+    private var currentModel: PartialModel = ModPartialModels.getRecordModel()
 
-    private var cachedRecordType: RecordType? = null
+    private var hasRecord = false
 
     val disc: TransformedInstance =
         instancerProvider
@@ -66,7 +66,7 @@ class RecordPlayerActorVisual(
                 setRotationAxis(axis)
                 setRotationOffset(KineticBlockEntityVisual.rotationOffset(blockState, axis, context.localPos))
                 setPosition(context.localPos)
-                rotateToFace(Direction.SOUTH, blockState.getValue(BlockStateProperties.FACING).opposite)
+                rotateToFace(Direction.SOUTH, blockState.getShaftFacing())
                 light(localBlockLight(), 0)
                 setChanged()
             }
@@ -79,12 +79,11 @@ class RecordPlayerActorVisual(
     }
 
     override fun tick() {
-        val recordItem = getRecord()
-        val newRecordType = recordItem?.recordType
+        val recordPresent = getRecord() != null
 
-        if (newRecordType != cachedRecordType) {
-            cachedRecordType = newRecordType
-            updateRecordModel(newRecordType)
+        if (recordPresent != hasRecord) {
+            hasRecord = recordPresent
+            updateRecordVisibility(recordPresent)
         }
         val speed =
             when {
@@ -105,14 +104,8 @@ class RecordPlayerActorVisual(
         rotation %= 360.0
     }
 
-    private fun updateRecordModel(recordType: RecordType?) {
-        if (recordType != null) {
-            currentModel = ModPartialModels.getRecordModel(recordType)
-            instancerProvider.instancer(InstanceTypes.TRANSFORMED, Models.partial(currentModel)).stealInstance(disc)
-            disc.setVisible(true)
-        } else {
-            disc.setVisible(false)
-        }
+    private fun updateRecordVisibility(visible: Boolean) {
+        disc.setVisible(visible)
     }
 
     override fun beginFrame() {

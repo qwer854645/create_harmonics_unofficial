@@ -3,7 +3,6 @@ package me.mochibit.createharmonics.gui
 import com.mojang.blaze3d.systems.RenderSystem
 import dev.engine_room.flywheel.lib.model.baked.PartialModel
 import me.mochibit.createharmonics.CreateHarmonicsMod.MOD_ID
-import me.mochibit.createharmonics.content.records.RecordType
 import me.mochibit.createharmonics.foundation.locale.ModLang
 import me.mochibit.createharmonics.foundation.registry.ModPartialModels
 import net.createmod.catnip.config.ui.BaseConfigScreen
@@ -38,11 +37,7 @@ class WebdiscMenuScreen(
 
     val logoTexture = ModGuiTexture("logo_small", 0, 0, 256, 256)
 
-    val randomModels: Pair<PartialModel, PartialModel> =
-        Pair(
-            ModPartialModels.getRecordModel(RecordType.entries.random()),
-            ModPartialModels.getRecordModel(RecordType.entries.random()),
-        )
+    val recordModel: PartialModel = ModPartialModels.getRecordModel()
 
     override fun init() {
         super.init()
@@ -128,13 +123,13 @@ class WebdiscMenuScreen(
             ms.translate(-1.25 * ((alpha * alpha) / 2f + .5f), 0.25, 0.0)
 
             GuiGameElement
-                .of(randomModels.first)
+                .of(recordModel)
                 .rotateBlock(0.0, 0.0, Util.getMillis() / 32.0)
                 .lighting(ILightingSettings.DEFAULT_FLAT)
                 .render(graphics)
             ms.translate(-.7, 0.0, -1.0)
             GuiGameElement
-                .of(randomModels.second)
+                .of(recordModel)
                 .rotateBlock(0.0, 0.0, Util.getMillis() / -16.0)
                 .lighting(ILightingSettings.DEFAULT_FLAT)
                 .render(graphics)

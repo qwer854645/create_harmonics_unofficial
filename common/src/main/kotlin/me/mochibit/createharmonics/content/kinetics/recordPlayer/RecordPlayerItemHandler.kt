@@ -10,20 +10,9 @@ import net.neoforged.neoforge.items.ItemStackHandler
 
 class RecordPlayerItemHandler(
     val behaviour: RecordPlayerBehaviour,
-    private val targetSlotCount: Int = 2,
-) : ItemStackHandler(targetSlotCount) {
+) : ItemStackHandler(1) {
     companion object {
         const val MAIN_RECORD_SLOT = 0
-        const val RECORD_OUTPUT_SLOT = 1
-    }
-
-    override fun insertItem(
-        slot: Int,
-        stack: ItemStack,
-        simulate: Boolean,
-    ): ItemStack {
-        if (slot == RECORD_OUTPUT_SLOT) return stack
-        return super.insertItem(slot, stack, simulate)
     }
 
     override fun onLoad() {
@@ -52,18 +41,7 @@ class RecordPlayerItemHandler(
         stack: ItemStack,
     ): Boolean {
         if (stack.isEmpty) return true
-        val item = stack.item as? EtherealRecordItem ?: return false
-        val validForSlot =
-            when (slot) {
-                MAIN_RECORD_SLOT -> {
-                    !item.isRecordBroken()
-                }
-
-                else -> {
-                    true
-                }
-            }
-        return validForSlot
+        return stack.item is EtherealRecordItem
     }
 
     override fun deserializeNBT(
@@ -71,8 +49,8 @@ class RecordPlayerItemHandler(
         nbt: CompoundTag,
     ) {
         super.deserializeNBT(provider, nbt)
-        if (stacks.size < targetSlotCount) {
-            val expanded = NonNullList.withSize(targetSlotCount, ItemStack.EMPTY)
+        if (stacks.size < 1) {
+            val expanded = NonNullList.withSize(1, ItemStack.EMPTY)
             for (i in stacks.indices) expanded[i] = stacks[i]
             stacks = expanded
         }

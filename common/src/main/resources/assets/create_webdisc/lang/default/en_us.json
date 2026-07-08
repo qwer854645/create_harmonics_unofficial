@@ -70,13 +70,14 @@
   "create_webdisc.mod_display_name": "Create: Webdisc",
   "create_webdisc.mod_fork_subtitle": "Independent Create addon — original art, not upstream",
   "create_webdisc.item_group": "Create: Webdisc",
-  "create_webdisc.recipe.record_repair": "Repairing",
   "create_webdisc.tooltips.item.webdisc.url_bound": "Web URL bound",
-  "create_webdisc.tooltips.item.webdisc.qualities": "Qualities:",
-  "create.item_attributes.record_is_broken": "Record is broken",
-  "create.item_attributes.record_is_broken.inverted": "Record is not broken",
   "create.item_attributes.has_url_assigned": "Web URL is bound",
   "create.item_attributes.has_url_assigned.inverted": "Web URL is not bound",
+  "create_webdisc.gui.record_player_seek.title": "Playback Position",
+  "create_webdisc.gui.record_player_seek.apply": "Seek",
+  "create_webdisc.gui.record_player_seek.restart": "From Start",
+  "create_webdisc.gui.record_player_seek.time_label": "Time",
+  "create_webdisc.gui.record_player_seek.time_input": "m:ss",
   "sounds.create_webdisc.subtitle.sliding_stone": "Webdisc slides",
   "sounds.create_webdisc.subtitle.glitter": "Webdisc sparkles"
 }

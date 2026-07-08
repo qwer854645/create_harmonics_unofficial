@@ -1,56 +1,22 @@
-# Create: Webdisc - 1.1.7
+# Changelog — Create: Webdisc
 
-### Bug fixes
-- Fixed console spamming under certain conditions
-- Jukebox restarts not being synchronized
-- Jukebox particle buildup when game is paused
+Fork changelog for **qwer854645/create_webdisc** (mod ID `create_webdisc`).  
+Upstream release history for the official Create: Harmonics mod is not reproduced here.
 
-### Translations
-- Updated Italian translation
+## 2.0.0
 
+### Rebrand & compliance
+- Rebranded from `createharmonics` to `create_webdisc`
+- Removed upstream All Rights Reserved artwork; added script-generated replacement assets
+- Rewrote README, LICENSE, and NOTICE for derivative-work compliance
+- Bundle LICENSE.MD in release JAR (`META-INF/`)
 
-# Create: Webdisc - 1.1.6
-### Bug fixes
-- Fixed record durabilities not updating correctly
-- Fixed record press base not updating on sable and valkyrien skies plots
-### Translations
-- Updated Russian translation @J0phie
+### Features (this fork)
+- **Brass Web Player** — side-face seek GUI with live duration, precise time input, and restart-from-beginning
+- Chinese (`zh_cn`) tooltips and Ponder translations
+- Bilibili yt-dlp patch script (`tools/repatch-ytdlp-bilibili.ps1`)
 
-# Create: Webdisc - 1.1.5
-
-### Features
-- **Sable** (_Create Aeronautics_) now supported!
-- Ethereal records have now a broken state, and can be repaired in various ways, available on JEI.
-- Now when rotational power is supplied before assembly, and after, the sound is continuous, and the speaker will transition to the new state without interrupting.
-- New attribute filters for detecting if a record has a url, or if it's broken.
-- Now jukeboxes fully support all funnel configurations.
-- When a record breaks, the broken record will be put in any container or create input near of it, otherwise it will be dropped on the ground. This also applies on contraptions.
-### Optimizations
-- Optimized audio players management and contexts are handled efficiently.
-- Removed useless wrappers for registers.
-- Improved audio synchronization.
-### Bug fixes
-- Fixed crashes with mods which shaded tukaani (like distant horizons).
-- Fixed crashes with mods which have a root package as "mixin", now Create Harmonics has a properly namespaced package.
-- Fixed random player kicking, and contraptions not being able to pick up loot.
-- Fixed crashes with the record press base.
-- Very short audio now will work normally.
-- Fixed wrong ffmpeg installation (especially for Linux users) but it affected OSes without specific libraries, required by ffmpeg.
-### Translations
-- Swedish translation by @Torktumlaren
----
-
-# Create: Webdisc - 1.1.4
-
-### Features
-- Now stress usage from jukeboxes is dynamic depending on its state and mode
-
-### Optimizations
-- Optimized ffmpeg parameters
-- Unified url resolution
-
-### Bug fixes
-- ⚠️ (1.20.1) Fixed game crash when Valkyrien Skies was not installed
-- Fixed **EventBus** errors spamming in console under certain conditions
-- Fixed **ffmpeg** not extracting in Linux
-- Fixed **volume** controls being completely wrong 
+### Fixes
+- Seek GUI rendering and sync
+- Restart-from-beginning when client audio player is stopped
+- Real-time duration sync from client audio stream to server

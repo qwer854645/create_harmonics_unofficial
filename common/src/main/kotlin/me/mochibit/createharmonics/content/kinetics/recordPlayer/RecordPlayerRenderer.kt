@@ -19,7 +19,8 @@ import net.minecraft.client.renderer.LevelRenderer
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider
-import net.minecraft.world.level.block.state.properties.BlockStateProperties
+import me.mochibit.createharmonics.extension.getRecordSlotDirection
+import me.mochibit.createharmonics.extension.getShaftFacing
 
 class RecordPlayerRenderer(
     val context: BlockEntityRendererProvider.Context,
@@ -35,14 +36,15 @@ class RecordPlayerRenderer(
         if (VisualizationManager.supportsVisualization(be.level)) return
 
         val blockState = be.blockState
-        val discFacing = blockState.getValue(BlockStateProperties.FACING)
+        val discFacing = blockState.getRecordSlotDirection()
+        val shaftFacing = blockState.getShaftFacing()
         val vb = bufferSource.getBuffer(RenderType.cutoutMipped())
 
         val shaftHalf =
             CachedBuffers.partialFacing(
                 AllPartialModels.SHAFT_HALF,
                 be.blockState,
-                discFacing.opposite,
+                shaftFacing,
             )
 
         standardKineticRotationTransform(shaftHalf, be, light).renderInto(ms, vb)
@@ -51,7 +53,7 @@ class RecordPlayerRenderer(
             val recordItem = be.playerBehaviour.getRecord().item as? EtherealRecordItem
             val recordModel =
                 recordItem?.let {
-                    ModPartialModels.getRecordModel(it.recordType)
+                    ModPartialModels.getRecordModel()
                 } ?: return
 
             val discBuffer: SuperByteBuffer = CachedBuffers.partialFacing(recordModel, blockState, discFacing)
@@ -79,10 +81,10 @@ class RecordPlayerRenderer(
             val state = context.state
             val model =
                 item.let {
-                    ModPartialModels.getRecordModel(it.recordType)
+                    ModPartialModels.getRecordModel()
                 }
             val modelBuffer: SuperByteBuffer = CachedBuffers.partial(model, state)
-            val discFacing = state.getValue(BlockStateProperties.FACING)
+            val discFacing = state.getRecordSlotDirection()
             val angle = be.getRotationAngle(AnimationTickHolder.getPartialTicks())
 
             modelBuffer

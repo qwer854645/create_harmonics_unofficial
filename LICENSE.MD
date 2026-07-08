@@ -78,3 +78,9 @@ This mod may download or use external binaries at runtime (with user consent):
 - **yt-dlp** — https://github.com/yt-dlp/yt-dlp (Unlicense)
 
 See the mod's in-game library setup screen for installation details. A Bilibili compatibility patch for the bundled yt-dlp workflow can be reapplied with `tools/repatch-ytdlp-bilibili.ps1`.
+
+### Shaded dependency
+
+- **XZ for Java** (`org.tukaani:xz`) — Public Domain, relocated in the release JAR
+
+See [NOTICE.MD](NOTICE.MD) for additional attribution.

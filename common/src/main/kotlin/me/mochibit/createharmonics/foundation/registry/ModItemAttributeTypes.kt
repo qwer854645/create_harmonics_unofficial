@@ -4,7 +4,6 @@ import com.simibubi.create.api.registry.CreateBuiltInRegistries
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttributeType
 import com.simibubi.create.content.logistics.item.filter.attribute.SingletonItemAttribute
 import me.mochibit.createharmonics.content.records.hasAssignedUrl
-import me.mochibit.createharmonics.content.records.isBrokenEtherealRecord
 import me.mochibit.createharmonics.content.records.isEtherealRecord
 import me.mochibit.createharmonics.foundation.extension.asResource
 import me.mochibit.createharmonics.foundation.info
@@ -14,16 +13,9 @@ import net.minecraft.world.level.Level
 import java.util.function.BiPredicate
 
 object ModItemAttributeTypes : PreFreezeCommonRegistry {
-    val ETHEREAL_RECORD_DESTROYED =
-        singleton("record_is_broken") { stack, _ ->
-            stack.isBrokenEtherealRecord()
-        }
-
     val ETHEREAL_RECORD_URL_ASSIGNED =
         singleton("has_url_assigned") { stack, _ ->
-            stack.isEtherealRecord() &&
-                !stack.isBrokenEtherealRecord() &&
-                stack.hasAssignedUrl()
+            stack.isEtherealRecord() && stack.hasAssignedUrl()
         }
 
     private fun singleton(

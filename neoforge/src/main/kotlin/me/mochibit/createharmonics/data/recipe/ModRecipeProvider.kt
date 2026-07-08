@@ -21,7 +21,6 @@ class ModRecipeProvider(
         ) {
             val generators =
                 listOf(
-                    ModDeployingRecipeGen(output, registries),
                     ModPressingRecipeGen(output, registries),
                     ModMechanicalCraftingRecipeGen(output, registries),
                 )

@@ -82,13 +82,5 @@
   "create_webdisc.record_player.playback_mode.pause": "Pauza",
   "create_webdisc.record_player.playback_mode.pause_static_pitch": "Pauza (Ciągła Wysokość)",
   "create_webdisc.record_player.playback_mode.play": "Odtwarzanie",
-  "create_webdisc.record_player.playback_mode.play_static_pitch": "Odtwarzanie (Ciągła Wysokość)",
-  "item.create_webdisc.brass_webdisc": "Mosiężne Eteryczne Nagranie",
-  "item.create_webdisc.creative_webdisc": "Kreatywne Eteryczne Nagranie",
-  "item.create_webdisc.diamond_webdisc": "Diamentowe Eteryczne Nagranie",
-  "item.create_webdisc.emerald_webdisc": "Szmaragdowe Eteryczne Nagranie",
-  "item.create_webdisc.webdisc_blank": "Podstawa Eterycznego Nagrania",
-  "item.create_webdisc.gold_webdisc": "Złote Eteryczne Nagranie",
-  "item.create_webdisc.netherite_webdisc": "Netherytowe Eteryczne Nagranie",
-  "item.create_webdisc.stone_webdisc": "Kamienne Eteryczne Nagranie"
+  "create_webdisc.record_player.playback_mode.play_static_pitch": "Odtwarzanie (Ciągła Wysokość)"
 }

@@ -118,19 +118,5 @@
   "create_webdisc.tooltips.item.webdisc.effect_attribute.rustic": "Грубый",
   "create_webdisc.tooltips.item.webdisc.effect_attribute.shiny": "Звонкий",
   "create_webdisc.tooltips.item.webdisc.qualities": "Качества:",
-  "create_webdisc.tooltips.item.webdisc.url_bound": "Привязана к эфирному источнику",
-  "item.create_webdisc.brass_webdisc": "Латунная эфирная пластинка",
-  "item.create_webdisc.broken_brass_webdisc": "Сломанная латунная эфирная пластинка",
-  "item.create_webdisc.broken_diamond_webdisc": "Сломанная алмазная эфирная пластинка",
-  "item.create_webdisc.broken_emerald_webdisc": "Сломанная изумрудная эфирная пластинка",
-  "item.create_webdisc.broken_gold_webdisc": "Сломанная золотая эфирная пластинка",
-  "item.create_webdisc.broken_netherite_webdisc": "Сломанная незеритовая эфирная пластинка",
-  "item.create_webdisc.broken_stone_webdisc": "Сломанная каменная эфирная пластинка",
-  "item.create_webdisc.creative_webdisc": "Творческая эфирная пластинка",
-  "item.create_webdisc.diamond_webdisc": "Алмазная эфирная пластинка",
-  "item.create_webdisc.emerald_webdisc": "Изумрудная эфирная пластинка",
-  "item.create_webdisc.webdisc_blank": "Основа эфирной пластинки",
-  "item.create_webdisc.gold_webdisc": "Золотая эфирная пластинка",
-  "item.create_webdisc.netherite_webdisc": "Незеритовая эфирная пластинка",
-  "item.create_webdisc.stone_webdisc": "Каменная эфирная пластинка"
+  "create_webdisc.tooltips.item.webdisc.url_bound": "Привязана к эфирному источнику"
 }

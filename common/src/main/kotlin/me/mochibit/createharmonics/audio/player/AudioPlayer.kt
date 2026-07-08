@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import me.mochibit.createharmonics.audio.comp.SoundEventComposition
+import me.mochibit.createharmonics.audio.info.AudioInfo
 import me.mochibit.createharmonics.audio.effect.EffectChain
 import me.mochibit.createharmonics.audio.effect.EffectPreset
 import me.mochibit.createharmonics.audio.effect.MixerEffect
@@ -56,6 +57,13 @@ class AudioPlayer(
         )
 
     private val _state = MutableStateFlow(PlayerState.STOPPED)
+
+    @Volatile
+    var activeAudioInfo: AudioInfo? = null
+        private set
+
+    val durationSeconds: Int?
+        get() = activeAudioInfo?.durationSeconds?.takeIf { it > 0 }
 
     @Volatile
     private var currentAudioRequest: AudioRequest? = null
@@ -246,13 +254,14 @@ class AudioPlayer(
                     isSeekingDisabled.set(true)
                 }
 
+                activeAudioInfo = intent.audioInfo
                 val resolutionElapsed = (System.currentTimeMillis() - streamResolutionStartMillis.get()) / 1000.0
                 val adjustedPos = if (intent.audioInfo.isLive) 0.0 else intent.atPos + resolutionElapsed
                 clock.play(adjustedPos)
                 lastResyncAt = System.currentTimeMillis()
                 withMainContext { soundManager.play(intent.soundInstance) }
                 soundEventComposition.makeComposition(intent.soundInstance)
-                notifyAudioTitle(intent.audioInfo.title)
+                notifyAudioMetadata(intent.audioInfo)
 
                 transition(PlayerState.PLAYING)
             }
@@ -479,6 +488,7 @@ class AudioPlayer(
         val capturedInstance = currentSoundInstance
         currentAudioEffectInputStream = null
         currentSoundInstance = null
+        activeAudioInfo = null
 
         soundEventComposition.stopComposition()
         clock.stop()
@@ -548,7 +558,8 @@ class AudioPlayer(
 
     private fun handleStreamHang() = intents.trySend(PlayerIntent.AudioHanged)
 
-    private fun notifyAudioTitle(name: String) = ModPackets.sendToServer(UpdateAudioNamePacket(playerId, name))
+    private fun notifyAudioMetadata(info: AudioInfo) =
+        ModPackets.sendToServer(UpdateAudioNamePacket(playerId, info.title, info.durationSeconds))
 
     private fun notifyStreamEnd() = ModPackets.sendToServer(AudioPlayerStreamEndPacket(playerId))
 
