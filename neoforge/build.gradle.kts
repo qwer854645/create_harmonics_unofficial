@@ -102,7 +102,7 @@ tasks.named<ProcessResources>("processResources") {
     filesMatching("META-INF/neoforge.mods.toml") { expand(project.properties) }
 }
 
-val mixinConfigs = "${v.modId}.mixins.json,create_webdisc.common.mixins.json"
+val mixinConfigs = "${v.modId}.mixins.json,create_resonance.common.mixins.json"
 
 tasks.named<Jar>("jar") {
     manifest.attributes("MixinConfigs" to mixinConfigs)
@@ -112,7 +112,7 @@ tasks.named<ShadowJar>("shadowJar") {
     manifest.attributes("MixinConfigs" to mixinConfigs)
     configurations = listOf(project.configurations.getByName("shadow"))
     dependencies { include(dependency("org.tukaani:xz:1.11")) }
-    relocate("org.tukaani.xz", "me.mochibit.createharmonics.libs.tukaani.xz")
+    relocate("org.tukaani.xz", "io.github.qwer854645.createresonance.libs.tukaani.xz")
     from(rootProject.file("LICENSE.MD")) { into("META-INF") }
     from(rootProject.file("NOTICE.MD")) { into("META-INF") }
     archiveClassifier = ""

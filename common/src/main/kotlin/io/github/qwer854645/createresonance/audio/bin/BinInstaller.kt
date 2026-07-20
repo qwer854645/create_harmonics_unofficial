@@ -1,0 +1,259 @@
+package io.github.qwer854645.createresonance.audio.bin
+
+import io.github.qwer854645.createresonance.foundation.err
+import io.github.qwer854645.createresonance.foundation.info
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
+import org.tukaani.xz.XZInputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.net.URL
+import java.util.concurrent.ConcurrentHashMap
+import java.util.zip.ZipInputStream
+
+object BinInstaller {
+    private val installationLocks = ConcurrentHashMap<String, Any>()
+
+    /**
+     * Install a binary provider
+     */
+    fun install(
+        provider: BinProvider,
+        providerName: String,
+        progressCallback: ((String, Float, String) -> Unit)? = null,
+    ): Boolean {
+        val lockObject = installationLocks.computeIfAbsent(providerName) { Any() }
+
+        synchronized(lockObject) {
+            if (provider.isAvailable()) {
+                progressCallback?.invoke("already_installed", 1.0f, "")
+                return true
+            }
+
+            try {
+                progressCallback?.invoke("downloading", 0.0f, "")
+                provider.directory.mkdirs()
+
+                val downloadUrl = provider.getDownloadUrl()
+
+                val tempFile = File.createTempFile("${providerName}_download", ".tmp")
+                try {
+                    downloadFile(downloadUrl, tempFile, progressCallback)
+
+                    if (tempFile.length() == 0L) {
+                        throw IOException("Downloaded file is empty")
+                    }
+
+                    progressCallback?.invoke("extracting", 0.0f, "")
+                    extractDownloadedFile(downloadUrl, tempFile, provider)
+
+                    progressCallback?.invoke("completed", 1.0f, "")
+
+                    // Clear cache and verify
+                    provider.clearCache()
+                    return provider.isAvailable().also { available ->
+                        if (!available) {
+                            "Installation verification failed for $providerName".err()
+                            progressCallback?.invoke("failed", 0.0f, "")
+                        }
+                    }
+                } finally {
+                    tempFile.delete()
+                }
+            } catch (e: Exception) {
+                "Failed to install $providerName: ${e.message}".err()
+                e.printStackTrace()
+                progressCallback?.invoke("failed", 0.0f, "")
+                return false
+            }
+        }
+    }
+
+    private fun extractDownloadedFile(
+        downloadUrl: String,
+        tempFile: File,
+        provider: BinProvider,
+    ) {
+        when {
+            downloadUrl.endsWith(".zip") -> extractZip(tempFile, provider.directory, provider)
+            downloadUrl.endsWith(".tar.xz") -> extractTarXz(tempFile, provider.directory)
+            else -> extractSingleFile(tempFile, provider)
+        }
+    }
+
+    private fun extractSingleFile(
+        tempFile: File,
+        provider: BinProvider,
+    ) {
+        val exeName = provider.getExecutableNameInternal()
+        val targetFile = File(provider.directory, exeName)
+        tempFile.copyTo(targetFile, overwrite = true)
+        provider.ensureExecutable(targetFile)
+    }
+
+    private fun downloadFile(
+        url: String,
+        destination: File,
+        progressCallback: ((String, Float, String) -> Unit)? = null,
+    ) {
+        val connection = URL(url).openConnection()
+        connection.connectTimeout = 30000
+        connection.readTimeout = 30000
+
+        val contentLength = connection.contentLengthLong
+
+        connection.getInputStream().use { input ->
+            FileOutputStream(destination).use { output ->
+                val buffer = ByteArray(8192)
+                var bytesRead: Int
+                var totalBytes = 0L
+                val startTime = System.currentTimeMillis()
+                var lastUpdateTime = startTime
+                var lastUpdateBytes = 0L
+
+                while (input.read(buffer).also { bytesRead = it } != -1) {
+                    output.write(buffer, 0, bytesRead)
+                    totalBytes += bytesRead
+
+                    val currentTime = System.currentTimeMillis()
+                    val timeSinceLastUpdate = currentTime - lastUpdateTime
+
+                    if (timeSinceLastUpdate >= 100) {
+                        val bytesSinceLastUpdate = totalBytes - lastUpdateBytes
+                        val speedBytesPerSec = (bytesSinceLastUpdate * 1000.0 / timeSinceLastUpdate).toLong()
+                        val speedText = formatSpeed(speedBytesPerSec)
+
+                        val progress =
+                            if (contentLength > 0) {
+                                totalBytes.toFloat() / contentLength.toFloat()
+                            } else {
+                                0.0f
+                            }
+
+                        progressCallback?.invoke("downloading", progress, speedText)
+
+                        lastUpdateTime = currentTime
+                        lastUpdateBytes = totalBytes
+                    }
+                }
+            }
+        }
+    }
+
+    private fun formatSpeed(bytesPerSecond: Long): String =
+        when {
+            bytesPerSecond >= 1024 * 1024 -> "%.2f MB/s".format(bytesPerSecond / (1024.0 * 1024.0))
+            bytesPerSecond >= 1024 -> "%.2f KB/s".format(bytesPerSecond / 1024.0)
+            else -> "$bytesPerSecond B/s"
+        }
+
+    private fun extractZip(
+        zipFile: File,
+        destDir: File,
+        provider: BinProvider,
+    ) {
+        destDir.mkdirs()
+        val destPath = destDir.canonicalFile.toPath()
+
+        var fileCount = 0
+
+        ZipInputStream(zipFile.inputStream()).use { zis ->
+            generateSequence { zis.nextEntry }
+                .forEach { entry ->
+                    fileCount++
+
+                    val entryPath = File(entry.name).toPath().normalize()
+                    val resolvedPath = destPath.resolve(entryPath).normalize()
+
+                    if (!resolvedPath.startsWith(destPath)) {
+                        throw SecurityException("Zip entry is outside target directory: ${entry.name}")
+                    }
+
+                    val file = resolvedPath.toFile()
+
+                    if (entry.isDirectory) {
+                        file.mkdirs()
+                    } else {
+                        file.parentFile?.mkdirs()
+                        file.outputStream().use { output ->
+                            zis.copyTo(output)
+                        }
+
+                        if (shouldBeExecutable(entry.name, provider)) {
+                            provider.ensureExecutable(file)
+                        }
+                    }
+
+                    zis.closeEntry()
+                }
+        }
+    }
+
+    private fun shouldBeExecutable(
+        fileName: String,
+        provider: BinProvider,
+    ): Boolean {
+        val name = File(fileName).name
+        return when {
+            BinProvider.isWindows -> name.endsWith(".exe", ignoreCase = true)
+            else -> !name.contains(".") || name == provider.getExecutableNameInternal()
+        }
+    }
+
+    private fun extractTarXz(
+        tarXzFile: File,
+        destDir: File,
+    ) {
+        destDir.mkdirs()
+        val destPath = destDir.canonicalFile.toPath()
+
+        var fileCount = 0
+
+        tarXzFile.inputStream().use { fileInput ->
+            XZInputStream(fileInput).use { xzInput ->
+                TarArchiveInputStream(xzInput).use { tarInput ->
+                    var entry = tarInput.nextTarEntry
+                    while (entry != null) {
+                        fileCount++
+
+                        val entryPath = File(entry.name).toPath().normalize()
+                        val resolvedPath = destPath.resolve(entryPath).normalize()
+
+                        if (!resolvedPath.startsWith(destPath)) {
+                            throw SecurityException("Tar entry is outside target directory: ${entry.name}")
+                        }
+
+                        val file = resolvedPath.toFile()
+
+                        when {
+                            entry.isDirectory -> {
+                                file.mkdirs()
+                            }
+
+                            entry.isSymbolicLink -> {
+                                "Skipping symbolic link: ${entry.name}".info()
+                            }
+
+                            else -> {
+                                file.parentFile?.mkdirs()
+                                file.outputStream().use { output ->
+                                    tarInput.copyTo(output)
+                                }
+
+                                // Preserve Unix permissions if available
+                                if (!BinProvider.isWindows && entry.mode != 0) {
+                                    val isExecutable = (entry.mode and 0b001_001_001) != 0
+                                    if (isExecutable) {
+                                        file.setExecutable(true, false)
+                                    }
+                                }
+                            }
+                        }
+
+                        entry = tarInput.nextTarEntry
+                    }
+                }
+            }
+        }
+    }
+}

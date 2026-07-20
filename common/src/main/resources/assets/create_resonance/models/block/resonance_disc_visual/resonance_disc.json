@@ -1,0 +1,7 @@
+{
+  "parent": "create_resonance:block/resonance_disc_visual/visual",
+  "textures": {
+    "0": "create_resonance:block/resonance_disc_visual/resonance_disc",
+    "particle": "create_resonance:block/resonance_disc_visual/resonance_disc"
+  }
+}

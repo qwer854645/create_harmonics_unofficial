@@ -1,0 +1,44 @@
+package io.github.qwer854645.createresonance.mixin;
+
+import com.simibubi.create.content.kinetics.mechanicalArm.ArmBlockEntity;
+import io.github.qwer854645.createresonance.content.kinetics.recordPlayer.RecordPlayerTrait;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
+
+import java.util.Optional;
+
+@Mixin(ArmBlockEntity.class)
+public class ArmBlockEntityMixin {
+    @Shadow
+    ArmBlockEntity.Phase phase;
+
+    @Redirect(
+            method = "checkForMusicAmong",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/level/block/state/BlockState;getOptionalValue(Lnet/minecraft/world/level/block/state/properties/Property;)Ljava/util/Optional;"
+            )
+    )
+    private Optional<?> redirectHasRecord(BlockState state, Property<?> property) {
+        Optional<?> original = state.getOptionalValue(property);
+
+        if (state.hasProperty(RecordPlayerTrait.Companion.getHAS_RESONANCE_DISC())
+                && state.getValue(RecordPlayerTrait.Companion.getHAS_RESONANCE_DISC())) {
+
+            if (phase == ArmBlockEntity.Phase.DANCING) {
+                if (Math.random() < 0.1) {
+                    return Optional.of(false);
+                }
+                return Optional.of(true);
+            }
+
+            return Optional.of(Math.random() < 0.005);
+        }
+
+        return original;
+    }
+}

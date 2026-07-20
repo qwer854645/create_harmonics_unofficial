@@ -1,0 +1,21 @@
+{
+  "credit": "Green score pad — lit by BER when the imprint table has kinetic speed",
+  "textures": {
+    "details": "create:block/link_details",
+    "particle": "create:block/link_details"
+  },
+  "elements": [
+    {
+      "name": "ScorePad",
+      "from": [3, 13, 3],
+      "to": [13, 13.3, 11],
+      "faces": {
+        "up": {"uv": [13.5, 0, 16, 2.5], "texture": "#details"},
+        "north": {"uv": [13.5, 0, 16, 0.5], "texture": "#details"},
+        "east": {"uv": [13.5, 0, 16, 0.5], "texture": "#details"},
+        "south": {"uv": [13.5, 0, 16, 0.5], "texture": "#details"},
+        "west": {"uv": [13.5, 0, 16, 0.5], "texture": "#details"}
+      }
+    }
+  ]
+}

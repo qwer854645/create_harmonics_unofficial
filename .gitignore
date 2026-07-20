@@ -32,3 +32,15 @@ buildSrc/build/
 # Local platform descriptions (not for the repo)
 INTRODUCTION.en.md
 INTRODUCTION.zh_cn.md
+
+# Local scratch / decompile dumps (not for the repo)
+.tmp_create/
+_tmp_create_extract/
+_ref_bearing/
+_ref_schematic_table/
+_ref_stock_link/
+art/
+com/
+net/
+DepotBlock.class
+*.class

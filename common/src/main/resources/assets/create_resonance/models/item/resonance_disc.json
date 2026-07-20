@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "create_resonance:item/resonance_disc_blank/base"
+  }
+}

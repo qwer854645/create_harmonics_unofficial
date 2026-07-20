@@ -1,0 +1,28 @@
+package io.github.qwer854645.createresonance.foundation.registry
+
+import com.simibubi.create.foundation.data.CreateRegistrate
+import com.tterrag.registrate.util.entry.RegistryEntry
+import io.github.qwer854645.createresonance.CreateResonanceMod.MOD_ID
+import io.github.qwer854645.createresonance.ModRegistrate
+import io.github.qwer854645.createresonance.foundation.info
+import net.minecraft.core.Registry
+import net.minecraft.core.registries.Registries
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.sounds.SoundEvent
+
+object ModSounds : CommonRegistry {
+    val SLIDING_STONE = ModRegistrate.sound("sliding_stone")
+    val GLITTER = ModRegistrate.sound("glitter")
+
+    override fun register(registry: Registry<*>?) {
+        "Registering mod sounds..".info()
+    }
+
+    fun CreateRegistrate.sound(
+        name: String,
+        soundPath: String = name,
+    ): RegistryEntry<SoundEvent, SoundEvent> =
+        this.simple(name, Registries.SOUND_EVENT) {
+            SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(MOD_ID, soundPath))
+        }
+}

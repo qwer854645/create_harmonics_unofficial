@@ -1,0 +1,33 @@
+package io.github.qwer854645.createresonance.data.recipe
+
+import com.simibubi.create.AllItems
+import com.simibubi.create.api.data.recipe.MechanicalCraftingRecipeGen
+import io.github.qwer854645.createresonance.CreateResonanceMod.MOD_ID
+import io.github.qwer854645.createresonance.foundation.registry.ModBlocks
+import net.minecraft.core.HolderLookup
+import net.minecraft.data.PackOutput
+import net.minecraft.world.item.Items
+import net.minecraft.world.item.crafting.Ingredient
+import java.util.concurrent.CompletableFuture
+
+class ModMechanicalCraftingRecipeGen(
+    output: PackOutput,
+    registries: CompletableFuture<HolderLookup.Provider>,
+) : MechanicalCraftingRecipeGen(output, registries, MOD_ID) {
+    val recordPressBaseRecipe =
+        create { ModBlocks.RECORD_PRESS_BASE }.returns(1).recipe { b ->
+            b.apply {
+                key('P', Ingredient.of(AllItems.PRECISION_MECHANISM))
+                key('A', Ingredient.of(AllItems.ANDESITE_ALLOY))
+                key('E', Ingredient.of(AllItems.ELECTRON_TUBE))
+                key('B', Ingredient.of(AllItems.BRASS_INGOT))
+                key('X', Ingredient.of(Items.AMETHYST_SHARD))
+
+                patternLine("AAA")
+                patternLine("EXE")
+                patternLine("BPB")
+                patternLine("ABA")
+                disallowMirrored()
+            }
+        }
+}

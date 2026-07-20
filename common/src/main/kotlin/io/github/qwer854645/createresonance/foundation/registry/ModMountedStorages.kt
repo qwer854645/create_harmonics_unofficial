@@ -1,0 +1,40 @@
+package io.github.qwer854645.createresonance.foundation.registry
+
+import com.simibubi.create.api.contraption.storage.item.MountedItemStorageType
+import com.tterrag.registrate.util.entry.RegistryEntry
+import io.github.qwer854645.createresonance.ModRegistrate
+import io.github.qwer854645.createresonance.content.kinetics.recordPlayer.RecordPlayerBlockEntity
+import io.github.qwer854645.createresonance.content.kinetics.recordPlayer.RecordPlayerMountedStorage
+import io.github.qwer854645.createresonance.foundation.info
+import net.minecraft.core.BlockPos
+import net.minecraft.core.Registry
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.block.state.BlockState
+
+object ModMountedStorages : CommonRegistry {
+    override val registrationOrder = 1
+
+    val SIMPLE_RECORD_PLAYER_STORAGE: RegistryEntry<MountedItemStorageType<*>, RecordPlayerMountedStorageType> =
+        ModRegistrate
+            .mountedItemStorage("simple_record_player_storage", ::RecordPlayerMountedStorageType)
+            .register()
+
+    override fun register(registry: Registry<*>?) {
+        "Registering mounted storages".info()
+    }
+
+    class RecordPlayerMountedStorageType : MountedItemStorageType<RecordPlayerMountedStorage>(RecordPlayerMountedStorage.CODEC) {
+        override fun mount(
+            level: Level?,
+            state: BlockState?,
+            pos: BlockPos?,
+            be: BlockEntity?,
+        ): RecordPlayerMountedStorage? {
+            if (be is RecordPlayerBlockEntity) {
+                return RecordPlayerMountedStorage.fromRecordPlayer(be)
+            }
+            return null
+        }
+    }
+}

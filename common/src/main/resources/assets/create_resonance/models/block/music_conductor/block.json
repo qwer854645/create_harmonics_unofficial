@@ -1,0 +1,105 @@
+{
+  "credit": "Bearing stress bottom + depot sides + andesite rims + hollow interior + glass top",
+  "parent": "block/block",
+  "ambientocclusion": false,
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "gearbox": "create:block/gearbox",
+    "andesite": "create:block/andesite_casing",
+    "depot": "create:block/depot_side",
+    "glass": "minecraft:block/glass",
+    "antenna": "create:block/link_details",
+    "particle": "create:block/depot_side"
+  },
+  "elements": [
+    {
+      "name": "WallWest",
+      "from": [0, 0, 0],
+      "to": [3, 11, 16],
+      "faces": {
+        "west": {"uv": [0, 5, 16, 16], "texture": "#depot"},
+        "east": {"uv": [0, 5, 16, 16], "texture": "#andesite"},
+        "up": {"uv": [0, 0, 3, 16], "texture": "#andesite"},
+        "down": {"uv": [0, 0, 3, 16], "texture": "#gearbox"}
+      }
+    },
+    {
+      "name": "WallEast",
+      "from": [13, 0, 0],
+      "to": [16, 11, 16],
+      "faces": {
+        "west": {"uv": [0, 5, 16, 16], "texture": "#andesite"},
+        "east": {"uv": [0, 5, 16, 16], "texture": "#depot"},
+        "up": {"uv": [13, 0, 16, 16], "texture": "#andesite"},
+        "down": {"uv": [13, 0, 16, 16], "texture": "#gearbox"}
+      }
+    },
+    {
+      "name": "WallNorth",
+      "from": [0, 0, 0],
+      "to": [16, 11, 3],
+      "faces": {
+        "north": {"uv": [0, 5, 16, 16], "texture": "#depot"},
+        "south": {"uv": [0, 5, 16, 16], "texture": "#andesite"},
+        "up": {"uv": [0, 0, 16, 3], "texture": "#andesite"},
+        "down": {"uv": [0, 13, 16, 16], "texture": "#gearbox"}
+      }
+    },
+    {
+      "name": "WallSouth",
+      "from": [0, 0, 13],
+      "to": [16, 11, 16],
+      "faces": {
+        "north": {"uv": [0, 5, 16, 16], "texture": "#andesite"},
+        "south": {"uv": [0, 5, 16, 16], "texture": "#depot"},
+        "up": {"uv": [0, 13, 16, 16], "texture": "#andesite"},
+        "down": {"uv": [0, 0, 16, 3], "texture": "#gearbox"}
+      }
+    },
+    {
+      "name": "StressCore",
+      "from": [3, 0.95, 3],
+      "to": [13, 1.95, 13],
+      "faces": {
+        "up": {"uv": [3, 3, 13, 13], "texture": "#gearbox"},
+        "down": {"uv": [3, 3, 13, 13], "texture": "#gearbox"}
+      }
+    },
+    {
+      "name": "GlassShell",
+      "from": [0, 11, 0],
+      "to": [16, 16, 16],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 5], "texture": "#glass"},
+        "east": {"uv": [0, 0, 16, 5], "texture": "#glass"},
+        "south": {"uv": [0, 0, 16, 5], "texture": "#glass"},
+        "west": {"uv": [0, 0, 16, 5], "texture": "#glass"},
+        "up": {"uv": [0, 0, 16, 16], "texture": "#glass"}
+      }
+    },
+    {
+      "name": "AntennaMount",
+      "from": [5, 7, -1.0],
+      "to": [11, 11, 1.0],
+      "shade": false,
+      "faces": {
+        "north": {"uv": [1, 0, 4, 2], "texture": "#antenna", "shade": false},
+        "east": {"uv": [1, 0, 0, 2], "texture": "#antenna", "shade": false},
+        "south": {"uv": [1, 0, 4, 2], "texture": "#antenna", "shade": false},
+        "west": {"uv": [1, 2, 0, 0], "rotation": 180, "texture": "#antenna", "shade": false},
+        "up": {"uv": [1, 2, 4, 3], "rotation": 180, "texture": "#antenna", "shade": false},
+        "down": {"uv": [1, 2, 4, 3], "texture": "#antenna", "shade": false}
+      }
+    },
+    {
+      "name": "AntennaFin",
+      "from": [3, 9, -0.5],
+      "to": [13, 21, -0.5],
+      "shade": false,
+      "faces": {
+        "north": {"uv": [0, 8, 5, 3], "rotation": 180, "texture": "#antenna", "shade": false},
+        "south": {"uv": [0, 3, 5, 8], "texture": "#antenna", "shade": false}
+      }
+    }
+  ]
+}

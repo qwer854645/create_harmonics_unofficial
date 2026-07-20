@@ -1,0 +1,244 @@
+package io.github.qwer854645.createresonance.content.kinetics.recordPlayer
+
+import com.simibubi.create.content.kinetics.base.KineticBlock
+import com.simibubi.create.content.kinetics.base.KineticBlockEntity
+import com.simibubi.create.content.kinetics.belt.behaviour.DirectBeltInputBehaviour
+import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
+import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.INamedIconOptions
+import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollOptionBehaviour
+import com.simibubi.create.foundation.gui.AllIcons
+import dev.engine_room.flywheel.api.visualization.VisualizationManager
+import io.github.qwer854645.createresonance.config.ModStressConfig
+import io.github.qwer854645.createresonance.foundation.extension.lerpTo
+import io.github.qwer854645.createresonance.foundation.goggles.ResonanceGoggles
+import io.github.qwer854645.createresonance.foundation.registry.ModIcons
+import net.createmod.catnip.math.AngleHelper
+import net.minecraft.ChatFormatting
+import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
+import net.minecraft.network.chat.Component
+import net.minecraft.world.Clearable
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.block.entity.BlockEntityType
+import net.minecraft.world.level.block.state.BlockState
+import net.neoforged.neoforge.items.ItemStackHandler
+import kotlin.math.abs
+
+abstract class RecordPlayerBlockEntity(
+    type: BlockEntityType<*>,
+    pos: BlockPos,
+    state: BlockState,
+) : KineticBlockEntity(type, pos, state),
+    Clearable {
+    companion object {
+        fun handlePlaybackEnd(
+            playerId: String,
+            failure: Boolean = false,
+        ) {
+            val blockEntity = RecordPlayerBehaviour.getBlockEntityByPlayerUUID(playerId)
+            blockEntity?.playerBehaviour?.onPlaybackEnd(failure)
+        }
+
+        fun handleAudioTitleChange(
+            playerId: String,
+            newTitle: String,
+            durationSeconds: Int = -1,
+        ) {
+            val blockEntity = RecordPlayerBehaviour.getBlockEntityByPlayerUUID(playerId)
+            blockEntity?.playerBehaviour?.onAudioTitleUpdate(newTitle)
+            if (durationSeconds > 0) {
+                blockEntity?.playerBehaviour?.onDurationUpdate(durationSeconds)
+            }
+        }
+    }
+
+    enum class PlaybackMode : INamedIconOptions {
+        PLAY(AllIcons.I_PLAY),
+        PAUSE(AllIcons.I_PAUSE),
+        PLAY_STATIC_PITCH(ModIcons.I_PLAY_PITCH_STATIC),
+        PAUSE_STATIC_PITCH(ModIcons.I_PAUSE_PITCH_STATIC),
+        ;
+
+        private val translationKey: String
+        private val icon: AllIcons
+
+        constructor(icon: AllIcons) {
+            this.icon = icon
+            this.translationKey = "create_resonance.record_player.playback_mode." + name.lowercase()
+        }
+
+        override fun getIcon(): AllIcons = icon
+
+        override fun getTranslationKey(): String = translationKey
+    }
+
+    lateinit var playerBehaviour: RecordPlayerBehaviour
+        private set
+
+    lateinit var playbackMode: ScrollOptionBehaviour<PlaybackMode>
+        private set
+
+    var visualSpeed = 0f
+    private val visualSpeedSmoothFactor = 0.1f
+
+    private var accumulatedRotation = 0.0
+    private var previousRotation = 0.0
+
+    override fun tick() {
+        super.tick()
+        if (level?.isClientSide == true && !VisualizationManager.supportsVisualization(level)) {
+            visualSpeed = visualSpeed.lerpTo(this.speed, visualSpeedSmoothFactor)
+        }
+
+        refreshNetworkStress()
+    }
+
+    fun getRotationAngle(partialTicks: Float): Float {
+        previousRotation = accumulatedRotation
+        val deg = visualSpeed / (360 * 5)
+        accumulatedRotation += deg
+        accumulatedRotation %= 360.0
+
+        return AngleHelper.angleLerp(partialTicks.toDouble(), previousRotation, accumulatedRotation)
+    }
+
+    override fun remove() {
+        super.remove()
+    }
+
+    override fun addBehaviours(behaviours: MutableList<BlockEntityBehaviour>) {
+        playerBehaviour = RecordPlayerBehaviour(this)
+        behaviours.add(playerBehaviour)
+        behaviours.add(DirectBeltInputBehaviour(this).allowingBeltFunnels())
+
+        playbackMode =
+            ScrollOptionBehaviour(
+                PlaybackMode::class.java,
+                Component.translatable("create_resonance.record_player.playback_mode"),
+                this,
+                RecordPlayerValueBoxTransform { blockState, direction ->
+                    val axis: Direction.Axis = direction.axis
+                    val beAxis: Direction.Axis =
+                        (blockState.block as? KineticBlock)?.getRotationAxis(blockState) ?: direction.axis
+                    beAxis !== axis
+                },
+            )
+        behaviours.add(playbackMode)
+    }
+
+    override fun clearContent() {
+        for (i in 0 until itemHandler.slots) {
+            itemHandler.setStackInSlot(i, ItemStack.EMPTY)
+        }
+    }
+
+    fun applyInventoryToBlock(wrapped: ItemStackHandler) {
+        for (i in 0 until itemHandler.slots) {
+            itemHandler.setStackInSlot(i, if (i < wrapped.slots) wrapped.getStackInSlot(i) else ItemStack.EMPTY)
+        }
+    }
+
+    private var cachedStressImpact = Float.NaN
+
+    fun refreshNetworkStress() {
+        if (level?.isClientSide == true || !hasNetwork()) return
+        val newStress = calculateStressApplied()
+        if (cachedStressImpact == newStress) return
+        cachedStressImpact = newStress
+        orCreateNetwork.updateStressFor(this, newStress)
+        setChanged()
+    }
+
+    override fun onSpeedChanged(previousSpeed: Float) {
+        super.onSpeedChanged(previousSpeed)
+
+        cachedStressImpact = Float.NaN
+    }
+
+    override fun calculateStressApplied(): Float {
+        val baseImpact = ModStressConfig.getImpact(stressConfigKey)?.asDouble?.toFloat() ?: 0.0f
+
+        val applied =
+            when (playerBehaviour.playbackState) {
+                PlaybackState.STOPPED -> {
+                    0f
+                }
+
+                PlaybackState.PAUSED -> {
+                    if (playerBehaviour.speedInterrupted) {
+                        calculatePlayingStress(baseImpact)
+                    } else {
+                        baseImpact / 4f
+                    }
+                }
+
+                PlaybackState.PLAYING -> {
+                    calculatePlayingStress(baseImpact)
+                }
+            }
+
+        lastStressApplied = applied
+        return applied
+    }
+
+    private fun calculatePlayingStress(baseImpact: Float): Float {
+        if (!playerBehaviour.isStaticPitchMode) return baseImpact
+        val rpm = abs(theoreticalSpeed)
+        return if (rpm in (0f + Float.MIN_VALUE)..128f) baseImpact * (128f / rpm) else baseImpact
+    }
+
+    val itemHandler: RecordPlayerItemHandler
+        get() = playerBehaviour.itemHandler
+
+    override fun addToGoggleTooltip(
+        tooltip: MutableList<Component>,
+        isPlayerSneaking: Boolean,
+    ): Boolean {
+        super.addToGoggleTooltip(tooltip, isPlayerSneaking)
+        ResonanceGoggles.header(tooltip, "gui.goggles.record_player.header")
+
+        val stateKey =
+            when (playerBehaviour.playbackState) {
+                PlaybackState.PLAYING -> "gui.goggles.record_player.state.playing"
+                PlaybackState.PAUSED -> "gui.goggles.record_player.state.paused"
+                PlaybackState.STOPPED -> "gui.goggles.record_player.state.stopped"
+            }
+        val stateStyle =
+            when (playerBehaviour.playbackState) {
+                PlaybackState.PLAYING -> ChatFormatting.GREEN
+                PlaybackState.PAUSED -> ChatFormatting.YELLOW
+                PlaybackState.STOPPED -> ChatFormatting.DARK_GRAY
+            }
+        ResonanceGoggles.line(tooltip, stateKey, style = stateStyle)
+
+        if (playerBehaviour.hasRecord()) {
+            val title =
+                playerBehaviour.audioPlayingTitle?.takeIf { it.isNotBlank() }
+                    ?: playerBehaviour.getRecord().hoverName.string
+            ResonanceGoggles.line(
+                tooltip,
+                "gui.goggles.record_player.track",
+                ResonanceGoggles.truncate(title),
+            )
+            val current = playerBehaviour.playtimeClock.currentPlaytime
+            val duration = playerBehaviour.cachedDurationSeconds?.toDouble()?.takeIf { it > 0 }
+            if (duration != null) {
+                ResonanceGoggles.line(
+                    tooltip,
+                    "gui.goggles.record_player.progress",
+                    ResonanceGoggles.formatTime(current),
+                    ResonanceGoggles.formatTime(duration),
+                )
+            } else {
+                ResonanceGoggles.line(
+                    tooltip,
+                    "gui.goggles.record_player.position",
+                    ResonanceGoggles.formatTime(current),
+                )
+            }
+        } else {
+            ResonanceGoggles.line(tooltip, "gui.goggles.record_player.no_disc", style = ChatFormatting.DARK_GRAY)
+        }
+        return true
+    }
+}

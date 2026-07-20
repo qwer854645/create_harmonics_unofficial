@@ -1,0 +1,53 @@
+{
+  "credit": "Conductor interior link bulb — larger/lower to cover bottom half-shaft",
+  "parent": "block/block",
+  "ambientocclusion": false,
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "details": "create:block/link_details",
+    "casing": "create:block/brass_casing",
+    "particle": "create:block/link_details"
+  },
+  "elements": [
+    {
+      "name": "PedestalBase",
+      "from": [4, 1.95, 4],
+      "to": [12, 3.25, 12],
+      "faces": {
+        "north": {"uv": [4, 12, 12, 13], "texture": "#casing"},
+        "east": {"uv": [4, 12, 12, 13], "texture": "#casing"},
+        "south": {"uv": [4, 12, 12, 13], "texture": "#casing"},
+        "west": {"uv": [4, 12, 12, 13], "texture": "#casing"},
+        "up": {"uv": [4, 4, 12, 12], "texture": "#casing"},
+        "down": {"uv": [4, 4, 12, 12], "texture": "#casing"}
+      }
+    },
+    {
+      "name": "PedestalStem",
+      "from": [6.5, 3.25, 6.5],
+      "to": [9.5, 4.5, 9.5],
+      "faces": {
+        "north": {"uv": [6, 11, 9, 12], "texture": "#casing"},
+        "east": {"uv": [6, 11, 9, 12], "texture": "#casing"},
+        "south": {"uv": [6, 11, 9, 12], "texture": "#casing"},
+        "west": {"uv": [6, 11, 9, 12], "texture": "#casing"},
+        "up": {"uv": [6, 6, 9, 9], "texture": "#casing"},
+        "down": {"uv": [6, 6, 9, 9], "texture": "#casing"}
+      }
+    },
+    {
+      "name": "Bulb",
+      "from": [4.5, 4.5, 4.5],
+      "to": [11.5, 8.85, 11.5],
+      "shade": false,
+      "faces": {
+        "north": {"uv": [13.5, 0, 16, 2.5], "texture": "#details", "shade": false},
+        "east": {"uv": [13.5, 0, 16, 2.5], "texture": "#details", "shade": false},
+        "south": {"uv": [13.5, 0, 16, 2.5], "texture": "#details", "shade": false},
+        "west": {"uv": [13.5, 0, 16, 2.5], "texture": "#details", "shade": false},
+        "up": {"uv": [13.5, 0, 16, 2.5], "texture": "#details", "shade": false},
+        "down": {"uv": [13.5, 0, 16, 2.5], "texture": "#details", "shade": false}
+      }
+    }
+  ]
+}

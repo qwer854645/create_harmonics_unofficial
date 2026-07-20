@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate original replacement assets for Create: Webdisc."""
+"""Generate original replacement assets for Create: Resonance."""
 
 from __future__ import annotations
 
@@ -15,8 +15,8 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
-TEXTURES = ROOT / "common" / "src" / "main" / "resources" / "assets" / "create_webdisc" / "textures"
-SOUNDS = ROOT / "common" / "src" / "main" / "resources" / "assets" / "create_webdisc" / "sounds"
+TEXTURES = ROOT / "common" / "src" / "main" / "resources" / "assets" / "create_resonance" / "textures"
+SOUNDS = ROOT / "common" / "src" / "main" / "resources" / "assets" / "create_resonance" / "sounds"
 
 # Create-inspired palette
 ANDESITE = (110, 110, 110)
@@ -36,7 +36,7 @@ VINYL = (32, 34, 40)
 VINYL_GROOVE = (48, 50, 58)
 
 RECORD_COLORS = {
-    "webdisc": ((120, 220, 255), (40, 160, 210)),
+    "resonance_disc": ((120, 220, 255), (40, 160, 210)),
 }
 
 
@@ -94,7 +94,7 @@ def draw_andesite_face(img: Image.Image, x0: int, y0: int, w: int, h: int, top: 
         draw.ellipse((cx - 2, cy - 2, cx + 1, cy + 1), fill=BRASS)
 
 
-def make_andesite_web_player_texture() -> Image.Image:
+def make_andesite_resonator_texture() -> Image.Image:
     img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
     draw_andesite_face(img, 0, 0, 16, 16, top=False)
     draw_andesite_face(img, 16, 0, 16, 16, top=True)
@@ -115,7 +115,7 @@ def make_andesite_web_player_texture() -> Image.Image:
     return img
 
 
-def make_webdisc_imprinter_texture() -> Image.Image:
+def make_resonance_press_texture() -> Image.Image:
     img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
     draw_andesite_face(img, 0, 0, 32, 32, top=True)
     draw_andesite_face(img, 32, 0, 32, 32, top=False)
@@ -286,7 +286,7 @@ def generate_logo() -> None:
 
 def generate_textures() -> None:
     # Hand-drawn assets (do not overwrite):
-    # block/andesite_web_player/*, item/webdisc_blank/base.png, block/webdisc_visual/webdisc.png
+    # block/andesite_resonator/*, item/resonance_disc_blank/base.png, block/resonance_disc_visual/resonance_disc.png
     save_png(TEXTURES / "gui/icons.png", make_icons_texture())
     save_png(TEXTURES / "gui/logo_small.png", make_logo_texture())
     save_png(TEXTURES / "gui/record_press_base.png", make_record_press_gui())
@@ -356,7 +356,7 @@ def generate_sounds() -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate Create: Webdisc replacement assets")
+    parser = argparse.ArgumentParser(description="Generate Create: Resonance replacement assets")
     parser.add_argument("--logo-only", action="store_true", help="Regenerate logo_small.png only")
     args = parser.parse_args()
 

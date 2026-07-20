@@ -1,0 +1,13 @@
+{
+  "type": "create:pressing",
+  "ingredients": [
+    {
+      "item": "create_resonance:resonance_disc"
+    }
+  ],
+  "results": [
+    {
+      "id": "create_resonance:resonance_disc"
+    }
+  ]
+}

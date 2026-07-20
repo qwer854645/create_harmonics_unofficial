@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BNB",
+    "NCN",
+    "BNB"
+  ],
+  "key": {
+    "B": { "tag": "c:ingots/brass" },
+    "N": { "item": "minecraft:note_block" },
+    "C": { "item": "create:cogwheel" }
+  },
+  "result": {
+    "id": "create_resonance:kinetic_music_box",
+    "count": 1
+  }
+}

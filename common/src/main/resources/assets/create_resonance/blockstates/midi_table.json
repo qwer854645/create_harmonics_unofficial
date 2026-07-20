@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "create_resonance:block/midi_table/block" }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "variants": {
+    "facing=north,has_resonance_disc=true,powered=true": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=north,has_resonance_disc=true,powered=false": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=north,has_resonance_disc=false,powered=true": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=north,has_resonance_disc=false,powered=false": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=south,has_resonance_disc=true,powered=true": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=south,has_resonance_disc=true,powered=false": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=south,has_resonance_disc=false,powered=true": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=south,has_resonance_disc=false,powered=false": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=east,has_resonance_disc=true,powered=true": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=east,has_resonance_disc=true,powered=false": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=east,has_resonance_disc=false,powered=true": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=east,has_resonance_disc=false,powered=false": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=west,has_resonance_disc=true,powered=true": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=west,has_resonance_disc=true,powered=false": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=west,has_resonance_disc=false,powered=true": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=west,has_resonance_disc=false,powered=false": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=up,has_resonance_disc=true,powered=true": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=up,has_resonance_disc=true,powered=false": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=up,has_resonance_disc=false,powered=true": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=up,has_resonance_disc=false,powered=false": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=down,has_resonance_disc=true,powered=true": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=down,has_resonance_disc=true,powered=false": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=down,has_resonance_disc=false,powered=true": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    },
+    "facing=down,has_resonance_disc=false,powered=false": {
+      "model": "create_resonance:block/kinetic_network_jukebox/block"
+    }
+  }
+}

@@ -1,0 +1,182 @@
+package io.github.qwer854645.createresonance.foundation.behaviour.movement
+
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour
+import com.simibubi.create.content.contraptions.AbstractContraptionEntity
+import com.simibubi.create.content.contraptions.behaviour.MovementContext
+import io.github.qwer854645.createresonance.foundation.eventbus.EventBus
+import io.github.qwer854645.createresonance.foundation.eventbus.ServerEvents
+import io.github.qwer854645.createresonance.foundation.network.packet.ContraptionBlockDataChangedPacket
+import io.github.qwer854645.createresonance.foundation.registry.ModPackets
+import net.minecraft.core.BlockPos
+import net.minecraft.core.HolderLookup
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.collections.set
+
+interface Stainable {
+    var isDirty: Boolean
+
+    fun markDirty() {
+        isDirty = true
+    }
+
+    fun clean() {
+        isDirty = false
+    }
+}
+
+interface StopAwareData {
+    var stopMovingCalled: Boolean
+}
+
+abstract class SmartMovementBehaviour<Data : Stainable> : MovementBehaviour {
+    abstract fun contextDataFactory(context: MovementContext): Data
+
+    companion object {
+        private val trackingCounts = ConcurrentHashMap<Int, AtomicInteger>()
+    }
+
+    enum class SyncType {
+        NET,
+        DISK,
+    }
+
+    init {
+        EventBus.onSync<ServerEvents.PlayerStartTrackingEntity> { event ->
+            val entity = event.entity
+            if (entity !is AbstractContraptionEntity) return@onSync
+
+            trackingCounts.getOrPut(entity.id) { AtomicInteger(0) }.incrementAndGet()
+
+            entity.contraption.actors.forEach { (_, context) ->
+                context.resync()
+            }
+        }
+
+        EventBus.onSync<ServerEvents.PlayerStopTrackingEntity> { event ->
+            val entity = event.entity
+            if (entity !is AbstractContraptionEntity) return@onSync
+
+            val remaining = trackingCounts[entity.id]?.decrementAndGet() ?: 0
+            if (remaining <= 0) {
+                trackingCounts.remove(entity.id)
+
+                entity.contraption.actors.forEach { (_, context) ->
+                    val data = context.temporaryData as? Data ?: return@forEach
+                    if (data is StopAwareData && data.stopMovingCalled) {
+                        return@forEach
+                    }
+                    context.blockEntityData?.let { onStopTracking(it) }
+                }
+            }
+        }
+    }
+
+    abstract fun onStopTracking(blockEntityData: CompoundTag)
+
+    @Suppress("UNCHECKED_CAST")
+    fun getContextData(context: MovementContext): Data {
+        if (context.temporaryData == null) {
+            context.temporaryData =
+                contextDataFactory(context).apply {
+                    read(context, context.data, this, SyncType.DISK, context.world.registryAccess())
+                }
+            if (!context.world.isClientSide) {
+                resyncData(context)
+            }
+        }
+        return context.temporaryData as Data
+    }
+
+    /**
+     * Serialize data in compound tags for disk and networking
+     */
+    abstract fun write(
+        target: CompoundTag,
+        contextData: Data,
+        context: MovementContext,
+        syncType: SyncType,
+        provider: HolderLookup.Provider,
+    )
+
+    /**
+     * Deserialize data and updates [target]
+     */
+    abstract fun read(
+        context: MovementContext,
+        from: CompoundTag,
+        target: Data,
+        syncType: SyncType,
+        provider: HolderLookup.Provider,
+    )
+
+    override fun writeExtraData(context: MovementContext) {
+        write(context.data, getContextData(context), context, SyncType.DISK, context.world.registryAccess())
+    }
+
+    fun syncFromBlock(context: MovementContext) {
+        val nbt = context.contraption.blocks[context.localPos]?.nbt ?: return
+        val data = getContextData(context)
+        data.markDirty()
+        read(context, nbt, data, SyncType.NET, context.world.registryAccess())
+    }
+
+    /**
+     * Equivalent to [com.simibubi.create.foundation.blockEntity.SmartBlockEntity.setChanged] but for contraptions
+     */
+    fun resyncData(
+        context: MovementContext,
+        checkForDirty: Boolean = false,
+    ) {
+        val data = getContextData(context)
+        if (checkForDirty && !data.isDirty) {
+            return
+        }
+        val block = context.contraption.blocks[context.localPos] ?: return
+        val nbt = block.nbt ?: return
+        write(nbt, data, context, SyncType.NET, context.world.registryAccess())
+        context.contraption.entity.setBlockData(context.localPos, block)
+        data.clean()
+    }
+}
+
+/**
+ * Create mod lacks a way to update contraption block data without replacing the entire block state
+ * This function updates the block data of a contraption block and syncs it to clients
+ */
+
+inline fun <reified DataType> MovementContext.getContextData(): DataType? = this.temporaryData as? DataType
+
+fun MovementContext.resync() {
+    val actor = this.contraption.getActorAt(localPos) ?: return
+    val state = actor.left.state
+    val behaviour = MovementBehaviour.REGISTRY.get(state)
+    if (behaviour is SmartMovementBehaviour<*>) {
+        behaviour.resyncData(this)
+    }
+}
+
+fun AbstractContraptionEntity.handleBlockDataChange(
+    localPos: BlockPos,
+    newData: CompoundTag,
+) {
+    if (contraption == null || !contraption.blocks.containsKey(localPos)) return
+    val info: StructureBlockInfo = contraption.blocks[localPos] ?: return
+    val context = contraption.getActorAt(localPos)?.right ?: return
+    contraption.blocks[localPos] = StructureBlockInfo(info.pos(), info.state, newData)
+    val behaviour = MovementBehaviour.REGISTRY.get(info.state)
+    if (behaviour is SmartMovementBehaviour<*>) {
+        behaviour.syncFromBlock(context)
+    }
+}
+
+fun AbstractContraptionEntity.setBlockData(
+    localPos: BlockPos,
+    newInfo: StructureBlockInfo,
+) {
+    contraption.blocks[localPos] = newInfo
+    ModPackets.sendToTrackingEntity(ContraptionBlockDataChangedPacket(id, localPos, newInfo.nbt ?: CompoundTag()), this)
+}

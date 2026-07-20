@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "create_resonance:block/music_conductor/block",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "create_resonance:block/music_conductor/block",
+      "x": 90,
+      "y": 180
+    },
+    "facing=east": {
+      "model": "create_resonance:block/music_conductor/block",
+      "x": 90,
+      "y": 90
+    },
+    "facing=west": {
+      "model": "create_resonance:block/music_conductor/block",
+      "x": 90,
+      "y": 270
+    },
+    "facing=up": {
+      "model": "create_resonance:block/music_conductor/block"
+    },
+    "facing=down": {
+      "model": "create_resonance:block/music_conductor/block",
+      "x": 180
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BNB",
+    "NCN",
+    "BRB"
+  ],
+  "key": {
+    "B": { "tag": "c:ingots/brass" },
+    "N": { "item": "minecraft:note_block" },
+    "C": { "item": "create:precision_mechanism" },
+    "R": { "item": "create:transmitter" }
+  },
+  "result": {
+    "id": "create_resonance:music_conductor",
+    "count": 1
+  }
+}

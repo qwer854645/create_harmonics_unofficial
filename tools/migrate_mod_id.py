@@ -125,7 +125,7 @@ def patch_gradle_mod_id() -> None:
 
 
 def patch_mod_id_constant() -> None:
-    path = ROOT / "common/src/main/kotlin/me/mochibit/createharmonics/CreateHarmonicsMod.kt"
+    path = ROOT / "common/src/main/kotlin/io/github/qwer854645/createresonance/CreateResonanceMod.kt"
     text = path.read_text(encoding="utf-8")
     text = re.sub(
         r'const val MOD_ID = "createharmonics(_unofficial)?"',
@@ -133,7 +133,7 @@ def patch_mod_id_constant() -> None:
         text,
     )
     path.write_text(text, encoding="utf-8")
-    print("updated CreateHarmonicsMod.MOD_ID")
+    print("updated CreateResonanceMod.MOD_ID")
 
 
 def main() -> None:

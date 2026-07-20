@@ -1,0 +1,11 @@
+{
+  "type": "create_resonance:add_record_to_end_ship",
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:chests/end_city_treasure"
+    }
+  ],
+  "item": "create_resonance:resonance_disc",
+  "chance": 0.10
+}

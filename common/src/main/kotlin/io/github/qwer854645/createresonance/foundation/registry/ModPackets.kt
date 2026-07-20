@@ -1,0 +1,27 @@
+package io.github.qwer854645.createresonance.foundation.registry
+
+import io.github.qwer854645.createresonance.foundation.info
+import io.github.qwer854645.createresonance.foundation.network.packet.ModPacket
+import io.github.qwer854645.createresonance.foundation.services.NetworkService
+import io.github.qwer854645.createresonance.foundation.services.networkService
+import net.minecraft.core.Registry
+import kotlin.reflect.KClass
+
+object ModPackets : CommonRegistry, NetworkService by networkService {
+    val packetClasses: List<KClass<out ModPacket>> =
+        mutableListOf<KClass<out ModPacket>>().apply {
+            fun collectSubclasses(kClass: KClass<out ModPacket>) {
+                val subs = kClass.sealedSubclasses
+                if (subs.isEmpty()) {
+                    add(kClass)
+                } else {
+                    subs.forEach { collectSubclasses(it) }
+                }
+            }
+            collectSubclasses(ModPacket::class)
+        }
+
+    override fun register(registry: Registry<*>?) {
+        "Loading Mod Packets".info()
+    }
+}

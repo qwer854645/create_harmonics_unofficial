@@ -11,7 +11,7 @@ from pathlib import Path
 from nbtlib import Compound, File, Int, List, String
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT_DIR = ROOT / "common" / "src" / "main" / "resources" / "assets" / "create_webdisc" / "ponder"
+OUT_DIR = ROOT / "common" / "src" / "main" / "resources" / "assets" / "create_resonance" / "ponder"
 
 # Base plate uses a distinct checker pattern (not upstream snow / white concrete).
 BASE_A = "minecraft:gray_concrete"
@@ -22,7 +22,7 @@ RECORD_PRESS_BLOCKS = [
     {"pos": [2, 1, 4], "name": "create:belt", "props": {"casing": "false", "waterlogged": "false", "part": "start", "facing": "east", "slope": "horizontal"}},
     {"pos": [3, 1, 4], "name": "create:belt", "props": {"casing": "false", "waterlogged": "false", "part": "end", "facing": "east", "slope": "horizontal"}},
     {"pos": [3, 1, 5], "name": "create:gearbox", "props": {"axis": "y"}},
-    {"pos": [4, 1, 4], "name": "create_webdisc:webdisc_imprinter", "props": {"waterlogged": "false", "facing": "north"}},
+    {"pos": [4, 1, 4], "name": "create_resonance:resonance_press", "props": {"waterlogged": "false", "facing": "north"}},
     {"pos": [4, 1, 5], "name": "create:gearbox", "props": {"axis": "y"}},
     {"pos": [4, 1, 6], "name": "create:gearbox", "props": {"axis": "x"}},
     {"pos": [4, 1, 7], "name": "create:creative_motor", "props": {"facing": "north"}},
@@ -58,7 +58,7 @@ ANDESITE_JUKEBOX_BLOCKS = [
     {"pos": [16, 1, 23], "name": "create:shaft", "props": {"waterlogged": "false", "axis": "z"}},
     {"pos": [16, 1, 24], "name": "create:creative_motor", "props": {"facing": "north"}},
     {"pos": [19, 1, 16], "name": "create:creative_motor", "props": {"facing": "up"}},
-    {"pos": [16, 2, 16], "name": "create_webdisc:andesite_web_player", "props": {"has_record": "false", "facing": "up"}},
+    {"pos": [16, 2, 16], "name": "create_resonance:kinetic_network_jukebox", "props": {"has_resonance_disc": "false", "powered": "false", "facing": "up"}},
     {"pos": [16, 2, 17], "name": "create:speedometer", "props": {"facing": "up", "axis_along_first": "false"}},
     {"pos": [16, 2, 18], "name": "create:andesite_encased_cogwheel", "props": {"top_shaft": "false", "bottom_shaft": "true", "axis": "z"}},
     {"pos": [18, 2, 15], "name": "create:mechanical_arm", "props": {"ceiling": "false"}},
@@ -67,8 +67,35 @@ ANDESITE_JUKEBOX_BLOCKS = [
     {"pos": [19, 2, 15], "name": "create:cogwheel", "props": {"waterlogged": "false", "axis": "y"}},
     {"pos": [19, 2, 16], "name": "create:cogwheel", "props": {"waterlogged": "false", "axis": "y"}},
     {"pos": [19, 2, 17], "name": "create:cogwheel", "props": {"waterlogged": "false", "axis": "y"}},
-    {"pos": [15, 3, 14], "name": "create_webdisc:andesite_web_player", "props": {"has_record": "true", "facing": "west"}},
+    {"pos": [15, 3, 14], "name": "create_resonance:kinetic_network_jukebox", "props": {"has_resonance_disc": "true", "powered": "false", "facing": "west"}},
     {"pos": [16, 3, 16], "name": "create:mechanical_bearing", "props": {"facing": "west"}},
+]
+
+# Motor below (facing up) → MIDI table (shaft from below). Optional side belts for feed demo.
+MIDI_TABLE_BLOCKS = [
+    {"pos": [3, 1, 2], "name": "create:creative_motor", "props": {"facing": "up"}},
+    {"pos": [1, 2, 2], "name": "create:belt", "props": {"casing": "false", "waterlogged": "false", "part": "start", "facing": "east", "slope": "horizontal"}},
+    {"pos": [2, 2, 2], "name": "create:belt", "props": {"casing": "false", "waterlogged": "false", "part": "end", "facing": "east", "slope": "horizontal"}},
+    {"pos": [3, 2, 2], "name": "create_resonance:midi_table", "props": {"facing": "up"}},
+    {"pos": [4, 2, 2], "name": "create:belt", "props": {"casing": "false", "waterlogged": "false", "part": "start", "facing": "east", "slope": "horizontal"}},
+    {"pos": [5, 2, 2], "name": "create:belt", "props": {"casing": "false", "waterlogged": "false", "part": "end", "facing": "east", "slope": "horizontal"}},
+]
+
+# Solo kinetic music box with shaft from below.
+KINETIC_MUSIC_BOX_BLOCKS = [
+    {"pos": [3, 1, 2], "name": "create:creative_motor", "props": {"facing": "up"}},
+    {"pos": [3, 2, 2], "name": "create_resonance:kinetic_music_box", "props": {"facing": "up"}},
+    {"pos": [3, 2, 3], "name": "create:speedometer", "props": {"facing": "up", "axis_along_first": "false"}},
+]
+
+# Conductor flanked by two section music boxes — shared ensemble demo.
+MUSIC_CONDUCTOR_BLOCKS = [
+    {"pos": [2, 1, 3], "name": "create:creative_motor", "props": {"facing": "up"}},
+    {"pos": [4, 1, 3], "name": "create:creative_motor", "props": {"facing": "up"}},
+    {"pos": [6, 1, 3], "name": "create:creative_motor", "props": {"facing": "up"}},
+    {"pos": [2, 2, 3], "name": "create_resonance:kinetic_music_box", "props": {"facing": "up"}},
+    {"pos": [4, 2, 3], "name": "create_resonance:music_conductor", "props": {"facing": "up"}},
+    {"pos": [6, 2, 3], "name": "create_resonance:kinetic_music_box", "props": {"facing": "up"}},
 ]
 
 
@@ -133,8 +160,11 @@ def write_structure(path: Path, root: Compound) -> None:
 
 
 def main() -> None:
-    write_structure(OUT_DIR / "webdisc_imprinter.nbt", build_structure((9, 6, 9), RECORD_PRESS_BLOCKS))
-    write_structure(OUT_DIR / "andesite_web_player.nbt", build_structure((33, 7, 33), ANDESITE_JUKEBOX_BLOCKS))
+    write_structure(OUT_DIR / "resonance_press.nbt", build_structure((9, 6, 9), RECORD_PRESS_BLOCKS))
+    write_structure(OUT_DIR / "kinetic_network_jukebox.nbt", build_structure((33, 7, 33), ANDESITE_JUKEBOX_BLOCKS))
+    write_structure(OUT_DIR / "midi_table.nbt", build_structure((7, 4, 5), MIDI_TABLE_BLOCKS))
+    write_structure(OUT_DIR / "kinetic_music_box.nbt", build_structure((7, 4, 5), KINETIC_MUSIC_BOX_BLOCKS))
+    write_structure(OUT_DIR / "music_conductor.nbt", build_structure((9, 4, 7), MUSIC_CONDUCTOR_BLOCKS))
     print(f"Wrote ponder structures to {OUT_DIR.relative_to(ROOT)}")
 
 

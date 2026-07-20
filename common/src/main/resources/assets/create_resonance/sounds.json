@@ -1,0 +1,21 @@
+{
+  "sliding_stone": {
+    "subtitle": "sounds.create_resonance.subtitle.sliding_stone",
+    "sounds": [
+      {
+        "name": "create_resonance:sliding_stone",
+        "stream": false
+      }
+    ]
+  },
+  "glitter": {
+    "subtitle": "sounds.create_resonance.subtitle.glitter",
+    "sounds": [
+      {
+        "name": "create_resonance:glitter",
+        "stream": false
+      }
+    ]
+  }
+}
+

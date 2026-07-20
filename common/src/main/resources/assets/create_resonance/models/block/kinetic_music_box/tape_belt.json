@@ -1,0 +1,109 @@
+{
+  "credit": "Paper tape loop around the two internal shafts (centers y=11, z=4/12). Clearance outside half-shaft rotating AABB (r≈√2).",
+  "textures": {
+    "tape": "create_resonance:block/kinetic_music_box/tape",
+    "particle": "create_resonance:block/kinetic_music_box/tape"
+  },
+  "elements": [
+    {
+      "name": "TapeTop",
+      "from": [5, 12.55, 4],
+      "to": [11, 12.85, 12],
+      "faces": {
+        "up": {"uv": [0, 0, 16, 16], "texture": "#tape"},
+        "down": {"uv": [0, 0, 16, 16], "texture": "#tape"},
+        "north": {"uv": [0, 0, 16, 1], "texture": "#tape"},
+        "south": {"uv": [0, 0, 16, 1], "texture": "#tape"},
+        "east": {"uv": [0, 0, 16, 1], "texture": "#tape"},
+        "west": {"uv": [0, 0, 16, 1], "texture": "#tape"}
+      }
+    },
+    {
+      "name": "TapeBottom",
+      "from": [5, 9.15, 4],
+      "to": [11, 9.45, 12],
+      "faces": {
+        "up": {"uv": [0, 0, 16, 16], "texture": "#tape"},
+        "down": {"uv": [0, 0, 16, 16], "texture": "#tape"},
+        "north": {"uv": [0, 0, 16, 1], "texture": "#tape"},
+        "south": {"uv": [0, 0, 16, 1], "texture": "#tape"},
+        "east": {"uv": [0, 0, 16, 1], "texture": "#tape"},
+        "west": {"uv": [0, 0, 16, 1], "texture": "#tape"}
+      }
+    },
+    {
+      "name": "TapeFront",
+      "from": [5, 9.45, 2.15],
+      "to": [11, 12.55, 2.45],
+      "faces": {
+        "north": {"uv": [0, 2, 16, 14], "texture": "#tape"},
+        "south": {"uv": [0, 2, 16, 14], "texture": "#tape"},
+        "up": {"uv": [0, 0, 16, 1], "texture": "#tape"},
+        "down": {"uv": [0, 0, 16, 1], "texture": "#tape"},
+        "east": {"uv": [0, 2, 1, 14], "texture": "#tape"},
+        "west": {"uv": [0, 2, 1, 14], "texture": "#tape"}
+      }
+    },
+    {
+      "name": "TapeBack",
+      "from": [5, 9.45, 13.55],
+      "to": [11, 12.55, 13.85],
+      "faces": {
+        "north": {"uv": [0, 2, 16, 14], "texture": "#tape"},
+        "south": {"uv": [0, 2, 16, 14], "texture": "#tape"},
+        "up": {"uv": [0, 0, 16, 1], "texture": "#tape"},
+        "down": {"uv": [0, 0, 16, 1], "texture": "#tape"},
+        "east": {"uv": [0, 2, 1, 14], "texture": "#tape"},
+        "west": {"uv": [0, 2, 1, 14], "texture": "#tape"}
+      }
+    },
+    {
+      "name": "TapeFrontTopJoin",
+      "from": [5, 12.55, 2.15],
+      "to": [11, 12.85, 4],
+      "faces": {
+        "up": {"uv": [0, 0, 16, 4], "texture": "#tape"},
+        "down": {"uv": [0, 0, 16, 4], "texture": "#tape"},
+        "north": {"uv": [0, 0, 16, 1], "texture": "#tape"},
+        "east": {"uv": [0, 0, 4, 1], "texture": "#tape"},
+        "west": {"uv": [0, 0, 4, 1], "texture": "#tape"}
+      }
+    },
+    {
+      "name": "TapeFrontBottomJoin",
+      "from": [5, 9.15, 2.15],
+      "to": [11, 9.45, 4],
+      "faces": {
+        "up": {"uv": [0, 0, 16, 4], "texture": "#tape"},
+        "down": {"uv": [0, 0, 16, 4], "texture": "#tape"},
+        "north": {"uv": [0, 0, 16, 1], "texture": "#tape"},
+        "east": {"uv": [0, 0, 4, 1], "texture": "#tape"},
+        "west": {"uv": [0, 0, 4, 1], "texture": "#tape"}
+      }
+    },
+    {
+      "name": "TapeBackTopJoin",
+      "from": [5, 12.55, 12],
+      "to": [11, 12.85, 13.85],
+      "faces": {
+        "up": {"uv": [0, 0, 16, 4], "texture": "#tape"},
+        "down": {"uv": [0, 0, 16, 4], "texture": "#tape"},
+        "south": {"uv": [0, 0, 16, 1], "texture": "#tape"},
+        "east": {"uv": [0, 0, 4, 1], "texture": "#tape"},
+        "west": {"uv": [0, 0, 4, 1], "texture": "#tape"}
+      }
+    },
+    {
+      "name": "TapeBackBottomJoin",
+      "from": [5, 9.15, 12],
+      "to": [11, 9.45, 13.85],
+      "faces": {
+        "up": {"uv": [0, 0, 16, 4], "texture": "#tape"},
+        "down": {"uv": [0, 0, 16, 4], "texture": "#tape"},
+        "south": {"uv": [0, 0, 16, 1], "texture": "#tape"},
+        "east": {"uv": [0, 0, 4, 1], "texture": "#tape"},
+        "west": {"uv": [0, 0, 4, 1], "texture": "#tape"}
+      }
+    }
+  ]
+}

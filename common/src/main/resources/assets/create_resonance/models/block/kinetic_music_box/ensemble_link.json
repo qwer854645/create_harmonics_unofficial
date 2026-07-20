@@ -1,0 +1,53 @@
+{
+  "credit": "Section-mode ensemble link bulb on brass pedestal (Stock Link green UVs)",
+  "parent": "block/block",
+  "ambientocclusion": false,
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "details": "create:block/link_details",
+    "casing": "create:block/brass_casing",
+    "particle": "create:block/link_details"
+  },
+  "elements": [
+    {
+      "name": "PedestalBase",
+      "from": [5, 9, 5],
+      "to": [11, 9.75, 11],
+      "faces": {
+        "north": {"uv": [5, 6, 11, 7], "texture": "#casing"},
+        "east": {"uv": [5, 6, 11, 7], "texture": "#casing"},
+        "south": {"uv": [5, 6, 11, 7], "texture": "#casing"},
+        "west": {"uv": [5, 6, 11, 7], "texture": "#casing"},
+        "up": {"uv": [5, 5, 11, 11], "texture": "#casing"},
+        "down": {"uv": [5, 5, 11, 11], "texture": "#casing"}
+      }
+    },
+    {
+      "name": "PedestalStem",
+      "from": [7, 9.75, 7],
+      "to": [9, 10.5, 9],
+      "faces": {
+        "north": {"uv": [7, 5, 9, 6], "texture": "#casing"},
+        "east": {"uv": [7, 5, 9, 6], "texture": "#casing"},
+        "south": {"uv": [7, 5, 9, 6], "texture": "#casing"},
+        "west": {"uv": [7, 5, 9, 6], "texture": "#casing"},
+        "up": {"uv": [7, 7, 9, 9], "texture": "#casing"},
+        "down": {"uv": [7, 7, 9, 9], "texture": "#casing"}
+      }
+    },
+    {
+      "name": "Bulb",
+      "from": [6, 10.5, 6],
+      "to": [10, 14.5, 10],
+      "shade": false,
+      "faces": {
+        "north": {"uv": [13.5, 0, 16, 2.5], "texture": "#details", "shade": false},
+        "east": {"uv": [13.5, 0, 16, 2.5], "texture": "#details", "shade": false},
+        "south": {"uv": [13.5, 0, 16, 2.5], "texture": "#details", "shade": false},
+        "west": {"uv": [13.5, 0, 16, 2.5], "texture": "#details", "shade": false},
+        "up": {"uv": [13.5, 0, 16, 2.5], "texture": "#details", "shade": false},
+        "down": {"uv": [13.5, 0, 16, 2.5], "texture": "#details", "shade": false}
+      }
+    }
+  ]
+}

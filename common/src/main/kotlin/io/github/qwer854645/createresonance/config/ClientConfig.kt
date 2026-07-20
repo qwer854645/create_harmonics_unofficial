@@ -1,0 +1,161 @@
+package io.github.qwer854645.createresonance.config
+
+import net.createmod.catnip.config.ConfigBase
+import net.neoforged.neoforge.common.ModConfigSpec
+
+object ClientConfig : ConfigBase() {
+    lateinit var minPitch: ConfigFloat
+        private set
+
+    lateinit var maxPitch: ConfigFloat
+        private set
+
+    lateinit var reverberatorScanRadius: ConfigInt
+        private set
+
+    lateinit var ytdlpOverrideArgs: CValue<String, ModConfigSpec.ConfigValue<String>>
+        private set
+
+    lateinit var mainMenuLibButtonRow: ConfigInt
+        private set
+
+    lateinit var mainMenuLibButtonOffsetX: ConfigInt
+        private set
+
+    lateinit var ingameMenuLibButtonRow: ConfigInt
+        private set
+
+    lateinit var ingameMenuLibButtonOffsetX: ConfigInt
+        private set
+
+    lateinit var neverShowLibraryDisclaimer: ConfigBool
+        private set
+
+    lateinit var debugFFmpeg: ConfigBool
+        private set
+
+    lateinit var debugAudioPlayer: ConfigBool
+        private set
+
+    override fun registerAll(builder: ModConfigSpec.Builder) {
+        menuButtonsGroup(builder)
+        audioSourceGroup(builder)
+        audioEffectsGroup(builder)
+        libraryGroup(builder)
+        debugGroup(builder)
+        super.registerAll(builder)
+    }
+
+    private fun menuButtonsGroup(builder: ModConfigSpec.Builder) {
+        group(1, "menu_buttons", "Configuration for menu buttons")
+
+        mainMenuLibButtonRow =
+            i(
+                2,
+                0,
+                4,
+                "mainMenuLibButtonRow",
+                "",
+                "Choose the menu row that the Lib Download menu button appears on in the main menu",
+                "Set to 0 to disable the button altogether",
+            )
+
+        mainMenuLibButtonOffsetX =
+            i(
+                -28,
+                Integer.MIN_VALUE,
+                Integer.MAX_VALUE,
+                "mainMenuLibButtonOffsetX",
+                "",
+                "Offset the Lib Download menu button in the main menu by this many pixels on the X axis",
+                "The sign (-/+) of this value determines what side of the row the button appears on (left/right)",
+            )
+
+        ingameMenuLibButtonRow =
+            i(
+                3,
+                0,
+                5,
+                "ingameMenuLibButtonRow",
+                "",
+                "Choose the menu row that the Lib Download menu button appears on in the ingame menu",
+                "Set to 0 to disable the button altogether",
+            )
+
+        ingameMenuLibButtonOffsetX =
+            i(
+                -28,
+                Integer.MIN_VALUE,
+                Integer.MAX_VALUE,
+                "ingameMenuLibButtonOffsetX",
+                "",
+                "Offset the Lib Download menu button in the ingame menu by this many pixels on the X axis",
+                "The sign (-/+) of this value determines what side of the row the button appears on (left/right)",
+            )
+    }
+
+    private fun audioSourceGroup(builder: ModConfigSpec.Builder) {
+        group(1, "audio_sources", "Configuration for audio sources and playback")
+
+        minPitch = f(0.5f, 0.1f, 1.0f, "minPitch", "Minimum pitch for audio playback")
+        maxPitch = f(2.0f, 1.0f, 4.0f, "maxPitch", "Maximum pitch for audio playback")
+
+        ytdlpOverrideArgs =
+            CValue<String, ModConfigSpec.ConfigValue<String>>(
+                "ytdlpOverrideArgs",
+                { builder ->
+                    builder.define("ytdlpOverrideArgs", "")
+                },
+                "Override arguments for yt-dlp when requesting streaming URLs",
+            )
+    }
+
+    private fun audioEffectsGroup(builder: ModConfigSpec.Builder) {
+        group(1, "audio_effects", "Configuration for audio effects")
+
+        reverberatorScanRadius =
+            i(
+                5,
+                1,
+                30,
+                "reverberatorScanRadius",
+                "Radius within which reverberator blocks are detected to adjust the reverb effect.",
+                "Beware: higher values will impact performance.",
+            )
+    }
+
+    private fun libraryGroup(builder: ModConfigSpec.Builder) {
+        group(1, "library", "Configuration for external library management")
+
+        neverShowLibraryDisclaimer =
+            b(
+                false,
+                "neverShowLibraryDisclaimer",
+                "Never show library installation disclaimer on startup",
+                "When enabled, the library installation prompt will not appear on game startup",
+                "You can still access the library installer through the in-game menu button",
+            )
+    }
+
+    private fun debugGroup(builder: ModConfigSpec.Builder) {
+        group(1, "debug", "Debug utilities for detecting errors")
+
+        debugFFmpeg =
+            b(
+                false,
+                "debugFFmpeg",
+                "Enables extensive logging for debugging ffmpeg lifecycle",
+                "This is useful for reporting bugs and discovering why ffmpeg is failing.",
+            )
+
+        debugAudioPlayer =
+            b(
+                false,
+                "debugAudioPlayer",
+                "Enables extensive logging for debugging the audio player lifecycle",
+                "This is useful for reporting bugs and discovering why the audio player is not working as expected.",
+            )
+    }
+
+    override fun getName(): String = "client"
+}

@@ -1,0 +1,26 @@
+{
+  "required": true,
+  "package": "io.github.qwer854645.createresonance.mixin",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "create_resonance.refmap.json",
+  "mixins": [
+    "ArmBlockEntityMixin",
+    "AssemblyOperatorBlockItemMixin",
+    "RecipeApplierMixin",
+    "RecipeGridHandlerMixin",
+    "ShapedRecipeMixin",
+    "ShapelessRecipeMixin"
+  ],
+  "client": [
+    "AbstractWidgetAccessor",
+    "ChannelAccessor",
+    "ChannelMixin",
+    "SoundEngineAccessor",
+    "SoundManagerAccessor"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

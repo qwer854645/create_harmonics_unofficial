@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " P ",
+    "PNP",
+    " A "
+  ],
+  "key": {
+    "P": { "item": "minecraft:paper" },
+    "N": { "item": "minecraft:note_block" },
+    "A": { "item": "create:andesite_alloy" }
+  },
+  "result": {
+    "id": "create_resonance:midi_roll",
+    "count": 1
+  }
+}

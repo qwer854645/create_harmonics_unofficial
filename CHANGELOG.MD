@@ -1,22 +1,20 @@
-# Changelog — Create: Webdisc
+# Changelog — Create: Resonance
 
-Fork changelog for **qwer854645/create_webdisc** (mod ID `create_webdisc`).  
-Upstream release history for the official Create: Harmonics mod is not reproduced here.
+## 1.0.0
 
-## 2.0.0
+### Rebrand
+- New mod identity: **Create: Resonance** (`create_resonance`)
+- Package moved to `io.github.qwer854645.createresonance`
+- Network gear renamed: Resonance Disc / Resonator / Resonance Press
 
-### Rebrand & compliance
-- Rebranded from `createharmonics` to `create_webdisc`
-- Removed upstream All Rights Reserved artwork; added script-generated replacement assets
-- Rewrote README, LICENSE, and NOTICE for derivative-work compliance
-- Bundle LICENSE.MD in release JAR (`META-INF/`)
+### Music boxes
+- Kinetic Music Box (no disc required) — Solo or Section roles
+- **Music Conductor** (dedicated block) — imports the score, sets band channel, syncs Section boxes
+- Import MIDI from `config/create_resonance/import/`
+- Solo playback with RPM-linked tempo
+- Ensemble: Conductor block + Section music boxes on the same channel
+- SoundFont support via `config/create_resonance/soundfonts/`
+- Kinetic Music Box / Conductor: seek; Conductor can stay silent while leading
 
-### Features (this fork)
-- **Brass Web Player** — side-face seek GUI with live duration, precise time input, and restart-from-beginning
-- Chinese (`zh_cn`) tooltips and Ponder translations
-- Bilibili yt-dlp patch script (`tools/repatch-ytdlp-bilibili.ps1`)
-
-### Fixes
-- Seek GUI rendering and sync
-- Restart-from-beginning when client audio player is stopped
-- Real-time duration sync from client audio stream to server
+### Retained
+- Online resonance discs, imprint press, kinetic resonators, seek GUI on kinetic network resonator

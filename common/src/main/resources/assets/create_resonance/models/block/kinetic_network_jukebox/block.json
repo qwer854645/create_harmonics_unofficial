@@ -1,0 +1,68 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "shaft_top": "create_resonance:block/kinetic_network_jukebox/gearbox_top",
+    "shaft_bottom": "create_resonance:block/kinetic_network_jukebox/gearbox_bottom",
+    "side": "create_resonance:block/kinetic_network_jukebox/jukebox_casing",
+    "particle": "create_resonance:block/kinetic_network_jukebox/jukebox_casing"
+  },
+  "elements": [
+    {
+      "name": "ShaftCore",
+      "from": [2, 0.95, 2],
+      "to": [14, 15.05, 14],
+      "faces": {
+        "up": {"uv": [2, 2, 14, 14], "texture": "#shaft_top"},
+        "down": {"uv": [2, 2, 14, 14], "texture": "#shaft_bottom"}
+      }
+    },
+    {
+      "name": "Side_West",
+      "from": [0, 0, 0],
+      "to": [2, 16, 16],
+      "faces": {
+        "north": {"uv": [14, 0, 16, 16], "texture": "#side"},
+        "east": {"uv": [0, 0, 16, 16], "texture": "#side"},
+        "south": {"uv": [0, 0, 2, 16], "texture": "#side"},
+        "west": {"uv": [0, 0, 16, 16], "texture": "#side"},
+        "up": {"uv": [0, 0, 2, 16], "texture": "#shaft_top"},
+        "down": {"uv": [0, 0, 2, 16], "texture": "#shaft_bottom"}
+      }
+    },
+    {
+      "name": "Side_East",
+      "from": [14, 0, 0],
+      "to": [16, 16, 16],
+      "faces": {
+        "north": {"uv": [0, 0, 2, 16], "texture": "#side"},
+        "east": {"uv": [0, 0, 16, 16], "texture": "#side"},
+        "south": {"uv": [14, 0, 16, 16], "texture": "#side"},
+        "west": {"uv": [0, 0, 16, 16], "texture": "#side"},
+        "up": {"uv": [14, 0, 16, 16], "texture": "#shaft_top"},
+        "down": {"uv": [14, 0, 16, 16], "texture": "#shaft_bottom"}
+      }
+    },
+    {
+      "name": "Side_South",
+      "from": [2, 0, 0],
+      "to": [14, 16, 2],
+      "faces": {
+        "north": {"uv": [2, 0, 14, 16], "texture": "#side"},
+        "south": {"uv": [2, 0, 14, 16], "texture": "#side"},
+        "up": {"uv": [2, 0, 14, 2], "texture": "#shaft_top"},
+        "down": {"uv": [2, 14, 14, 16], "texture": "#shaft_bottom"}
+      }
+    },
+    {
+      "name": "Side_North",
+      "from": [2, 0, 14],
+      "to": [14, 16, 16],
+      "faces": {
+        "north": {"uv": [2, 0, 14, 16], "texture": "#side"},
+        "south": {"uv": [2, 0, 14, 16], "texture": "#side"},
+        "up": {"uv": [2, 14, 14, 16], "texture": "#shaft_top"},
+        "down": {"uv": [2, 0, 14, 2], "texture": "#shaft_bottom"}
+      }
+    }
+  ]
+}
