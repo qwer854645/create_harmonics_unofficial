@@ -1,6 +1,7 @@
 package io.github.qwer854645.createresonance
 
 import kotlinx.coroutines.runBlocking
+import io.github.qwer854645.createresonance.audio.BackgroundMusicGuard
 import io.github.qwer854645.createresonance.audio.bin.BinStatusManager
 import io.github.qwer854645.createresonance.audio.process.ProcessLifecycleManager
 import io.github.qwer854645.createresonance.content.kinetics.musicBox.MusicBoxFrequencyRenderer
@@ -25,6 +26,7 @@ object CreateResonanceClientMod {
         EventBus.onMcMain<TickEvents.ClientTickEvent> { event ->
             if (event.phase == TickEvents.Phase.END) {
                 MusicBoxFrequencyRenderer.tick()
+                BackgroundMusicGuard.tick()
             }
         }
 

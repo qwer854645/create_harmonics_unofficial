@@ -3,6 +3,7 @@ package io.github.qwer854645.createresonance.audio
 import kotlinx.coroutines.launch
 import io.github.qwer854645.createresonance.audio.effect.EffectChain
 import io.github.qwer854645.createresonance.audio.player.AudioPlayer
+import io.github.qwer854645.createresonance.audio.player.PlayerState
 import io.github.qwer854645.createresonance.audio.player.SoundInstanceFactory
 import io.github.qwer854645.createresonance.foundation.async.ModCoroutineScope
 import io.github.qwer854645.createresonance.foundation.err
@@ -58,4 +59,16 @@ object AudioPlayerManager {
 
 
     fun exists(id: String): Boolean = players.containsKey(id)
+
+    /** True while a network jukebox (or similar) is loading, playing, or finishing a tail. */
+    fun anyActivelyPlaying(): Boolean =
+        players.values.any { player ->
+            when (player.state.value) {
+                PlayerState.LOADING,
+                PlayerState.PLAYING,
+                PlayerState.TAILING,
+                -> true
+                else -> false
+            }
+        }
 }

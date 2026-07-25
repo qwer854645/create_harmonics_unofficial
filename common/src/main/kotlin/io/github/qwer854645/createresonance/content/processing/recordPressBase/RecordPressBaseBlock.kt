@@ -176,7 +176,8 @@ class RecordPressBaseBlock(
 
     override fun getStateForPlacement(context: BlockPlaceContext): BlockState =
         withWater(
-            defaultBlockState().setValue(FACING, context.horizontalDirection.opposite),
+            // Front of the model faces the player (same convention as furnaces after correcting an inverted mesh).
+            defaultBlockState().setValue(FACING, context.horizontalDirection),
             context,
         )
 

@@ -90,7 +90,7 @@ abstract class BinProvider(
     /**
      * Check if the binary is available and executable
      */
-    fun isAvailable(): Boolean {
+    open fun isAvailable(): Boolean {
         val execPath = getExecutablePath()
         return execPath != null && File(execPath).let { it.exists() && it.canExecute() }
     }

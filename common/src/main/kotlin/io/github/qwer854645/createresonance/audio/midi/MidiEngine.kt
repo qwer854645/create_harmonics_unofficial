@@ -77,6 +77,10 @@ object MidiEngine {
         players[id]?.pause()
     }
 
+    /** True while any music-box / conductor MIDI instance is emitting audio. */
+    fun anyAudiblyPlaying(): Boolean =
+        players.values.any { it.playing && !it.muted }
+
     fun listImportFiles(): List<File> =
         importDir()
             .listFiles()
@@ -337,7 +341,7 @@ class MidiPlayerInstance(
         if (synthesizer?.isOpen == true && sequencer?.isOpen == true) return
         close()
         val synth = MidiSystem.getSynthesizer()
-        synth.open()
+        openSynthesizerWithPolyphony(synth)
         soundbank?.let {
             try {
                 synth.loadAllInstruments(it)
@@ -355,6 +359,43 @@ class MidiPlayerInstance(
             )
         synthesizer = synth
         sequencer = sequ
+    }
+
+    /**
+     * Gervill [SoftSynthesizer] defaults to 64 simultaneous voices. Dense MIDI (big chords,
+     * long sustains, multi-track) will steal notes long before Minecraft's own sound-slot limit
+     * matters — our MIDI path never goes through MC's SoundEngine.
+     *
+     * Open via [com.sun.media.sound.AudioSynthesizer] when available so we can raise polyphony.
+     */
+    private fun openSynthesizerWithPolyphony(synth: Synthesizer) {
+        val props =
+            mapOf<String, Any>(
+                "max polyphony" to MAX_POLYPHONY,
+                // Slightly lower default latency (200ms) helps dense passages feel tighter.
+                "latency" to 80_000L,
+            )
+        try {
+            val audioSynthClass = Class.forName("com.sun.media.sound.AudioSynthesizer")
+            if (audioSynthClass.isInstance(synth)) {
+                val open =
+                    audioSynthClass.getMethod(
+                        "open",
+                        javax.sound.sampled.SourceDataLine::class.java,
+                        Map::class.java,
+                    )
+                open.invoke(synth, null, props)
+                return
+            }
+        } catch (e: Exception) {
+            "MIDI synthesizer polyphony setup failed (${e.message}); using default open()".warn()
+        }
+        synth.open()
+    }
+
+    companion object {
+        /** SoftSynthesizer default is 64; 1024 covers dense / multi-box MIDI with headroom. */
+        const val MAX_POLYPHONY = 1024
     }
 
     /** Apply the forced GM program only on the melodic sink channel. */

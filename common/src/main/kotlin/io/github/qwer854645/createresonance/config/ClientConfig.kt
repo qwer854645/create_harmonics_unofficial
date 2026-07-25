@@ -4,6 +4,9 @@ import net.createmod.catnip.config.ConfigBase
 import net.neoforged.neoforge.common.ModConfigSpec
 
 object ClientConfig : ConfigBase() {
+    lateinit var muteBackgroundMusicWhilePlaying: ConfigBool
+        private set
+
     lateinit var minPitch: ConfigFloat
         private set
 
@@ -96,6 +99,14 @@ object ClientConfig : ConfigBase() {
 
     private fun audioSourceGroup(builder: ModConfigSpec.Builder) {
         group(1, "audio_sources", "Configuration for audio sources and playback")
+
+        muteBackgroundMusicWhilePlaying =
+            b(
+                true,
+                "muteBackgroundMusicWhilePlaying",
+                "When Resonance audio is playing (network jukebox or music box MIDI), stop vanilla background music",
+                "Does not affect ambient/UI sounds or the in-game Music volume slider permanently",
+            )
 
         minPitch = f(0.5f, 0.1f, 1.0f, "minPitch", "Minimum pitch for audio playback")
         maxPitch = f(2.0f, 1.0f, 4.0f, "maxPitch", "Maximum pitch for audio playback")

@@ -44,12 +44,13 @@ object MusicBoxFrequencyRenderer {
         if (target == null || target !is BlockHitResult) return
         val world = mc.level ?: return
         val pos = target.blockPos
+        val behaviour =
+            BlockEntityBehaviour.get(world, pos, MusicBoxFrequencyBehaviour.TYPE) ?: return
         val state = world.getBlockState(pos)
+        if (!state.hasProperty(DirectionalKineticBlock.FACING)) return
         val front = MusicBoxFrequencySlot.frontFace(state)
         // Only when looking at the front — same face the slots sit on.
         if (target.direction != front) return
-        val behaviour =
-            BlockEntityBehaviour.get(world, pos, MusicBoxFrequencyBehaviour.TYPE) ?: return
 
         val freq1: Component = CreateLang.translateDirect("logistics.firstFrequency")
         val freq2: Component = CreateLang.translateDirect("logistics.secondFrequency")

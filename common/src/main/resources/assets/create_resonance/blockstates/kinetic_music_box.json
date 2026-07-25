@@ -1,30 +1,114 @@
 {
   "variants": {
-    "facing=down": {
+    "facing=up,front=north": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "y": 180
+    },
+    "facing=up,front=east": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "y": 270
+    },
+    "facing=up,front=south": {
+      "model": "create_resonance:block/kinetic_music_box/block"
+    },
+    "facing=up,front=west": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "y": 90
+    },
+    "facing=down,front=north": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "x": 180,
+      "y": 180
+    },
+    "facing=down,front=east": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "x": 180,
+      "y": 270
+    },
+    "facing=down,front=south": {
       "model": "create_resonance:block/kinetic_music_box/block",
       "x": 180
     },
-    "facing=east": {
+    "facing=down,front=west": {
       "model": "create_resonance:block/kinetic_music_box/block",
-      "x": 90,
+      "x": 180,
       "y": 90
     },
-    "facing=north": {
+    "facing=north,front=north": {
       "model": "create_resonance:block/kinetic_music_box/block",
       "x": 90
     },
-    "facing=south": {
+    "facing=north,front=east": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "x": 90
+    },
+    "facing=north,front=south": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "x": 90
+    },
+    "facing=north,front=west": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "x": 90
+    },
+    "facing=south,front=north": {
       "model": "create_resonance:block/kinetic_music_box/block",
       "x": 90,
       "y": 180
     },
-    "facing=up": {
-      "model": "create_resonance:block/kinetic_music_box/block"
+    "facing=south,front=east": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "x": 90,
+      "y": 180
     },
-    "facing=west": {
+    "facing=south,front=south": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "x": 90,
+      "y": 180
+    },
+    "facing=south,front=west": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "x": 90,
+      "y": 180
+    },
+    "facing=west,front=north": {
       "model": "create_resonance:block/kinetic_music_box/block",
       "x": 90,
       "y": 270
+    },
+    "facing=west,front=east": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "x": 90,
+      "y": 270
+    },
+    "facing=west,front=south": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "x": 90,
+      "y": 270
+    },
+    "facing=west,front=west": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "x": 90,
+      "y": 270
+    },
+    "facing=east,front=north": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "x": 90,
+      "y": 90
+    },
+    "facing=east,front=east": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "x": 90,
+      "y": 90
+    },
+    "facing=east,front=south": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "x": 90,
+      "y": 90
+    },
+    "facing=east,front=west": {
+      "model": "create_resonance:block/kinetic_music_box/block",
+      "x": 90,
+      "y": 90
     }
   }
 }

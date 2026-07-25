@@ -71,6 +71,14 @@ class MusicBoxFrequencySlot(
     companion object {
         /** Front face shared with the ensemble-mode value box. */
         fun frontFace(state: BlockState): Direction {
+            // Vertical shaft: use dedicated FRONT (set on place to face the player).
+            if (state.hasProperty(MusicBoxBlock.FRONT) && state.hasProperty(DirectionalKineticBlock.FACING)) {
+                val shaft = state.getValue(DirectionalKineticBlock.FACING)
+                if (shaft.axis.isVertical) {
+                    return state.getValue(MusicBoxBlock.FRONT)
+                }
+            }
+            if (!state.hasProperty(DirectionalKineticBlock.FACING)) return Direction.SOUTH
             val facing = state.getValue(DirectionalKineticBlock.FACING)
             return if (facing.axis.isVertical) Direction.SOUTH else facing
         }

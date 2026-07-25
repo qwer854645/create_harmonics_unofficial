@@ -19,6 +19,8 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.LevelReader
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.block.state.StateDefinition
+import net.minecraft.world.level.block.state.properties.DirectionProperty
 import net.minecraft.world.phys.BlockHitResult
 
 enum class MusicBoxKind {
@@ -32,8 +34,30 @@ open class MusicBoxBlock(
     val kind: MusicBoxKind,
 ) : DirectionalKineticBlock(properties),
     IBE<MusicBoxBlockEntity> {
+    companion object {
+        /**
+         * Horizontal front used while the kinetic [FACING] is vertical (shaft from above/below).
+         * Must not reuse [BlockStateProperties.HORIZONTAL_FACING] — that property is also named
+         * `"facing"` and collides with [DirectionalKineticBlock.FACING].
+         */
+        val FRONT: DirectionProperty = DirectionProperty.create("front", Direction.Plane.HORIZONTAL)
+    }
+
     val isConductor: Boolean get() = kind == MusicBoxKind.CONDUCTOR
     val hasAdvancedControls: Boolean get() = kind == MusicBoxKind.KINETIC || kind == MusicBoxKind.CONDUCTOR
+
+    init {
+        registerDefaultState(
+            defaultBlockState()
+                .setValue(FACING, Direction.UP)
+                .setValue(FRONT, Direction.SOUTH),
+        )
+    }
+
+    override fun createBlockStateDefinition(builder: StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState>) {
+        super.createBlockStateDefinition(builder)
+        builder.add(FRONT)
+    }
 
     override fun getBlockEntityClass(): Class<MusicBoxBlockEntity> = MusicBoxBlockEntity::class.java
 
@@ -54,7 +78,10 @@ open class MusicBoxBlock(
 
     override fun getStateForPlacement(context: BlockPlaceContext): BlockState? {
         val placed = super.getStateForPlacement(context) ?: return null
-        return placed.setValue(FACING, Direction.UP)
+        // Shaft from below by default; yaw the front toward the player.
+        return placed
+            .setValue(FACING, Direction.UP)
+            .setValue(FRONT, context.horizontalDirection.opposite)
     }
 
     private fun trySetFrequency(
@@ -147,7 +174,6 @@ open class MusicBoxBlock(
         super.onRemove(state, level, pos, newState, isMoving)
     }
 }
-
 
 class KineticMusicBoxBlock(
     properties: Properties,

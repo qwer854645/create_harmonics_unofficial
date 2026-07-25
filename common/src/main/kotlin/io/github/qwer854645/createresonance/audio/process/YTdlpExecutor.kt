@@ -21,29 +21,29 @@ class YTdlpExecutor {
             try {
                 if (!YTDLProvider.isAvailable()) throw IllegalStateException("YTDLProvider not available")
 
-                val ytdlPath = YTDLProvider.getExecutablePath() ?: throw IllegalStateException("YTDLP not found")
+                val launch = YTDLProvider.getLaunchCommand() ?: throw IllegalStateException("YTDLP not found")
                 val configOverrides = ModConfigs.client.ytdlpOverrideArgs.get()
 
                 val command =
                     if (configOverrides.isNotBlank()) {
                         buildList {
-                            add(ytdlPath)
-                            addAll(configOverrides.split(" "))
+                            addAll(launch)
+                            addAll(configOverrides.split(" ").filter { it.isNotBlank() })
                             add("-j")
                             add(youtubeUrl)
                         }
                     } else {
-                        listOf(
-                            ytdlPath,
-                            "-f",
-                            "bestaudio[ext!=flv][ext=fmp4][protocol!=m3u8_native][protocol!=m3u8]/bestaudio/best",
-                            "--no-check-formats",
-                            "-j",
-                            "--quiet",
-                            "--no-playlist",
-                            "--skip-download",
-                            youtubeUrl,
-                        )
+                        buildList {
+                            addAll(launch)
+                            add("-f")
+                            add("bestaudio[ext!=flv][ext=fmp4][protocol!=m3u8_native][protocol!=m3u8]/bestaudio/best")
+                            add("--no-check-formats")
+                            add("-j")
+                            add("--quiet")
+                            add("--no-playlist")
+                            add("--skip-download")
+                            add(youtubeUrl)
+                        }
                     }
 
                 val process =

@@ -1,5 +1,20 @@
 # Changelog — Create: Resonance
 
+## 1.0.1
+
+### Placement & facing
+- **Resonance Press** now faces the player when placed (front was previously reversed)
+- **Kinetic Music Box** and **Music Conductor** keep a vertical shaft and yaw their front toward the player on place (`front` blockstate)
+
+### Audio
+- Raise SoftSynthesizer MIDI polyphony to **1024** (default Gervill limit is 64) to reduce dropped notes on dense scores
+- Optionally mute vanilla background music while Resonance audio is playing (`muteBackgroundMusicWhilePlaying`, default **true**)
+
+### Stability & tooling
+- Prefer a local `audio_providers/venv` yt-dlp when present (helps HMCL/CurseForge instances)
+- Music box frequency rendering no longer queries facing on non-box blocks
+- Bilibili yt-dlp repatch helper updated (`tools/repatch-ytdlp-bilibili.ps1` + wrapper source)
+
 ## 1.0.0
 
 ### Rebrand

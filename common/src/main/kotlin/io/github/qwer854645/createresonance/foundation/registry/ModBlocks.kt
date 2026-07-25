@@ -13,13 +13,20 @@ import io.github.qwer854645.createresonance.config.ModStressConfig
 import io.github.qwer854645.createresonance.content.kinetics.recordPlayer.RecordPlayerMovementBehaviour
 import io.github.qwer854645.createresonance.content.kinetics.recordPlayer.kineticNetworkJukebox.KineticNetworkJukeboxBlock
 import io.github.qwer854645.createresonance.content.kinetics.musicBox.KineticMusicBoxBlock
+import io.github.qwer854645.createresonance.content.kinetics.musicBox.MusicBoxBlock
 import io.github.qwer854645.createresonance.content.kinetics.musicBox.MusicConductorBlock
 import io.github.qwer854645.createresonance.content.midi.MidiTableBlock
 import io.github.qwer854645.createresonance.content.processing.recordPressBase.RecordPressBaseBlock
 import io.github.qwer854645.createresonance.foundation.info
+import net.minecraft.core.Direction
 import net.minecraft.core.Registry
 import net.minecraft.world.level.block.SoundType
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel
+import net.neoforged.neoforge.client.model.generators.ModelFile
+import com.tterrag.registrate.providers.DataGenContext
+import com.tterrag.registrate.providers.RegistrateBlockstateProvider
+import net.minecraft.world.level.block.Block
+import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock
 
 object ModBlocks : CommonRegistry {
     override val registrationOrder = 2
@@ -78,10 +85,8 @@ object ModBlocks : CommonRegistry {
             .lang("Kinetic Music Box")
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .transform(ModStressConfig.setImpact(1.0))
-            .blockstate { ctx, prov ->
-                val model = prov.models().getExistingFile(prov.modLoc("block/${ctx.name}/block"))
-                prov.directionalBlock(ctx.entry, model)
-            }.item()
+            .blockstate { ctx, prov -> musicBoxBlockstate(ctx, prov) }
+            .item()
             .transform(customItemModel())
             .register()
 
@@ -95,10 +100,8 @@ object ModBlocks : CommonRegistry {
             .lang("Music Conductor")
             .tag(AllTags.AllBlockTags.SAFE_NBT.tag)
             .transform(ModStressConfig.setImpact(1.0))
-            .blockstate { ctx, prov ->
-                val model = prov.models().getExistingFile(prov.modLoc("block/${ctx.name}/block"))
-                prov.directionalBlock(ctx.entry, model)
-            }.item()
+            .blockstate { ctx, prov -> musicBoxBlockstate(ctx, prov) }
+            .item()
             .transform(customItemModel())
             .register()
 
@@ -123,5 +126,54 @@ object ModBlocks : CommonRegistry {
 
     override fun register(registry: Registry<*>?) {
         "Registering blocks".info()
+    }
+
+    /** Default model faces south; FRONT rotates yaw while shaft [FACING] is vertical. */
+    private fun yRotFromFront(front: Direction): Int =
+        when (front) {
+            Direction.SOUTH -> 0
+            Direction.WEST -> 90
+            Direction.NORTH -> 180
+            Direction.EAST -> 270
+            else -> 0
+        }
+
+    private fun musicBoxBlockstate(
+        ctx: DataGenContext<Block, out Block>,
+        prov: RegistrateBlockstateProvider,
+    ) {
+        val model: ModelFile = prov.models().getExistingFile(prov.modLoc("block/${ctx.name}/block"))
+        prov.getVariantBuilder(ctx.entry).forAllStates { state ->
+            val facing = state.getValue(DirectionalKineticBlock.FACING)
+            val front = state.getValue(MusicBoxBlock.FRONT)
+            var x = 0
+            var y = 0
+            when (facing) {
+                Direction.UP -> y = yRotFromFront(front)
+                Direction.DOWN -> {
+                    x = 180
+                    y = yRotFromFront(front)
+                }
+                Direction.NORTH -> x = 90
+                Direction.SOUTH -> {
+                    x = 90
+                    y = 180
+                }
+                Direction.WEST -> {
+                    x = 90
+                    y = 270
+                }
+                Direction.EAST -> {
+                    x = 90
+                    y = 90
+                }
+            }
+            ConfiguredModel
+                .builder()
+                .modelFile(model)
+                .rotationX(x)
+                .rotationY(y)
+                .build()
+        }
     }
 }
