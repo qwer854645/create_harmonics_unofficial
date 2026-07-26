@@ -2,12 +2,14 @@ package io.github.qwer854645.createresonance.content.kinetics.musicBox
 
 import com.simibubi.create.AllItems
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
+import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform
 import com.simibubi.create.foundation.utility.RaycastHelper
 import io.github.qwer854645.createresonance.CreateResonanceMod.MOD_ID
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.phys.Vec3
+import net.neoforged.bus.api.EventPriority
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.fml.LogicalSide
@@ -15,12 +17,15 @@ import net.neoforged.neoforge.common.util.FakePlayer
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent
 
 /**
- * Create LinkHandler-style early intercept so frequency slots win over opening the GUI.
+ * Create LinkHandler-style intercept so frequency slots win over opening the GUI.
+ *
+ * Runs after Create's [com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsInputHandler]
+ * (LOW) so the Solo/Section value box is not stolen by frequency hit-tests.
  */
 @EventBusSubscriber(modid = MOD_ID)
 object MusicBoxFrequencyHandler {
     @JvmStatic
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOW)
     fun onBlockActivated(event: PlayerInteractEvent.RightClickBlock) {
         val world = event.level
         val pos = event.pos
@@ -28,6 +33,7 @@ object MusicBoxFrequencyHandler {
         val hand = event.hand
 
         if (player.isShiftKeyDown || player.isSpectator) return
+        if (event.isCanceled) return
 
         val behaviour =
             BlockEntityBehaviour.get(world, pos, MusicBoxFrequencyBehaviour.TYPE) ?: return
@@ -38,6 +44,17 @@ object MusicBoxFrequencyHandler {
 
         val ray = RaycastHelper.rayTraceRange(world, player, 10.0) ?: return
         if (ray.blockPos != pos) return
+
+        // Never claim clicks on the ensemble-mode scroll box.
+        val be = world.getBlockEntity(pos) as? MusicBoxBlockEntity
+        val mode = be?.ensembleMode
+        if (mode != null && mode.isActive) {
+            val slot = mode.slotPositioning
+            if (slot is ValueBoxTransform.Sided) {
+                slot.fromSide(ray.direction)
+            }
+            if (mode.testHit(ray.location)) return
+        }
 
         var fakePlayerChoice = false
         if (player is FakePlayer) {

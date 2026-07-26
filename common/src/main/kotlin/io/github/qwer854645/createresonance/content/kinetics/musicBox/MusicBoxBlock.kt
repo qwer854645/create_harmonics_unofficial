@@ -3,6 +3,7 @@ package io.github.qwer854645.createresonance.content.kinetics.musicBox
 import com.simibubi.create.AllItems
 import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock
 import com.simibubi.create.foundation.block.IBE
+import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform
 import com.simibubi.create.foundation.item.ItemHelper
 import io.github.qwer854645.createresonance.foundation.registry.ModBlockEntities
 import net.minecraft.core.BlockPos
@@ -114,6 +115,25 @@ open class MusicBoxBlock(
         return false
     }
 
+    /**
+     * Solo/Section scroll box — must not open the music-box menu or Create's ValueSettings
+     * never gets the click (scroll / hold-to-configure).
+     */
+    private fun hitsEnsembleModeSlot(
+        level: Level,
+        pos: BlockPos,
+        hit: BlockHitResult,
+    ): Boolean {
+        val be = level.getBlockEntity(pos) as? MusicBoxBlockEntity ?: return false
+        val mode = be.ensembleMode ?: return false
+        if (!mode.isActive) return false
+        val slot = mode.slotPositioning
+        if (slot is ValueBoxTransform.Sided) {
+            slot.fromSide(hit.direction)
+        }
+        return mode.testHit(hit.location)
+    }
+
     @Deprecated("Deprecated in Java")
     override fun useItemOn(
         stack: ItemStack,
@@ -128,6 +148,9 @@ open class MusicBoxBlock(
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
         }
         if (AllItems.WRENCH.isIn(stack) || AllItems.LINKED_CONTROLLER.isIn(stack)) {
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+        }
+        if (hitsEnsembleModeSlot(level, pos, hit)) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
         }
         if (trySetFrequency(level, pos, player, hit, stack)) {
@@ -145,6 +168,10 @@ open class MusicBoxBlock(
         hit: BlockHitResult,
     ): InteractionResult {
         if (player.isShiftKeyDown || player.isSpectator) {
+            return InteractionResult.PASS
+        }
+        // Let Create's ValueSettings / scroll handle Solo ↔ Section.
+        if (hitsEnsembleModeSlot(level, pos, hit)) {
             return InteractionResult.PASS
         }
         // Empty-hand click on a frequency slot clears it (Create redstone-link style).

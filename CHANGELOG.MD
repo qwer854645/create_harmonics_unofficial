@@ -1,5 +1,11 @@
 # Changelog — Create: Resonance
 
+## 1.0.2
+
+### Fixes
+- Kinetic Music Box: clicking the Solo/Section value box no longer opens the GUI, so Create scroll / hold-to-configure works again
+- Frequency-slot click handling runs after Create's ValueSettings handler so it cannot steal mode-box clicks
+
 ## 1.0.1
 
 ### Placement & facing
