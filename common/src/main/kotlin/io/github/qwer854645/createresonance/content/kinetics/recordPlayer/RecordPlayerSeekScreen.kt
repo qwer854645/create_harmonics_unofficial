@@ -44,10 +44,10 @@ class RecordPlayerSeekScreen(
         val x = guiLeft
         val y = guiTop
 
-        // Transport: play / pause / restart — nudged left of center for balance with seek row.
+        // Transport: play / pause / restart — left edge aligns with progress / time fields (x + 8).
         val transportY = y + 34
         addRenderableWidget(
-            IconButton(x + 46, transportY, AllIcons.I_PLAY).also {
+            IconButton(x + 8, transportY, AllIcons.I_PLAY).also {
                 it.withCallback<IconButton> {
                     ModPackets.sendToServer(SeekRecordPlayerPacket(be.blockPos, action = "play"))
                 }
@@ -55,7 +55,7 @@ class RecordPlayerSeekScreen(
             },
         )
         addRenderableWidget(
-            IconButton(x + 68, transportY, AllIcons.I_PAUSE).also {
+            IconButton(x + 30, transportY, AllIcons.I_PAUSE).also {
                 it.withCallback<IconButton> {
                     ModPackets.sendToServer(SeekRecordPlayerPacket(be.blockPos, action = "pause"))
                 }
@@ -63,7 +63,7 @@ class RecordPlayerSeekScreen(
             },
         )
         addRenderableWidget(
-            IconButton(x + 90, transportY, AllIcons.I_STOP).also {
+            IconButton(x + 52, transportY, AllIcons.I_STOP).also {
                 it.withCallback<IconButton> {
                     sendRestart()
                 }

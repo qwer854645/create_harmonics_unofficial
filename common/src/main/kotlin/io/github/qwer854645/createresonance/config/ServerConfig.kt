@@ -17,11 +17,11 @@ object ServerConfig : ConfigBase() {
 
         maxJukeboxSoundRange =
             i(
-                32,
+                64,
                 5,
                 4095,
                 "maxSoundRange",
-                "Maximum sound range (in blocks) for the Andesite Jukebox.",
+                "Maximum sound range (in blocks) for the record player / Andesite Jukebox.",
             )
     }
 

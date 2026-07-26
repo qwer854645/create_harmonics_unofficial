@@ -208,7 +208,8 @@ class RecordPlayerMovementBehaviour : SmartMovementBehaviour<RecordPlayerContext
             fun radiusSupplierFactory(context: MovementContext): FloatSupplier {
                 val redstonePower = context.blockEntityData.getInt("RedstonePower")
                 return FloatSupplier {
-                    if (redstonePower <= 0) return@FloatSupplier 16f
+                    val maxRange = ServerConfig.maxJukeboxSoundRange.get().toFloat()
+                    if (redstonePower <= 0) return@FloatSupplier maxRange
                     redstonePower.remapTo(0, 15, 4, ServerConfig.maxJukeboxSoundRange.get()).toFloat()
                 }
             }

@@ -140,8 +140,9 @@ class RecordPlayerBehaviour(
 
     val soundRadius: Int
         get() {
-            if (redstonePower <= 0) return 16
-            return redstonePower.remapTo(1, 15, 4, ServerConfig.maxJukeboxSoundRange.get())
+            val maxRange = ServerConfig.maxJukeboxSoundRange.get()
+            if (redstonePower <= 0) return maxRange
+            return redstonePower.remapTo(1, 15, 4, maxRange)
         }
 
     @Volatile
