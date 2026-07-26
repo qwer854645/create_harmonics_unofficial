@@ -200,8 +200,8 @@ class RecordPlayerMovementBehaviour : SmartMovementBehaviour<RecordPlayerContext
             fun volumeSupplierFactory(context: MovementContext): FloatSupplier {
                 val redstonePower = context.blockEntityData.getInt("RedstonePower")
                 return FloatSupplier {
-                    if (redstonePower <= 0) return@FloatSupplier 1f
-                    redstonePower.toFloat().remapTo(1f, 15f, 0.1f, 1.0f)
+                    if (redstonePower <= 0) return@FloatSupplier RecordPlayerBehaviour.BASE_VOLUME
+                    redstonePower.toFloat().remapTo(1f, 15f, 0.15f, RecordPlayerBehaviour.BASE_VOLUME)
                 }
             }
 

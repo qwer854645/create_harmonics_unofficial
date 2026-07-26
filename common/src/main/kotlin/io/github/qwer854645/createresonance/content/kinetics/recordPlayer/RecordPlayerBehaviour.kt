@@ -49,6 +49,9 @@ class RecordPlayerBehaviour(
         @JvmStatic
         val BEHAVIOUR_TYPE = BehaviourType<RecordPlayerBehaviour>()
 
+        /** Peak output multiplier (vanilla jukebox-scale is 1.0). */
+        const val BASE_VOLUME = 1.85f
+
         // Static tracking for active record players by their audio player UUID
         // This prevents UUID conflicts when blocks are copied (Valkyrian Skies, WorldEdit, etc.)
         // Each block entity must have a unique UUID to ensure only one audio player per block
@@ -142,7 +145,7 @@ class RecordPlayerBehaviour(
         }
 
     @Volatile
-    private var lastActiveVolume: Float = 1f
+    private var lastActiveVolume: Float = BASE_VOLUME
     val currentVolume: Float
         get() {
             val playerState = audioPlayer?.state?.value
@@ -162,8 +165,8 @@ class RecordPlayerBehaviour(
 
             return when {
                 redstonePower <= 0 && isPauseMode -> 0.0f
-                redstonePower <= 0 -> 1f
-                else -> redstonePower.toFloat().remapTo(1f, 15f, 0.1f, 1.0f)
+                redstonePower <= 0 -> BASE_VOLUME
+                else -> redstonePower.toFloat().remapTo(1f, 15f, 0.15f, BASE_VOLUME)
             }
         }
 

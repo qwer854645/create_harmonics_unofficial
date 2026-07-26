@@ -46,9 +46,13 @@ class KineticNetworkJukeboxBlock(
 
         val facing = pState.getValue(FACING)
         if (isSideSeekInteraction(pHit.direction, facing)) {
+            val be = pLevel.getBlockEntity(pPos) as? RecordPlayerBlockEntity
+            if (be != null && be.hitsPlaybackModeSlot(pHit)) {
+                return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+            }
             pLevel.onClient { _, _ ->
-                withBlockEntityDo(pLevel, pPos) { be: RecordPlayerBlockEntity ->
-                    RecordPlayerClientHandler.openSeekScreen(be)
+                withBlockEntityDo(pLevel, pPos) { entity: RecordPlayerBlockEntity ->
+                    RecordPlayerClientHandler.openSeekScreen(entity)
                 }
             }
             return ItemInteractionResult.SUCCESS
@@ -67,9 +71,13 @@ class KineticNetworkJukeboxBlock(
     ): InteractionResult {
         val facing = pState.getValue(FACING)
         if (isSideSeekInteraction(pHit.direction, facing)) {
+            val be = pLevel.getBlockEntity(pPos) as? RecordPlayerBlockEntity
+            if (be != null && be.hitsPlaybackModeSlot(pHit)) {
+                return InteractionResult.PASS
+            }
             pLevel.onClient { _, _ ->
-                withBlockEntityDo(pLevel, pPos) { be: RecordPlayerBlockEntity ->
-                    RecordPlayerClientHandler.openSeekScreen(be)
+                withBlockEntityDo(pLevel, pPos) { entity: RecordPlayerBlockEntity ->
+                    RecordPlayerClientHandler.openSeekScreen(entity)
                 }
             }
             return InteractionResult.SUCCESS

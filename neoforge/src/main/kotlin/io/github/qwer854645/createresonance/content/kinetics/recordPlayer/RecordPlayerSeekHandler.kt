@@ -14,11 +14,10 @@ import net.neoforged.fml.LogicalSide
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent
 
 /**
- * Opens the seek GUI on side faces before Create's ValueSettings handler
- * can claim the click for the playback-mode scroll box.
+ * Opens the seek GUI on side faces, but never when the playback-mode value box is hit —
+ * otherwise empty-hand clicks steal Create's scroll / ValueSettings interaction.
  *
- * Empty hand or sneak + side face → seek. Mode scroll still works when
- * holding an item (non-wrench) and clicking the value box.
+ * Holding a non-wrench item on the mode box still goes to Create (this handler returns early).
  */
 @EventBusSubscriber(modid = MOD_ID)
 object RecordPlayerSeekHandler {
@@ -38,14 +37,18 @@ object RecordPlayerSeekHandler {
         if (AllItems.WRENCH.isIn(held)) return
 
         val facing = state.getValue(DirectionalKineticBlock.FACING)
-        val hitFace = event.face ?: return
+        val hit = event.hitVec ?: return
+        val hitFace = event.face ?: hit.direction
         if (!isSideSeekFace(hitFace, facing)) return
+
+        // Mode scroll / hold-to-configure must win over seek UI.
+        val be = world.getBlockEntity(pos) as? RecordPlayerBlockEntity ?: return
+        if (be.hitsPlaybackModeSlot(hit)) return
 
         // Let Create's mode ValueBox handle item clicks; empty hand / sneak opens seek.
         if (!held.isEmpty && !player.isShiftKeyDown) return
 
         if (event.side == LogicalSide.CLIENT) {
-            val be = world.getBlockEntity(pos) as? RecordPlayerBlockEntity ?: return
             RecordPlayerClientHandler.openSeekScreen(be)
         }
 

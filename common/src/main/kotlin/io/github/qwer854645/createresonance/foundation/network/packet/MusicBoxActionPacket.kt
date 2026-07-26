@@ -59,6 +59,10 @@ class MusicBoxActionPacket(
                 if (behaviour.role == MusicBoxRole.SECTION) return false
                 if (behaviour.playing) behaviour.setPlaying(false, naturalEnd = true)
             }
+            "resync_midi" -> {
+                // Client lost its MidiBytes cache while the server still has HasMidi=true.
+                behaviour.forceResyncMidiToClient()
+            }
             "config" -> {
                 if (behaviour.isConductorBlock) {
                     behaviour.role = MusicBoxRole.CONDUCTOR

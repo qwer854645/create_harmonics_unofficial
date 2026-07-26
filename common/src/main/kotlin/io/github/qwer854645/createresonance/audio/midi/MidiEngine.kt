@@ -330,6 +330,9 @@ class MidiPlayerInstance(
         } catch (_: Exception) {
         }
         try {
+            // Silence again after closing the sequencer — SoftSynth can emit a pop if
+            // voices are still decaying when the audio line is torn down mid-note.
+            hardSilence()
             synthesizer?.close()
         } catch (_: Exception) {
         }

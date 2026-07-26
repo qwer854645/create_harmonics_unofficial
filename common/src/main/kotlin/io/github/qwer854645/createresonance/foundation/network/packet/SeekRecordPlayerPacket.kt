@@ -9,8 +9,10 @@ import net.minecraft.core.BlockPos
 @Serializable
 class SeekRecordPlayerPacket(
     @Contextual val blockPos: BlockPos,
-    val positionSeconds: Double,
+    val positionSeconds: Double = 0.0,
     val restart: Boolean = false,
+    /** Empty = seek/restart; `"play"` / `"pause"` for transport controls. */
+    val action: String = "",
 ) : ModPacket,
     C2SPacket {
     override fun handle(context: ModPacket.Context): Boolean {
@@ -20,10 +22,17 @@ class SeekRecordPlayerPacket(
         if (!world.isLoaded(blockPos) || !sender.canInteractWithBlock(blockPos, 20.0)) return false
 
         val blockEntity = world.getBlockEntity(blockPos) as? RecordPlayerBlockEntity ?: return false
-        if (restart) {
-            blockEntity.playerBehaviour.restartFromBeginning()
-        } else {
-            blockEntity.playerBehaviour.seekTo(positionSeconds.coerceAtLeast(0.0))
+        val behaviour = blockEntity.playerBehaviour
+        when (action) {
+            "play" -> behaviour.startPlayer()
+            "pause" -> behaviour.pausePlayer()
+            else -> {
+                if (restart) {
+                    behaviour.restartFromBeginning()
+                } else {
+                    behaviour.seekTo(positionSeconds.coerceAtLeast(0.0))
+                }
+            }
         }
         blockEntity.setChanged()
         return true

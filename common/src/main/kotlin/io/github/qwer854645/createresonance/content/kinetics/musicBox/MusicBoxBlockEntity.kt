@@ -376,6 +376,17 @@ class MusicBoxBehaviour(
     private var pendingRestart: Boolean = false
     private var clientLoadedHash: Int = 0
 
+    /**
+     * SoftSynth instance key last used on this client. When [playerId] flips from block-pos
+     * fallback to the server UUID, we must release the orphan and force a reload — otherwise
+     * [clientLoadedHash] skips [MidiPlayerInstance.load] and playback stays silent until a
+     * Solo↔Section toggle resets the hash.
+     */
+    private var boundAudioPlayerId: String? = null
+
+    /** Client-only: avoid spamming resync while waiting for MidiBytes after a cold HasMidi packet. */
+    private var midiResyncRequested: Boolean = false
+
     // Conductor-authoritative ensemble timeline (server). Prevents drift on rapid ops.
     private var ensembleClockSeconds: Double = 0.0
     private var ensembleClockGameTime: Long = 0L
@@ -405,8 +416,36 @@ class MusicBoxBehaviour(
     private fun releaseClientAudio() {
         val ids = linkedSetOf(playerId(), be.blockPos.asLong().toString())
         playerUuid?.let { ids.add(it.toString()) }
+        boundAudioPlayerId?.let { ids.add(it) }
         ids.forEach { MidiEngine.release(it) }
         clientLoadedHash = 0
+        boundAudioPlayerId = null
+    }
+
+    /** Next client packet must include full MidiBytes (cold clients / after a clear). */
+    fun invalidateClientMidiSync() {
+        lastClientSyncedMidiHash = Int.MIN_VALUE
+    }
+
+    /** Server: re-push full MIDI payload to clients that lost their cache. */
+    fun forceResyncMidiToClient() {
+        invalidateClientMidiSync()
+        be.sendData()
+    }
+
+    /** Bind SoftSynth to the current [playerId], migrating away from any prior id. */
+    private fun clientMidiPlayer(): MidiPlayerInstance {
+        val id = playerId()
+        val previous = boundAudioPlayerId
+        if (previous != null && previous != id) {
+            MidiEngine.release(previous)
+            // Also drop the pos-id fallback in case we bounced UUID → something else.
+            val posId = be.blockPos.asLong().toString()
+            if (previous != posId) MidiEngine.release(posId)
+            clientLoadedHash = 0
+        }
+        boundAudioPlayerId = id
+        return MidiEngine.getOrCreate(id)
     }
 
     /**
@@ -506,6 +545,7 @@ class MusicBoxBehaviour(
                 playing = false
                 playbackEndedNaturally = false
                 clientLoadedHash = 0
+                invalidateClientMidiSync()
                 pendingSeek = null
                 pendingRestart = false
                 // Stop mid-note immediately; otherwise SoftSynth leaves hanging voices.
@@ -523,10 +563,13 @@ class MusicBoxBehaviour(
             if (bytes != null) {
                 val name = MidiRollUtilities.getDisplayName(stack).ifBlank { "MIDI" }
                 val changed = midiBytes == null || !midiBytes!!.contentEquals(bytes) || displayName != name
+                if (midiBytes == null) invalidateClientMidiSync()
                 midiBytes = bytes
                 displayName = name.take(64)
                 if (changed) {
                     playbackEndedNaturally = false
+                    clientLoadedHash = 0
+                    invalidateClientMidiSync()
                     refreshDurationFromMidi()
                     // Inventory insert (GUI / arm): auto-start from the beginning.
                     // notify=false paths (world load, mode switch) must not force play.
@@ -563,9 +606,18 @@ class MusicBoxBehaviour(
     /** Section mode: keep local score item, ignore it for playback (conductor supplies MIDI). */
     fun onSwitchedToSection() {
         playing = false
-        be.level?.onClient { _, _ ->
-            MidiEngine.getOrCreate(playerId()).pause()
-        }
+        linkedConductorPos = null
+        // Drop solo-driven payload so we do not keep sounding until the conductor sync arrives.
+        midiBytes = null
+        displayName = ""
+        durationSeconds = 0.0
+        clientLoadedHash = 0
+        invalidateClientMidiSync()
+        pendingSeek = null
+        pendingRestart = false
+        be.level?.onClient { _, _ -> releaseClientAudio() }
+        be.notifyUpdate()
+        be.sendData()
     }
 
     /** Clear section channel filter / reload from retained score after returning to Solo. */
@@ -573,15 +625,10 @@ class MusicBoxBehaviour(
         linkedConductorPos = null
         playing = false
         clientLoadedHash = 0
+        invalidateClientMidiSync()
         be.level?.onClient { _, _ ->
-            val player = MidiEngine.getOrCreate(playerId())
-            if (sectionChannels.isEmpty()) {
-                player.setChannelFilter(null)
-            } else {
-                player.setChannelFilter(sectionChannels.toSet())
-            }
-            player.setForcedProgram(instrumentProgram)
-            player.pause()
+            // Hard-release — pause alone can leave an orphan SoftSynth under a stale player id.
+            releaseClientAudio()
         }
     }
 
@@ -819,10 +866,24 @@ class MusicBoxBehaviour(
         if (epoch > 0 && epoch < lastAppliedEnsembleEpoch) return
         if (epoch > 0) lastAppliedEnsembleEpoch = epoch
         linkedConductorPos = conductorPos
-        if (midi != null && (midiBytes == null || !midiBytes!!.contentEquals(midi))) {
-            midiBytes = midi
-            displayName = name
-            refreshDurationFromMidi()
+        if (midi != null) {
+            if (midiBytes == null || !midiBytes!!.contentEquals(midi)) {
+                midiBytes = midi
+                displayName = name
+                refreshDurationFromMidi()
+                clientLoadedHash = 0
+                invalidateClientMidiSync()
+            }
+        } else if (midiBytes != null || playing || displayName.isNotEmpty()) {
+            // Conductor cleared its score — drop the section payload and kill SoftSynth orphans.
+            midiBytes = null
+            displayName = ""
+            durationSeconds = 0.0
+            clientLoadedHash = 0
+            invalidateClientMidiSync()
+            pendingSeek = null
+            pendingRestart = false
+            be.level?.onClient { _, _ -> releaseClientAudio() }
         }
         playing = play
         if (seekSeconds != null) {
@@ -872,7 +933,7 @@ class MusicBoxBehaviour(
                 releaseClientAudio()
                 return
             }
-        val player = MidiEngine.getOrCreate(playerId())
+        val player = clientMidiPlayer()
         val hash = bytes.contentHashCode()
         if (hash != clientLoadedHash) {
             if (player.load(bytes)) {
@@ -1088,7 +1149,24 @@ class MusicBoxBehaviour(
         registries: HolderLookup.Provider,
         clientPacket: Boolean,
     ) {
-        if (compound.hasUUID("MusicBoxUuid")) playerUuid = compound.getUUID("MusicBoxUuid")
+        if (compound.hasUUID("MusicBoxUuid")) {
+            val incoming = compound.getUUID("MusicBoxUuid")
+            if (playerUuid != incoming) {
+                val stalePosId = be.blockPos.asLong().toString()
+                val staleUuid = playerUuid
+                playerUuid = incoming
+                if (clientPacket) {
+                    // UUID often arrives after the client already started SoftSynth under pos id.
+                    clientLoadedHash = 0
+                    MidiEngine.release(stalePosId)
+                    staleUuid?.let { MidiEngine.release(it.toString()) }
+                    if (boundAudioPlayerId != null && boundAudioPlayerId != incoming.toString()) {
+                        MidiEngine.release(boundAudioPlayerId!!)
+                        boundAudioPlayerId = null
+                    }
+                }
+            }
+        }
         displayName = compound.getString("DisplayName")
         durationSeconds = if (compound.contains("DurationSeconds")) compound.getDouble("DurationSeconds") else 0.0
         role = runCatching { MusicBoxRole.valueOf(compound.getString("Role")) }.getOrDefault(MusicBoxRole.SOLO)
@@ -1123,9 +1201,18 @@ class MusicBoxBehaviour(
             } catch (_: Exception) {
                 midiBytes = null
             }
-        } else if (!(clientPacket && compound.contains("HasMidi") && compound.getBoolean("HasMidi"))) {
-            // Client tick sync omitted MidiBytes — keep previously synced payload.
+        } else if (clientPacket && compound.contains("HasMidi") && compound.getBoolean("HasMidi")) {
+            // Omitted MidiBytes with HasMidi=true — keep a warm cache. If cold, ask the server
+            // to re-send (otherwise ensemble stays silent until a Solo↔Section toggle).
+            if (midiBytes == null && !midiResyncRequested) {
+                midiResyncRequested = true
+                ModPackets.sendToServer(MusicBoxActionPacket(be.blockPos, "resync_midi"))
+            }
+        } else {
             midiBytes = null
+        }
+        if (midiBytes != null) {
+            midiResyncRequested = false
         }
         if (compound.contains("PendingSeek")) {
             pendingSeek = compound.getDouble("PendingSeek")
@@ -1151,8 +1238,8 @@ class MusicBoxBehaviour(
             } else if (!playing) {
                 MidiEngine.pauseIfPresent(playerId())
                 MidiEngine.pauseIfPresent(be.blockPos.asLong().toString())
+                boundAudioPlayerId?.let { MidiEngine.pauseIfPresent(it) }
             }
         }
     }
 }
-

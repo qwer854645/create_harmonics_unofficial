@@ -14,14 +14,14 @@ import net.minecraft.util.Mth
 import kotlin.math.max
 
 /**
- * Record-player seek UI — same parchment style and MM:SS + Seek flow as [MusicBoxScreen].
+ * Record-player seek / transport UI — parchment style matching [MusicBoxScreen].
  */
 class RecordPlayerSeekScreen(
     private val be: RecordPlayerBlockEntity,
 ) : AbstractSimiScreen(Component.translatable("create_resonance.gui.record_player_seek.title")) {
     companion object {
         private const val WINDOW_WIDTH = 176
-        private const val WINDOW_HEIGHT = 78
+        private const val WINDOW_HEIGHT = 100
         private const val FALLBACK_DURATION = 300.0
         private const val COL_TITLE = ResonanceGuiStyle.COL_TITLE
         private const val COL_HINT = ResonanceGuiStyle.COL_HINT
@@ -43,8 +43,35 @@ class RecordPlayerSeekScreen(
 
         val x = guiLeft
         val y = guiTop
-        val rowY = y + 36
 
+        // Transport: play / pause / restart — nudged left of center for balance with seek row.
+        val transportY = y + 34
+        addRenderableWidget(
+            IconButton(x + 46, transportY, AllIcons.I_PLAY).also {
+                it.withCallback<IconButton> {
+                    ModPackets.sendToServer(SeekRecordPlayerPacket(be.blockPos, action = "play"))
+                }
+                it.setToolTip(Component.translatable("create_resonance.gui.record_player_seek.play"))
+            },
+        )
+        addRenderableWidget(
+            IconButton(x + 68, transportY, AllIcons.I_PAUSE).also {
+                it.withCallback<IconButton> {
+                    ModPackets.sendToServer(SeekRecordPlayerPacket(be.blockPos, action = "pause"))
+                }
+                it.setToolTip(Component.translatable("create_resonance.gui.record_player_seek.pause"))
+            },
+        )
+        addRenderableWidget(
+            IconButton(x + 90, transportY, AllIcons.I_STOP).also {
+                it.withCallback<IconButton> {
+                    sendRestart()
+                }
+                it.setToolTip(Component.translatable("create_resonance.gui.record_player_seek.restart"))
+            },
+        )
+
+        val rowY = y + 58
         val minutes =
             ResonanceGuiStyle
                 .parchmentEditBox(
@@ -86,17 +113,6 @@ class RecordPlayerSeekScreen(
         seekButton = seek
         seek.active = parseSeekSeconds() != null
         addRenderableWidget(seek)
-
-        // Same restart affordance as music-box stop (I_STOP → from beginning).
-        addRenderableWidget(
-            IconButton(x + 140, rowY, AllIcons.I_STOP).also {
-                it.withCallback<IconButton> {
-                    sendRestart()
-                    onClose()
-                }
-                it.setToolTip(Component.translatable("create_resonance.gui.record_player_seek.restart"))
-            },
-        )
     }
 
     override fun tick() {
@@ -108,7 +124,6 @@ class RecordPlayerSeekScreen(
         }
         seekButton?.active = parseSeekSeconds() != null
 
-        // Live-fill inputs when neither field is focused (mirrors music-box progress line).
         val minutes = minuteInput ?: return
         val seconds = secondInput ?: return
         if (!minutes.isFocused && !seconds.isFocused) {
@@ -144,7 +159,7 @@ class RecordPlayerSeekScreen(
                 ).string
         graphics.drawString(font, progress, x + 8, y + 20, COL_HINT, false)
 
-        val rowY = y + 36
+        val rowY = y + 58
         ResonanceGuiStyle.drawFieldPlate(graphics, x + 8, rowY, 28, 16)
         ResonanceGuiStyle.drawFieldPlate(graphics, x + 48, rowY, 28, 16)
         graphics.drawString(font, ":", x + 40, rowY + 4, COL_HINT, false)
@@ -166,7 +181,6 @@ class RecordPlayerSeekScreen(
         return "%d:%02d".format(total / 60, total % 60)
     }
 
-    /** Same validation as [MusicBoxScreen]: integer minutes ≥ 0, seconds 0–59. */
     private fun parseSeekSeconds(): Double? {
         val minutesText = minuteInput?.value?.trim() ?: return null
         val secondsText = secondInput?.value?.trim() ?: return null

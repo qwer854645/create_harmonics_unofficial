@@ -21,6 +21,8 @@ import net.minecraft.world.Clearable
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.phys.BlockHitResult
+import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform
 import net.neoforged.neoforge.items.ItemStackHandler
 import kotlin.math.abs
 
@@ -124,6 +126,18 @@ abstract class RecordPlayerBlockEntity(
                 },
             )
         behaviours.add(playbackMode)
+    }
+
+    /** True when the hit lands on the side playback-mode value box (Create scroll / ValueSettings). */
+    fun hitsPlaybackModeSlot(hit: BlockHitResult): Boolean {
+        if (!::playbackMode.isInitialized) return false
+        val mode = playbackMode
+        if (!mode.isActive) return false
+        val slot = mode.slotPositioning
+        if (slot is ValueBoxTransform.Sided) {
+            slot.fromSide(hit.direction)
+        }
+        return mode.testHit(hit.location)
     }
 
     override fun clearContent() {

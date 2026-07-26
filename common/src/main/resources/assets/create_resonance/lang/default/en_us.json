@@ -77,6 +77,8 @@
   "create.item_attributes.has_url_assigned.inverted": "Web URL is not bound",
   "create_resonance.gui.record_player_seek.title": "Seek",
   "create_resonance.gui.record_player_seek.apply": "Go",
+  "create_resonance.gui.record_player_seek.play": "Play",
+  "create_resonance.gui.record_player_seek.pause": "Pause",
   "create_resonance.gui.record_player_seek.restart": "From start",
   "create_resonance.gui.record_player_seek.time_label": "Time",
   "create_resonance.gui.record_player_seek.time_input": "m:ss",
