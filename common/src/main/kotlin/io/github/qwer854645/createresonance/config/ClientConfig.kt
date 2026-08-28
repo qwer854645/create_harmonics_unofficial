@@ -54,13 +54,13 @@ object ClientConfig : ConfigBase() {
 
         mainMenuLibButtonRow =
             i(
-                2,
+                0,
                 0,
                 4,
                 "mainMenuLibButtonRow",
                 "",
-                "Choose the menu row that the Lib Download menu button appears on in the main menu",
-                "Set to 0 to disable the button altogether",
+                "Deprecated — title-screen icon removed; kept for config compatibility",
+                "Set to 0 (no effect on the title screen)",
             )
 
         mainMenuLibButtonOffsetX =

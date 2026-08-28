@@ -2,10 +2,8 @@ package io.github.qwer854645.createresonance.gui
 
 import com.mojang.blaze3d.systems.RenderSystem
 import dev.engine_room.flywheel.lib.model.baked.PartialModel
-import io.github.qwer854645.createresonance.CreateResonanceMod.MOD_ID
 import io.github.qwer854645.createresonance.foundation.locale.ModLang
 import io.github.qwer854645.createresonance.foundation.registry.ModPartialModels
-import net.createmod.catnip.config.ui.BaseConfigScreen
 import net.createmod.catnip.data.Iterate
 import net.createmod.catnip.gui.AbstractSimiScreen
 import net.createmod.catnip.gui.ILightingSettings
@@ -62,23 +60,12 @@ class ResonanceMenuScreen(
                 .build(),
         )
 
-        // Mod Settings Button
-        addRenderableWidget(
-            Button
-                .builder(
-                    ModLang.translate("gui.main_menu.mod_settings_btn").component().withStyle(ChatFormatting.YELLOW),
-                ) {
-                    linkTo(BaseConfigScreen(this, MOD_ID))
-                }.bounds(center - buttonWidth / 2, yStart + 48, buttonWidth, buttonHeight)
-                .build(),
-        )
-
         // Back Button
         addRenderableWidget(
             Button
                 .builder(ModLang.translate("gui.main_menu.go_back_btn").component()) {
                     linkTo(parent)
-                }.bounds(center - buttonWidth / 2, yStart + 92, buttonWidth, buttonHeight)
+                }.bounds(center - buttonWidth / 2, yStart + 56, buttonWidth, buttonHeight)
                 .build(),
         )
     }

@@ -8,6 +8,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform
 import net.createmod.catnip.data.Couple
 import net.minecraft.core.HolderLookup
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.Containers
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
 import org.apache.commons.lang3.tuple.Pair
@@ -70,6 +71,26 @@ class MusicBoxFrequencyBehaviour(
     override fun getType(): BehaviourType<*> = TYPE
 
     override fun isSafeNBT(): Boolean = true
+
+    override fun destroy() {
+        val level = world
+        if (!level.isClientSide) {
+            for (stack in listOf(frequencyFirst.stack, frequencyLast.stack)) {
+                if (!stack.isEmpty) {
+                    Containers.dropItemStack(
+                        level,
+                        pos.x + 0.5,
+                        pos.y + 0.5,
+                        pos.z + 0.5,
+                        stack.copy(),
+                    )
+                }
+            }
+        }
+        frequencyFirst = Frequency.EMPTY
+        frequencyLast = Frequency.EMPTY
+        super.destroy()
+    }
 
     override fun write(
         nbt: CompoundTag,

@@ -15,7 +15,6 @@ import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.events.GuiEventListener
 import net.minecraft.client.gui.screens.PauseScreen
-import net.minecraft.client.gui.screens.TitleScreen
 import net.minecraft.client.resources.language.I18n
 import net.minecraft.network.chat.CommonComponents
 import org.apache.commons.lang3.mutable.MutableObject
@@ -100,12 +99,6 @@ object MainMenuHandler : CommonGuiEventHandler {
             val rowIdx: Int
             val offsetX: Int
             when (screen) {
-                is TitleScreen -> {
-                    menu = MenuRows.MAIN_MENU
-                    rowIdx = ModConfigs.client.mainMenuLibButtonRow.get()
-                    offsetX = ModConfigs.client.mainMenuLibButtonOffsetX.get()
-                }
-
                 is PauseScreen -> {
                     menu = MenuRows.INGAME_MENU
                     rowIdx = ModConfigs.client.ingameMenuLibButtonRow.get()

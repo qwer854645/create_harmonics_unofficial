@@ -193,12 +193,14 @@ open class MusicBoxBlock(
         newState: BlockState,
         isMoving: Boolean,
     ) {
+        // Drop score inventory before Create tears down the BE / behaviours.
         if (state.hasBlockEntity() && (!newState.hasBlockEntity() || state.block != newState.block)) {
             withBlockEntityDo(level, pos) { be ->
                 ItemHelper.dropContents(level, pos, be.inventory)
             }
         }
-        super.onRemove(state, level, pos, newState, isMoving)
+        // KineticBlock → IBE.onRemove: runs behaviour.destroy() (frequency items, SoftSynth cleanup).
+        IBE.onRemove(state, level, pos, newState)
     }
 }
 
