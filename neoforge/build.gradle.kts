@@ -25,11 +25,20 @@ neoForge {
         register("client") {
             client()
             jvmArguments.add("-XX:TieredStopAtLevel=1")
+            // SoftSynth polyphony: export Gervill internals (mod module + unnamed).
+            jvmArguments.add("--add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED,create_resonance")
+            jvmArguments.add("--add-opens=java.desktop/com.sun.media.sound=ALL-UNNAMED,create_resonance")
+            jvmArguments.add("--add-opens=java.base/java.lang=ALL-UNNAMED,create_resonance")
+            jvmArguments.add("--add-opens=jdk.unsupported/sun.misc=ALL-UNNAMED,create_resonance")
         }
         register("clientDebug") {
             client()
             jvmArguments.add("-XX:TieredStopAtLevel=1")
             jvmArguments.add("-XX:+AllowEnhancedClassRedefinition")
+            jvmArguments.add("--add-exports=java.desktop/com.sun.media.sound=ALL-UNNAMED,create_resonance")
+            jvmArguments.add("--add-opens=java.desktop/com.sun.media.sound=ALL-UNNAMED,create_resonance")
+            jvmArguments.add("--add-opens=java.base/java.lang=ALL-UNNAMED,create_resonance")
+            jvmArguments.add("--add-opens=jdk.unsupported/sun.misc=ALL-UNNAMED,create_resonance")
         }
         register("data") {
             data()

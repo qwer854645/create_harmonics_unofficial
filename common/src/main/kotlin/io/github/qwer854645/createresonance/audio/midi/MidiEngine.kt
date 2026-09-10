@@ -2,6 +2,7 @@ package io.github.qwer854645.createresonance.audio.midi
 
 import io.github.qwer854645.createresonance.CreateResonanceMod
 import io.github.qwer854645.createresonance.content.midi.MidiLimits
+import io.github.qwer854645.createresonance.foundation.info
 import io.github.qwer854645.createresonance.foundation.warn
 import net.minecraft.client.Minecraft
 import java.io.ByteArrayInputStream
@@ -94,8 +95,12 @@ class MidiPlayerInstance(
     private val soundbank: Soundbank?,
 ) {
     private var synthesizer: Synthesizer? = null
+    /** Extra SoftSynth banks when a single device cannot raise polyphony past Gervill's 64. */
+    private var auxiliarySynthesizers: List<Synthesizer> = emptyList()
     private var sequencer: Sequencer? = null
     private var sequence: Sequence? = null
+
+    private fun allSynthesizers(): List<Synthesizer> = listOfNotNull(synthesizer) + auxiliarySynthesizers
 
     @Volatile
     var allowedChannels: Set<Int>? = null // null = all channels
@@ -138,57 +143,18 @@ class MidiPlayerInstance(
         val next = channels?.let { HashSet(it) }
         // Content equality — callers often allocate a fresh set each tick.
         if (allowedChannels == next) return
-        applyLiveChange("part") {
-            allowedChannels = next
-        }
+        // Do not stop/restart the sequencer: that desyncs ensemble sections from the conductor.
+        // Clearing sounding voices is enough when the part filter changes mid-play.
+        allowedChannels = next
+        softAllNotesOff()
     }
 
     fun setForcedProgram(program: Int?) {
         val next = program?.let { GeneralMidiInstruments.clamp(it) }
         if (forcedProgram == next) return
-        applyLiveChange("instrument") {
-            forcedProgram = next
-        }
-    }
-
-    /**
-     * Pause → hard silence → mutate filter/program → re-apply forced program → resume.
-     * Prevents hanging notes from the previous part or instrument.
-     */
-    private fun applyLiveChange(
-        reason: String,
-        mutate: () -> Unit,
-    ) {
-        val sequ = sequencer
-        val wasRunning = sequ?.isRunning == true
-        val pos =
-            try {
-                sequ?.microsecondPosition ?: 0L
-            } catch (_: Exception) {
-                0L
-            }
-
-        if (wasRunning) {
-            try {
-                sequ?.stop()
-            } catch (_: Exception) {
-            }
-            playing = false
-        }
-
-        hardSilence()
-        mutate()
-        forcedProgram?.let { applyForcedProgram(it) }
-
-        if (wasRunning && sequ != null && sequence != null) {
-            try {
-                sequ.microsecondPosition = pos.coerceAtMost(sequence!!.microsecondLength)
-                sequ.start()
-                playing = true
-            } catch (e: Exception) {
-                "MIDI resume after $reason switch failed: ${e.message}".warn()
-            }
-        }
+        forcedProgram = next
+        softAllNotesOff()
+        next?.let { applyForcedProgram(it) }
     }
 
     fun play(fromSeconds: Double = 0.0) {
@@ -267,10 +233,36 @@ class MidiPlayerInstance(
                 sequ.sequence = seq
             }
             val micros = (seconds.coerceAtLeast(0.0) * 1_000_000).toLong().coerceAtMost(seq.microsecondLength)
+            val current =
+                try {
+                    sequ.microsecondPosition
+                } catch (_: Exception) {
+                    Long.MIN_VALUE / 2
+                }
+            // Sub-frame nudges only skip MIDI events (lost note-offs → swallowed notes / stuck voices).
+            if (abs(micros - current) < 40_000L) return // <40ms
+            // Clear sounding voices before the jump so stolen polyphony and hangs do not accumulate.
+            softAllNotesOff()
             sequ.microsecondPosition = micros
         } catch (e: Exception) {
             // Fallback to full seek if the sequencer rejects live position updates.
             seek(seconds)
+        }
+    }
+
+    /** All-notes-off without stopping the sequencer (used before soft position jumps). */
+    private fun softAllNotesOff() {
+        try {
+            allSynthesizers().forEach { synth ->
+                synth.channels?.forEach { ch ->
+                    try {
+                        ch.controlChange(123, 0)
+                        ch.allNotesOff()
+                    } catch (_: Exception) {
+                    }
+                }
+            }
+        } catch (_: Exception) {
         }
     }
 
@@ -333,29 +325,48 @@ class MidiPlayerInstance(
             // Silence again after closing the sequencer — SoftSynth can emit a pop if
             // voices are still decaying when the audio line is torn down mid-note.
             hardSilence()
-            synthesizer?.close()
+            for (synth in allSynthesizers()) {
+                try {
+                    synth.close()
+                } catch (_: Exception) {
+                }
+            }
         } catch (_: Exception) {
         }
         sequencer = null
         synthesizer = null
+        auxiliarySynthesizers = emptyList()
     }
 
     private fun ensureDevices() {
         if (synthesizer?.isOpen == true && sequencer?.isOpen == true) return
         close()
         val synth = MidiSystem.getSynthesizer()
-        openSynthesizerWithPolyphony(synth)
+        SoftSynthPolyphony.openPrimary(synth, MAX_POLYPHONY)
         soundbank?.let {
             try {
                 synth.loadAllInstruments(it)
             } catch (_: Exception) {
             }
         }
+
+        val sinkReceiver: Receiver =
+            if (synth.maxPolyphony < SoftSynthPolyphony.MIN_ACCEPTABLE_POLYPHONY) {
+                warnPolyphonyFallback(synth.maxPolyphony)
+                val (banks, fanout) = SoftSynthPolyphony.openPolyphonyBanks(synth, soundbank, MAX_POLYPHONY)
+                auxiliarySynthesizers = banks.drop(1)
+                fanout
+            } else {
+                auxiliarySynthesizers = emptyList()
+                "MIDI SoftSynth ready polyphony=${synth.maxPolyphony}".info()
+                synth.receiver
+            }
+
         val sequ = MidiSystem.getSequencer(false)
         sequ.open()
         sequ.transmitter.receiver =
             FilteringReceiver(
-                synth.receiver,
+                sinkReceiver,
                 { allowedChannels },
                 { forcedProgram },
                 { muted },
@@ -364,86 +375,57 @@ class MidiPlayerInstance(
         sequencer = sequ
     }
 
-    /**
-     * Gervill [SoftSynthesizer] defaults to 64 simultaneous voices. Dense MIDI (big chords,
-     * long sustains, multi-track) will steal notes long before Minecraft's own sound-slot limit
-     * matters — our MIDI path never goes through MC's SoundEngine.
-     *
-     * Open via [com.sun.media.sound.AudioSynthesizer] when available so we can raise polyphony.
-     */
-    private fun openSynthesizerWithPolyphony(synth: Synthesizer) {
-        val props =
-            mapOf<String, Any>(
-                "max polyphony" to MAX_POLYPHONY,
-                // Slightly lower default latency (200ms) helps dense passages feel tighter.
-                "latency" to 80_000L,
-            )
-        try {
-            val audioSynthClass = Class.forName("com.sun.media.sound.AudioSynthesizer")
-            if (audioSynthClass.isInstance(synth)) {
-                val open =
-                    audioSynthClass.getMethod(
-                        "open",
-                        javax.sound.sampled.SourceDataLine::class.java,
-                        Map::class.java,
-                    )
-                open.invoke(synth, null, props)
-                return
-            }
-        } catch (e: Exception) {
-            "MIDI synthesizer polyphony setup failed (${e.message}); using default open()".warn()
-        }
-        synth.open()
-    }
-
     companion object {
         /** SoftSynthesizer default is 64; 1024 covers dense / multi-box MIDI with headroom. */
-        const val MAX_POLYPHONY = 1024
+        const val MAX_POLYPHONY = SoftSynthPolyphony.TARGET_POLYPHONY
     }
 
     /** Apply the forced GM program only on the melodic sink channel. */
     private fun applyForcedProgram(program: Int) {
-        val synth = synthesizer ?: return
         val ch = MidiEngine.FORCED_SINK_CHANNEL
-        try {
-            val midiCh = synth.channels.getOrNull(ch) ?: return
-            midiCh.controlChange(64, 0)
-            midiCh.controlChange(121, 0) // reset all controllers
-            midiCh.pitchBend = 8192
-            midiCh.programChange(program)
-        } catch (_: Exception) {
+        for (synth in allSynthesizers()) {
+            try {
+                val midiCh = synth.channels.getOrNull(ch) ?: continue
+                midiCh.controlChange(64, 0)
+                midiCh.controlChange(121, 0) // reset all controllers
+                midiCh.pitchBend = 8192
+                midiCh.programChange(program)
+            } catch (_: Exception) {
+            }
         }
     }
 
     private fun hardSilence() {
         try {
-            synthesizer?.channels?.forEach { ch: MidiChannel ->
-                try {
-                    ch.controlChange(64, 0) // sustain off
-                    ch.controlChange(123, 0) // all notes off CC
-                    ch.controlChange(120, 0) // all sound off CC
-                    ch.controlChange(121, 0) // reset all controllers
-                    ch.pitchBend = 8192
-                } catch (_: Exception) {
-                }
-                try {
-                    ch.allNotesOff()
-                    ch.allSoundOff()
-                } catch (_: Exception) {
-                }
-                // SoftSynthesizer often keeps voices after CC all-sound-off when stopped mid-note.
-                try {
-                    for (note in 0..127) {
-                        ch.noteOff(note)
+            allSynthesizers().forEach { synth ->
+                synth.channels?.forEach { ch: MidiChannel ->
+                    try {
+                        ch.controlChange(64, 0) // sustain off
+                        ch.controlChange(123, 0) // all notes off CC
+                        ch.controlChange(120, 0) // all sound off CC
+                        ch.controlChange(121, 0) // reset all controllers
+                        ch.pitchBend = 8192
+                    } catch (_: Exception) {
                     }
-                } catch (_: Exception) {
+                    try {
+                        ch.allNotesOff()
+                        ch.allSoundOff()
+                    } catch (_: Exception) {
+                    }
+                    // SoftSynthesizer often keeps voices after CC all-sound-off when stopped mid-note.
+                    try {
+                        for (note in 0..127) {
+                            ch.noteOff(note)
+                        }
+                    } catch (_: Exception) {
+                    }
                 }
             }
         } catch (_: Exception) {
         }
-        // Also push through the sequencer receiver path (respects mute/filter wiring).
+        // Also push through the sequencer receiver path (respects mute/filter / fan-out wiring).
         try {
-            val receiver = synthesizer?.receiver ?: return
+            val receiver = sequencer?.transmitter?.receiver ?: synthesizer?.receiver ?: return
             for (ch in 0..15) {
                 receiver.send(ShortMessage(ShortMessage.CONTROL_CHANGE, ch, 64, 0), -1)
                 receiver.send(ShortMessage(ShortMessage.CONTROL_CHANGE, ch, 123, 0), -1)

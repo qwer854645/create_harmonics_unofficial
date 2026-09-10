@@ -395,6 +395,8 @@ class MusicBoxBehaviour(
     private var ensembleSyncDirty: Boolean = false
     private var pendingEnsembleSeek: Double? = null
     private var pendingEnsembleRestart: Boolean = false
+    /** When false, clock snapshot only — sections must not jump their sequencers. */
+    private var pendingEnsembleForceSeek: Boolean = true
     private var forceAlignTicks: Int = 0
 
     override fun getType() = TYPE
@@ -778,9 +780,19 @@ class MusicBoxBehaviour(
     }
 
     fun ensemblePositionSeconds(): Double {
-        // Solo + conductor share this timeline so natural end / arms stay authoritative.
-        if (role == MusicBoxRole.SECTION && !isConductorBlock) return ensembleClockSeconds
         val level = be.level ?: return ensembleClockSeconds
+        // Sections: follow the live conductor clock so GUI progress keeps moving after seeks
+        // (local mirrored clock alone only updates on soft sync snapshots).
+        if (role == MusicBoxRole.SECTION && !isConductorBlock) {
+            val conductor = resolveLinkedConductor()
+            if (conductor != null) {
+                return conductor.ensemblePositionSeconds()
+            }
+            if (!playing) return ensembleClockSeconds
+            val dt = (level.gameTime - ensembleClockGameTime).coerceAtLeast(0L) / 20.0
+            return (ensembleClockSeconds + dt).coerceAtLeast(0.0)
+        }
+        // Solo + conductor share this timeline so natural end / arms stay authoritative.
         if (!playing) return ensembleClockSeconds
         val dt = (level.gameTime - ensembleClockGameTime).coerceAtLeast(0L) / 20.0
         val tempo = rpmToTempoFactor(be.speed).toDouble()
@@ -799,9 +811,18 @@ class MusicBoxBehaviour(
     }
 
     /** Coalesce rapid conductor ops into one spatial sync on the next server tick. */
-    private fun queueEnsembleSync(seekSeconds: Double, restart: Boolean) {
+    private fun queueEnsembleSync(
+        seekSeconds: Double,
+        restart: Boolean,
+        forceClientSeek: Boolean = true,
+    ) {
         if (!isConductorBlock) return
         ensembleEpoch++
+        if (!ensembleSyncDirty) {
+            pendingEnsembleForceSeek = forceClientSeek || restart
+        } else {
+            pendingEnsembleForceSeek = pendingEnsembleForceSeek || forceClientSeek || restart
+        }
         ensembleSyncDirty = true
         pendingEnsembleSeek = seekSeconds
         pendingEnsembleRestart = restart
@@ -812,15 +833,23 @@ class MusicBoxBehaviour(
         ensembleSyncDirty = false
         val seek = pendingEnsembleSeek ?: ensemblePositionSeconds()
         val restart = pendingEnsembleRestart
+        val forceSeek = pendingEnsembleForceSeek
         pendingEnsembleSeek = null
         pendingEnsembleRestart = false
-        syncEnsembleClock(seekSeconds = seek, restart = restart, epoch = ensembleEpoch)
+        pendingEnsembleForceSeek = false
+        syncEnsembleClock(
+            seekSeconds = seek,
+            restart = restart,
+            epoch = ensembleEpoch,
+            forceClientSeek = forceSeek,
+        )
     }
 
     private fun syncEnsembleClock(
         seekSeconds: Double? = null,
         restart: Boolean = false,
         epoch: Int = ensembleEpoch,
+        forceClientSeek: Boolean = true,
     ) {
         val level = be.level ?: return
         if (level.isClientSide) return
@@ -831,23 +860,39 @@ class MusicBoxBehaviour(
         // Always push an absolute position so sections cannot drift apart.
         val pos = seekSeconds ?: ensemblePositionSeconds()
         val radius = MAX_ENSEMBLE_RADIUS
+        val radiusSq = radius * radius
         val origin = be.blockPos
         val myFreq = be.frequency
-        for (dx in -radius..radius) {
-            for (dy in -radius..radius) {
-                for (dz in -radius..radius) {
-                    val distSq = dx * dx + dy * dy + dz * dz
-                    if (distSq > radius * radius) continue
-                    val posBlock = origin.offset(dx, dy, dz)
+        // Iterate loaded chunk block-entities only — O(loaded BEs in AABB), not O(radius³) getBlockEntity.
+        val minCx = (origin.x - radius) shr 4
+        val maxCx = (origin.x + radius) shr 4
+        val minCz = (origin.z - radius) shr 4
+        val maxCz = (origin.z + radius) shr 4
+        for (cx in minCx..maxCx) {
+            for (cz in minCz..maxCz) {
+                if (!level.hasChunk(cx, cz)) continue
+                val chunk = level.getChunk(cx, cz)
+                for ((posBlock, blockEntity) in chunk.blockEntities) {
+                    if (blockEntity !is MusicBoxBlockEntity) continue
                     if (posBlock == origin) continue
-                    val other = level.getBlockEntity(posBlock) as? MusicBoxBlockEntity ?: continue
-                    val ob = other.behaviour
+                    val distSq = posBlock.distSqr(origin)
+                    if (distSq > radiusSq) continue
+                    val ob = blockEntity.behaviour
                     if (ob.isConductorBlock) continue
                     if (ob.role != MusicBoxRole.SECTION) continue
-                    if (!myFreq.matches(other.frequency)) continue
-                    val accept = ensembleAcceptRadius(other.speed)
+                    if (!myFreq.matches(blockEntity.frequency)) continue
+                    val accept = ensembleAcceptRadius(blockEntity.speed)
                     if (distSq > accept * accept) continue
-                    ob.applyEnsembleSync(midi, name, playing, pos, restart, origin, epoch)
+                    ob.applyEnsembleSync(
+                        midi,
+                        name,
+                        playing,
+                        pos,
+                        restart,
+                        origin,
+                        epoch,
+                        forceClientSeek = forceClientSeek || restart,
+                    )
                 }
             }
         }
@@ -861,6 +906,7 @@ class MusicBoxBehaviour(
         restart: Boolean,
         conductorPos: BlockPos,
         epoch: Int,
+        forceClientSeek: Boolean = true,
     ) {
         // Ignore stale packets from rapid conductor ops that arrived out of order.
         if (epoch > 0 && epoch < lastAppliedEnsembleEpoch) return
@@ -887,12 +933,22 @@ class MusicBoxBehaviour(
         }
         playing = play
         if (seekSeconds != null) {
-            pendingSeek = seekSeconds
-            pendingRestart = restart
-            // Mirror conductor timeline locally for same-tick soft align.
+            // Always mirror the conductor clock locally for GUI / out-of-range hold.
             ensembleClockSeconds = seekSeconds
             ensembleClockGameTime = be.level?.gameTime ?: 0L
-            forceAlignTicks = 15
+            if (restart) {
+                pendingSeek = seekSeconds
+                pendingRestart = true
+                forceAlignTicks = 2
+            } else if (forceClientSeek) {
+                // Play / pause / user seek — one-shot align, not a multi-tick hammer.
+                pendingSeek = seekSeconds
+                pendingRestart = false
+                forceAlignTicks = 1
+            } else {
+                // Soft periodic snapshot only — sections follow conductor.ensemblePositionSeconds().
+                pendingRestart = false
+            }
         }
         be.notifyUpdate()
         be.sendData()
@@ -908,13 +964,19 @@ class MusicBoxBehaviour(
             ensureUuid()
             if (isConductorBlock) {
                 flushEnsembleSync()
-                // Periodic timeline snapshot (soft). Clients align via syncPosition, not stop/start.
+                // Periodic clock snapshot for BE sync / GUI — sections soft-follow the conductor
+                // clock; avoid forcing sequencer seeks (that causes note swallowing on dense MIDI).
                 if (playing && level.gameTime % 20L == 0L) {
                     val pos = ensemblePositionSeconds()
                     ensembleClockSeconds = pos
                     ensembleClockGameTime = level.gameTime
                     ensembleEpoch++
-                    syncEnsembleClock(seekSeconds = pos, restart = false, epoch = ensembleEpoch)
+                    syncEnsembleClock(
+                        seekSeconds = pos,
+                        restart = false,
+                        epoch = ensembleEpoch,
+                        forceClientSeek = false,
+                    )
                     be.sendData()
                 }
             }
@@ -977,7 +1039,9 @@ class MusicBoxBehaviour(
                 // Keep local mirror of the conductor timeline.
                 ensembleClockSeconds = pos
                 ensembleClockGameTime = level.gameTime
-                forceAlignTicks = 15
+                if (pendingRestart) {
+                    forceAlignTicks = 2
+                }
                 pendingSeek = null
                 pendingRestart = false
             }
@@ -986,11 +1050,11 @@ class MusicBoxBehaviour(
                 if (!player.playing) {
                     player.play(conductor.ensemblePositionSeconds())
                 }
-                // Soft-align every tick to the conductor clock (critical for complex MIDIs).
+                // Occasional soft-align only — frequent syncPosition swallows notes on dense MIDI.
                 alignToEnsembleClock(player, conductor.ensemblePositionSeconds())
             } else if (!playing || speed <= 0f) {
                 if (player.playing) player.pause()
-                // Stay parked on the shared pause head.
+                // Stay parked on the shared pause head (at most once per tick is fine when paused).
                 player.syncPosition(conductor.ensemblePositionSeconds())
             }
             return
@@ -1004,7 +1068,9 @@ class MusicBoxBehaviour(
             if (isConductorBlock) {
                 ensembleClockSeconds = pos
                 ensembleClockGameTime = level.gameTime
-                forceAlignTicks = 15
+                if (pendingRestart) {
+                    forceAlignTicks = 2
+                }
             }
             pendingSeek = null
             pendingRestart = false
@@ -1058,8 +1124,10 @@ class MusicBoxBehaviour(
             return
         }
         val drift = abs(player.currentSeconds() - pos)
-        // Large jumps (user seek) need a full seek; small corrections stay soft.
-        if (drift > 0.35 || !player.playing) {
+        // Ignore tiny drift — sequencer seeks skip events and drop notes on dense MIDI.
+        if (drift < 0.08) return
+        // Large jumps (user seek) need a full seek; medium corrections stay soft.
+        if (drift > 0.50 || !player.playing) {
             player.seek(pos)
         } else {
             player.syncPosition(pos)
@@ -1072,13 +1140,18 @@ class MusicBoxBehaviour(
     ) {
         val drift = abs(player.currentSeconds() - targetSeconds)
         if (forceAlignTicks > 0) {
-            player.syncPosition(targetSeconds)
-            forceAlignTicks--
+            // One correction after restart, then trust tempo factor + conductor RPM.
+            if (drift >= 0.04) {
+                player.syncPosition(targetSeconds)
+            }
+            forceAlignTicks = 0
             return
         }
-        // ~25ms tolerance — tight enough for dense MIDI, loose enough to avoid chatter.
-        if (drift > 0.025) {
-            player.syncPosition(targetSeconds)
+        // Prefer slight desync over seeking: SoftSynth note-offs are lost when the sequencer jumps.
+        val gameTime = be.level?.gameTime ?: 0L
+        when {
+            drift > 0.55 -> player.syncPosition(targetSeconds)
+            drift > 0.18 && gameTime % 40L == 0L -> player.syncPosition(targetSeconds)
         }
     }
 

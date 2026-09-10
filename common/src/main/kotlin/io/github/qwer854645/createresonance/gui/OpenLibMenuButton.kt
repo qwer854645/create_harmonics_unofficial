@@ -13,13 +13,24 @@ import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.Button
+import net.minecraft.client.gui.components.Tooltip
 import net.minecraft.client.gui.components.events.GuiEventListener
 import net.minecraft.client.gui.screens.PauseScreen
+import net.minecraft.client.gui.screens.TitleScreen
 import net.minecraft.client.resources.language.I18n
-import net.minecraft.network.chat.CommonComponents
+import net.minecraft.network.chat.Component
 import org.apache.commons.lang3.mutable.MutableObject
 import java.util.function.Consumer
 
+/**
+ * Title / pause menu entry for Create: Resonance.
+ *
+ * FancyMenu:
+ * - Stable locator message (language-independent): `create_resonance:menu_open`
+ * - Opens screen id: `io.github.qwer854645.createresonance.gui.ResonanceMenuScreen`
+ * - Disable injection: set `mainMenuLibButtonRow` / `ingameMenuLibButtonRow` to 0, then add your own
+ *   FancyMenu button with Open Screen / Mimic on this widget if desired.
+ */
 class OpenLibMenuButton(
     x: Int,
     y: Int,
@@ -28,24 +39,21 @@ class OpenLibMenuButton(
         y,
         20,
         20,
-        CommonComponents.EMPTY,
-        OnPress { b: Button? -> click(b) },
+        // Stable id for FancyMenu across languages; icon is drawn instead of this text.
+        Component.literal(WIDGET_ID),
+        OnPress { click(it) },
         DEFAULT_NARRATION,
     ) {
+    init {
+        tooltip = Tooltip.create(Component.translatable("create_resonance.gui.main_menu.open_btn"))
+    }
+
     override fun renderString(
         graphics: GuiGraphics,
         pFont: Font,
         pColor: Int,
     ) {
-        val icon = ModItems.WEBDISC.asStack()
-        val bakedModel =
-            Minecraft
-                .getInstance()
-                .itemRenderer
-                .getModel(icon, Minecraft.getInstance().level, Minecraft.getInstance().player, 0)
-        if (bakedModel == null) return
-
-        graphics.renderItem(icon, x + 2, y + 2)
+        graphics.renderItem(ModItems.WEBDISC.asStack(), x + 2, y + 2)
     }
 
     data object MenuRows {
@@ -71,19 +79,14 @@ class OpenLibMenuButton(
                 SingleMenuRow("menu.returnToMenu"),
             )
 
-        fun List<SingleMenuRow>.leftTextKeys(): List<String> =
-            this.map {
-                it.leftTextKey
-            }
+        fun List<SingleMenuRow>.leftTextKeys(): List<String> = map { it.leftTextKey }
 
-        fun List<SingleMenuRow>.rightTextKeys(): List<String> =
-            this.map {
-                it.rightTextKey
-            }
+        fun List<SingleMenuRow>.rightTextKeys(): List<String> = map { it.rightTextKey }
     }
 
     companion object {
-        @Suppress("UNUSED_PARAMETER")
+        const val WIDGET_ID = "create_resonance:menu_open"
+
         fun click(b: Button?) {
             ScreenOpener.open(ResonanceMenuScreen(Minecraft.getInstance().screen))
         }
@@ -99,45 +102,47 @@ object MainMenuHandler : CommonGuiEventHandler {
             val rowIdx: Int
             val offsetX: Int
             when (screen) {
+                is TitleScreen -> {
+                    menu = MenuRows.MAIN_MENU
+                    rowIdx = ModConfigs.client.mainMenuLibButtonRow.get()
+                    offsetX = ModConfigs.client.mainMenuLibButtonOffsetX.get()
+                }
+
                 is PauseScreen -> {
                     menu = MenuRows.INGAME_MENU
                     rowIdx = ModConfigs.client.ingameMenuLibButtonRow.get()
                     offsetX = ModConfigs.client.ingameMenuLibButtonOffsetX.get()
                 }
 
-                else -> {
-                    return@onMcMain
-                }
+                else -> return@onMcMain
             }
 
-            if (rowIdx == 0) {
-                return@onMcMain
-            }
+            // Row 0 = disabled so FancyMenu can own the entire title/pause layout.
+            if (rowIdx == 0) return@onMcMain
 
             val onLeft = offsetX < 0
-            val targetMessage = I18n.get((if (onLeft) menu.leftTextKeys() else menu.rightTextKeys())[rowIdx - 1])
+            val keys = if (onLeft) menu.leftTextKeys() else menu.rightTextKeys()
+            if (rowIdx < 1 || rowIdx > keys.size) return@onMcMain
+            val targetMessage = I18n.get(keys[rowIdx - 1])
+            if (targetMessage.isBlank()) return@onMcMain
 
             val toAdd = MutableObject<GuiEventListener>(null)
-            event
-                .listenerList
+            event.listenerList
                 .stream()
                 .filter { w -> w is AbstractWidget }
                 .map { w -> w as AbstractWidget }
-                .filter { w: AbstractWidget ->
-                    (
-                        w.message.string == targetMessage
-                    )
-                }.findFirst()
+                .filter { w -> w.message.string == targetMessage }
+                .findFirst()
                 .ifPresent(
-                    Consumer { w: AbstractWidget ->
+                    Consumer { w ->
                         toAdd.value =
                             OpenLibMenuButton(
-                                w.x + offsetX + (if (onLeft) -20 else w.getWidth()),
+                                w.x + offsetX + (if (onLeft) -20 else w.width),
                                 w.y,
                             )
                     },
                 )
-            if (toAdd.getValue() != null) event.addListener(toAdd.getValue())
+            toAdd.value?.let { event.addListener(it) }
         }
     }
 }

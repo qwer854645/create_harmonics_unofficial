@@ -167,13 +167,23 @@ class MusicBoxScreen(
 
         if (showPart) {
             addRenderableWidget(
+                IconButton(x + 8, rowY, AllIcons.I_CONFIG_PREV).also {
+                    it.withCallback<IconButton> { cyclePart(-1) }
+                    it.setToolTip(Component.translatable("create_resonance.gui.music_box.part_prev"))
+                },
+            )
+            addRenderableWidget(
                 Button
                     .builder(partLabel()) {
-                        cyclePart()
-                        sendConfig()
-                        rebuildWidgets()
-                    }.bounds(x + 8, rowY, 160, 16)
+                        cyclePart(1)
+                    }.bounds(x + 30, rowY, 116, 18)
                     .build(),
+            )
+            addRenderableWidget(
+                IconButton(x + 150, rowY, AllIcons.I_CONFIG_NEXT).also {
+                    it.withCallback<IconButton> { cyclePart(1) }
+                    it.setToolTip(Component.translatable("create_resonance.gui.music_box.part_next"))
+                },
             )
         }
 
@@ -196,13 +206,16 @@ class MusicBoxScreen(
         }
     }
 
-    private fun cyclePart() {
+    private fun cyclePart(delta: Int) {
+        // Cycle: all (-1) ↔ parts 0..15
         val cur = currentPart()
-        val next = if (cur >= 15) -1 else cur + 1
+        val next = ((cur + 1 + delta).mod(17)) - 1
         behaviour.sectionChannels.clear()
         if (next >= 0) {
             behaviour.sectionChannels.add(next)
         }
+        sendConfig()
+        rebuildWidgets()
     }
 
     private fun cycleInstrument(delta: Int) {
@@ -268,10 +281,11 @@ class MusicBoxScreen(
             behaviour.displayName.ifBlank {
                 Component.translatable("create_resonance.gui.music_box.no_track").string
             }
-        // Prefer the block-entity timeline so the conductor progress stays visible while silent.
+        // Prefer the block-entity timeline so the conductor / section progress stays visible.
+        // Sections resolve through the linked conductor clock (see ensemblePositionSeconds).
         val player = MidiEngine.getOrCreate(behaviour.playerId())
         val current =
-            if (conductor || behaviour.durationSeconds > 0.0) {
+            if (conductor || sectionMode || behaviour.durationSeconds > 0.0) {
                 behaviour.ensemblePositionSeconds()
             } else {
                 player.currentSeconds()

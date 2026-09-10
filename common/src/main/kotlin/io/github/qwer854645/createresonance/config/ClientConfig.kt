@@ -31,6 +31,12 @@ object ClientConfig : ConfigBase() {
     lateinit var ingameMenuLibButtonOffsetX: ConfigInt
         private set
 
+    lateinit var renderMainMenuDecorations: ConfigBool
+        private set
+
+    lateinit var renderLibrarySetupDecorations: ConfigBool
+        private set
+
     lateinit var neverShowLibraryDisclaimer: ConfigBool
         private set
 
@@ -50,17 +56,21 @@ object ClientConfig : ConfigBase() {
     }
 
     private fun menuButtonsGroup(builder: ModConfigSpec.Builder) {
-        group(1, "menu_buttons", "Configuration for menu buttons")
+        group(
+            1,
+            "menu_buttons",
+            "Title / pause menu entry for Create: Resonance (FancyMenu can also hide or restyle these widgets)",
+        )
 
         mainMenuLibButtonRow =
             i(
-                0,
+                2,
                 0,
                 4,
                 "mainMenuLibButtonRow",
                 "",
-                "Deprecated — title-screen icon removed; kept for config compatibility",
-                "Set to 0 (no effect on the title screen)",
+                "Title-screen row for the Resonance disc button (1 = top row)",
+                "Set to 0 to disable injection (use FancyMenu layouts instead if desired)",
             )
 
         mainMenuLibButtonOffsetX =
@@ -70,8 +80,7 @@ object ClientConfig : ConfigBase() {
                 Integer.MAX_VALUE,
                 "mainMenuLibButtonOffsetX",
                 "",
-                "Offset the Lib Download menu button in the main menu by this many pixels on the X axis",
-                "The sign (-/+) of this value determines what side of the row the button appears on (left/right)",
+                "X offset from the anchored title-screen button; negative = left side",
             )
 
         ingameMenuLibButtonRow =
@@ -81,8 +90,8 @@ object ClientConfig : ConfigBase() {
                 5,
                 "ingameMenuLibButtonRow",
                 "",
-                "Choose the menu row that the Lib Download menu button appears on in the ingame menu",
-                "Set to 0 to disable the button altogether",
+                "Pause-menu row for the Resonance disc button",
+                "Set to 0 to disable injection",
             )
 
         ingameMenuLibButtonOffsetX =
@@ -92,8 +101,23 @@ object ClientConfig : ConfigBase() {
                 Integer.MAX_VALUE,
                 "ingameMenuLibButtonOffsetX",
                 "",
-                "Offset the Lib Download menu button in the ingame menu by this many pixels on the X axis",
-                "The sign (-/+) of this value determines what side of the row the button appears on (left/right)",
+                "X offset from the anchored pause-menu button; negative = left side",
+            )
+
+        renderMainMenuDecorations =
+            b(
+                true,
+                "renderMainMenuDecorations",
+                "Draw panorama / logo / rotating discs / title on the Resonance menu screen",
+                "Set false for a blank canvas so FancyMenu layouts or Custom GUI overrides fully control visuals",
+            )
+
+        renderLibrarySetupDecorations =
+            b(
+                true,
+                "renderLibrarySetupDecorations",
+                "Draw custom cards / titles / progress UI on the library setup screen",
+                "Set false to keep only the action buttons (FancyMenu can restyle the rest)",
             )
     }
 
@@ -143,8 +167,8 @@ object ClientConfig : ConfigBase() {
                 false,
                 "neverShowLibraryDisclaimer",
                 "Never show library installation disclaimer on startup",
-                "When enabled, the library installation prompt will not appear on game startup",
-                "You can still access the library installer through the in-game menu button",
+                "When enabled, the prompt will not appear on game startup",
+                "You can still open Library Management from the Resonance menu (disc button)",
             )
     }
 

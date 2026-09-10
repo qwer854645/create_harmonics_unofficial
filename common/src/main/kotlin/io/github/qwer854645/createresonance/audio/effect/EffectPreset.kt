@@ -154,12 +154,20 @@ sealed interface EffectPreset {
         private val scanRadiusProvider: () -> Int = { ModConfigs.client.reverberatorScanRadius.get() },
         private val maxEffectiveBlocks: Int = 8,
     ) : AbstractEffectPreset() {
+        override val heavyUpdateRate = 40
+
         var currentlyActive: Boolean = false
             private set
 
         val roomSizeInterpolated = FloatInterpolator(BASE_ROOM_SIZE, 900.milliseconds)
         val dampingInterpolated = FloatInterpolator(BASE_DAMPING, 900.milliseconds)
         val wetMixInterpolated = FloatInterpolator(BASE_WET_MIX, 900.milliseconds)
+
+        private var cachedCounts: BlockCounts? = null
+        private var cachedScanBlockX: Int = Int.MIN_VALUE
+        private var cachedScanBlockY: Int = Int.MIN_VALUE
+        private var cachedScanBlockZ: Int = Int.MIN_VALUE
+        private var cachedScanRadius: Int = -1
 
         companion object {
             val effectScope: AudioEffect.Scope =
@@ -196,6 +204,10 @@ sealed interface EffectPreset {
                     Blocks.PRISMARINE_BRICKS,
                     Blocks.DARK_PRISMARINE,
                 )
+
+            val ROOM_INCREASERS_SET: Set<Block> = ROOM_INCREASERS_BLOCKS.toHashSet()
+            val DAMPING_INCREASERS_SET: Set<Block> = DAMPING_INCREASERS_BLOCKS.toHashSet()
+            val WET_INCREASERS_SET: Set<Block> = WET_INCREASERS_BLOCKS.toHashSet()
         }
 
         private fun applyReverb(audioPlayer: AudioPlayer) {
@@ -245,7 +257,29 @@ sealed interface EffectPreset {
             if (level is VirtualRenderWorld) return
             if (!level.isClientSide) return
 
-            val counts = level.scanReverberatorBlocks(positionVec, scanRadiusProvider(), cursorVec)
+            val scanRadius = scanRadiusProvider().coerceAtLeast(0)
+            val blockX = positionVec.value.x.toInt()
+            val blockY = positionVec.value.y.toInt()
+            val blockZ = positionVec.value.z.toInt()
+            val moved =
+                cachedCounts == null ||
+                    scanRadius != cachedScanRadius ||
+                    kotlin.math.abs(blockX - cachedScanBlockX) > 1 ||
+                    kotlin.math.abs(blockY - cachedScanBlockY) > 1 ||
+                    kotlin.math.abs(blockZ - cachedScanBlockZ) > 1
+
+            val counts =
+                if (!moved) {
+                    cachedCounts!!
+                } else {
+                    level.scanReverberatorBlocks(positionVec, scanRadius, cursorVec).also {
+                        cachedCounts = it
+                        cachedScanRadius = scanRadius
+                        cachedScanBlockX = blockX
+                        cachedScanBlockY = blockY
+                        cachedScanBlockZ = blockZ
+                    }
+                }
 
             if (counts.total == 0) {
                 removeReverb(audioPlayer)
@@ -279,15 +313,26 @@ private fun Level.scanReverberatorBlocks(
     scanRadius: Int,
     cursorVector: CursorVector,
 ): BlockCounts {
+    if (scanRadius <= 0) return BlockCounts(0, 0, 0)
+
     var roomIncreasers = 0
     var dampingIncreasers = 0
     var wetIncreasers = 0
 
     val inPlotGrid = ModCompats.sableCompat?.isInPlotGrid(this, position.value) == true
+    // Large radii: stride sample (~1/8 volume) and scale counts so wet/room targets stay similar.
+    val step = if (scanRadius > 6) 2 else 1
+    val sampleScale = step * step * step
+    val roomSet = EffectPreset.Reverberator.ROOM_INCREASERS_SET
+    val dampSet = EffectPreset.Reverberator.DAMPING_INCREASERS_SET
+    val wetSet = EffectPreset.Reverberator.WET_INCREASERS_SET
 
-    for (dx in -scanRadius..scanRadius) {
-        for (dy in -scanRadius..scanRadius) {
-            for (dz in -scanRadius..scanRadius) {
+    var dx = -scanRadius
+    while (dx <= scanRadius) {
+        var dy = -scanRadius
+        while (dy <= scanRadius) {
+            var dz = -scanRadius
+            while (dz <= scanRadius) {
                 cursorVector.value.set(position.value.x + dx, position.value.y + dy, position.value.z + dz)
                 ModCompats.sableCompat?.projectOutOfSubLevel(this, cursorVector.value)
 
@@ -300,13 +345,12 @@ private fun Level.scanReverberatorBlocks(
                     )
 
                 when (blockState.block) {
-                    in EffectPreset.Reverberator.ROOM_INCREASERS_BLOCKS -> roomIncreasers++
-                    in EffectPreset.Reverberator.DAMPING_INCREASERS_BLOCKS -> dampingIncreasers++
-                    in EffectPreset.Reverberator.WET_INCREASERS_BLOCKS -> wetIncreasers++
+                    in roomSet -> roomIncreasers++
+                    in dampSet -> dampingIncreasers++
+                    in wetSet -> wetIncreasers++
                 }
 
                 // In physics space contribution
-
                 if (inPlotGrid) {
                     val shipBlockState =
                         this.getBlockState(
@@ -320,11 +364,18 @@ private fun Level.scanReverberatorBlocks(
                         Blocks.DIAMOND_BLOCK -> wetIncreasers++
                     }
                 }
+                dz += step
             }
+            dy += step
         }
+        dx += step
     }
 
-    return BlockCounts(roomIncreasers, dampingIncreasers, wetIncreasers)
+    return BlockCounts(
+        roomIncreasers * sampleScale,
+        dampingIncreasers * sampleScale,
+        wetIncreasers * sampleScale,
+    )
 }
 
 private fun Level.countLiquidCoveredFaces(

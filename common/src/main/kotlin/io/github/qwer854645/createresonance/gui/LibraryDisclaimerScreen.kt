@@ -14,15 +14,28 @@ import io.github.qwer854645.createresonance.foundation.extension.toMultilineForm
 import io.github.qwer854645.createresonance.foundation.locale.ModLang
 import net.minecraft.ChatFormatting
 import net.minecraft.Util
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.gui.screens.TitleScreen
 import net.minecraft.network.chat.Component
 import net.minecraft.util.FormattedCharSequence
 
-class LibraryDisclaimerScreen(
-    private val parent: Screen?,
-) : Screen(ModLang.translate("gui.library_setup.title").component()) {
+/**
+ * yt-dlp / FFmpeg installer screen.
+ *
+ * FancyMenu:
+ * - Screen id: `io.github.qwer854645.createresonance.gui.LibraryDisclaimerScreen`
+ * - No-arg constructible for FancyMenu "Open Screen" actions
+ * - Blank canvas: client `renderLibrarySetupDecorations=false` (buttons only)
+ * - Action buttons use `create_resonance.gui.library_setup.*` translation keys
+ */
+class LibraryDisclaimerScreen
+    @JvmOverloads
+    constructor(
+        private val parent: Screen? = Minecraft.getInstance().screen,
+    ) : Screen(ModLang.translate("gui.library_setup.title").component()) {
     // Data classes for better organization
     private data class LibInfo(
         val name: String,
@@ -282,6 +295,8 @@ class LibraryDisclaimerScreen(
     }
 
     private fun addDeleteButtonsForLibraries() {
+        if (!ModConfigs.client.renderLibrarySetupDecorations.get()) return
+
         val positions = calculateCardPositions()
 
         BinStatusManager.LibraryType.entries.forEachIndexed { index, library ->
@@ -357,19 +372,22 @@ class LibraryDisclaimerScreen(
         partialTick: Float,
     ) {
         renderBackground(guiGraphics, mouseX, mouseY, partialTick)
-        guiGraphics.fillGradient(0, 0, width, height, 0xE0000000.toInt(), 0xD0000000.toInt())
 
-        renderTitle(guiGraphics)
+        val drawDecorations = ModConfigs.client.renderLibrarySetupDecorations.get()
+        if (drawDecorations) {
+            guiGraphics.fillGradient(0, 0, width, height, 0xE0000000.toInt(), 0xD0000000.toInt())
+            renderTitle(guiGraphics)
 
-        when (currentState) {
-            State.DISCLAIMER -> renderDisclaimer(guiGraphics, mouseX, mouseY)
-            State.STATUS -> renderStatus(guiGraphics)
-            State.SKIPPED -> renderSkipped(guiGraphics)
+            when (currentState) {
+                State.DISCLAIMER -> renderDisclaimer(guiGraphics, mouseX, mouseY)
+                State.STATUS -> renderStatus(guiGraphics)
+                State.SKIPPED -> renderSkipped(guiGraphics)
+            }
         }
 
         renderables.forEach { it.render(guiGraphics, mouseX, mouseY, partialTick) }
 
-        if (currentState == State.DISCLAIMER) {
+        if (drawDecorations && currentState == State.DISCLAIMER) {
             hoveredCardIndex?.let { index ->
                 if (index in libraries.indices) {
                     renderLibraryTooltip(guiGraphics, libraries[index], width / 2, height / 2)
@@ -803,7 +821,7 @@ class LibraryDisclaimerScreen(
     }
 
     override fun onClose() {
-        minecraft?.setScreen(parent)
+        minecraft?.setScreen(parent ?: TitleScreen())
     }
 
     override fun isPauseScreen(): Boolean = true
